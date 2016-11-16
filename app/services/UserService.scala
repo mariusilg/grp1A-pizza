@@ -19,7 +19,7 @@ trait UserServiceT {
    */
   def addUser(name: String): User = {
     // create User
-    val newUser = User(-1, name)
+    val newUser = User(-1, name, false)
     // persist and return User
     userDao.addUser(newUser)
   }

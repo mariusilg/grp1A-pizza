@@ -7,6 +7,7 @@ package models
  */
 object Company {
 
-  val name = "Pizza-Flitza"
+  final val name = "Fast-Pizza-Line"
+
 
 }

@@ -28,11 +28,23 @@ object UserController extends Controller {
   def addUser : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(formWithErrors))
+        BadRequest(views.html.index(formWithErrors, null))
       },
       userData => {
         val newUser = services.UserService.addUser(userData.name)
         Redirect(routes.UserController.welcomeUser(newUser.name)).
+          flashing("success" -> "User saved!")
+      })
+  }
+
+
+  def login : Action[AnyContent] = Action { implicit request =>
+    userForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.index(formWithErrors, UserService.registeredUsers))
+      },
+      userData => {
+        Redirect(routes.UserController.welcomeUser(userData.name)).
           flashing("success" -> "User saved!")
       })
   }

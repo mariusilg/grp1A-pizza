@@ -9,6 +9,8 @@ POST        /addUser             controllers.UserController.addUser
 GET         /welcomeUser         controllers.UserController.welcomeUser(username)
 GET         /showUsers           controllers.UserController.showUsers
 
+POST        /login               controllers.UserController.login
+
 # REST API
 GET         /api                 rest.Api.api
 GET         /api/users           rest.Users.users

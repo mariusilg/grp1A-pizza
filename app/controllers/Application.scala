@@ -1,6 +1,7 @@
 package controllers
 
 import play.api.mvc.{Action, Controller, AnyContent}
+import services.UserService
 
 /**
  * Main controller of the Pizza Service application.
@@ -15,7 +16,7 @@ object Application extends Controller {
    * @return main web page
    */
   def index : Action[AnyContent] = Action {
-    Ok(views.html.index(controllers.UserController.userForm))
+    Ok(views.html.index(controllers.UserController.userForm, UserService.registeredUsers))
   }
 
 }

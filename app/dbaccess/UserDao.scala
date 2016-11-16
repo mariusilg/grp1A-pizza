@@ -46,9 +46,9 @@ trait UserDaoT {
    */
   def registeredUsers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectUsers = SQL("Select id, name from Users;")
+      val selectUsers = SQL("Select id, name, admin_flag from Users;")
       // Transform the resulting Stream[Row] to a List[(String,String)]
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"))).toList
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag"))).toList
       users
     }
   }

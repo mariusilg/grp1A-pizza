@@ -1,17 +1,62 @@
-@(userForm: Form[forms.CreateUserForm])
+@(userForm: Form[forms.CreateUserForm], users: List[models.User])
 
 @import views.html.helper
 
 @main(models.Company.name) {
+    <script>
+            function checkField(){
+                var temp = document.getElementById('role').value;
 
+                switch(temp){
+
+                    case "Kunde":
+                        document.getElementById("userDiv").innerHTML="<select name='Name'"
+                                @for(user <- users) {
+                                    @if(!user.admin) {
+                                    + "<option value='@user.name'>@user.name</option>"
+                                    }
+                                }
+                                + "</select>";
+                        break;
+                    case "Mitarbeiter":
+                        document.getElementById("userDiv").innerHTML="<select name='Name'"
+                                @for(user <- users) {
+                                @if(user.admin) {
+                                + "<option value='@user.name'>@user.name</option>"
+                                }
+                                }
+                                + "</select>";
+                        break;
+                    default:
+                        document.getElementById("userDiv").innerHTML="Please select!";
+                        break;
+
+                }
+
+            }
+    </script>
     <h1>Willkommen bei @models.Company.name</h1>
-    
-    <p>Registrieren:
-    	@helper.form(action = routes.UserController.addUser()) {
-  		@helper.inputText(userForm("Name"))
-		<input type="submit" value="Speichern" />
-	}
+
+    <p>Login:
+        @helper.form(action = routes.UserController.login()) {
+            <select id="role" name="Rolle" onchange="checkField()">
+                <option value="">Please select role..</option>
+                <option value="Kunde">Kunde</option>
+                <option value="Mitarbeiter">Mitarbeiter</option>
+            </select>
+            <div id="userDiv"></div>
+            <input type="submit" value="Login" />
+        }
 	</p>
+
+
+
+    <p>Registrieren:
+        @helper.form(action = routes.UserController.addUser()) {
+            @helper.inputText(userForm("Name"))
+            <input type="submit" value="Speichern" />
+        }
+    </p>
     
     <p><a href="/showUsers">Registrierte Benutzer</a></p>
 
