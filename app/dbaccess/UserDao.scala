@@ -53,6 +53,21 @@ trait UserDaoT {
     }
   }
 
+  /**
+    * Returns a admin_flag of specific user from the database.
+    * @return whether user is admin or not.
+    */
+  def getUser(name: String): Option[User] = {
+    DB.withConnection { implicit c =>
+      val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
+        .headOption
+      selectUser match {
+        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag")))
+        case None => None
+      }
+      }
+    }
+
 }
 
 object UserDao extends UserDaoT

@@ -5,6 +5,7 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping,text}
 import services.UserService
 import forms.CreateUserForm
+import forms.CreateLoginForm
 
 /**
  * Controller for user specific operations.
@@ -20,6 +21,11 @@ object UserController extends Controller {
     mapping(
       "Name" -> text)(CreateUserForm.apply)(CreateUserForm.unapply))
 
+  val loginForm = Form(
+    mapping(
+      "userName" -> text
+    )(CreateLoginForm.apply)(CreateLoginForm.unapply))
+
   /**
    * Adds a new user with the given data to the system.
    *
@@ -28,7 +34,7 @@ object UserController extends Controller {
   def addUser : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(formWithErrors, null))
+        BadRequest(views.html.index(formWithErrors, null, UserService.registeredUsers))
       },
       userData => {
         val newUser = services.UserService.addUser(userData.name)
@@ -39,13 +45,19 @@ object UserController extends Controller {
 
 
   def login : Action[AnyContent] = Action { implicit request =>
-    userForm.bindFromRequest.fold(
+    loginForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(formWithErrors, UserService.registeredUsers))
+        BadRequest(views.html.index(null, formWithErrors, UserService.registeredUsers))
       },
       userData => {
-        Redirect(routes.UserController.welcomeUser(userData.name)).
-          flashing("success" -> "User saved!")
+        val user = services.UserService.getUser(userData.userName).get
+        if (user.admin) {
+          Redirect(routes.UserController.welcomeAdmin(user.name)).
+          flashing("success" -> "successfully logged in as admin!")
+      } else {
+          Redirect(routes.UserController.welcomeUser(user.name)).
+            flashing("success" -> "successfully logged in as customer!")
+        }
       })
   }
 
@@ -54,6 +66,11 @@ object UserController extends Controller {
    */
   def welcomeUser(username: String) : Action[AnyContent] = Action {
     Ok(views.html.welcomeUser(username))
+  }
+
+  def welcomeAdmin(name : String) : Action[AnyContent] = Action {
+    val user = services.UserService.getUser(name).get
+    Ok(views.html.welcomeAdmin(){user})
   }
 
   /**

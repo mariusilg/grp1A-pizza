@@ -39,6 +39,14 @@ trait UserServiceT {
     userDao.registeredUsers
   }
 
+  /**
+    * Return whether user is admin or not.
+    * @return whether user is admin or not.
+    */
+  def getUser(name: String): Option[User] = {
+    userDao.getUser(name)
+  }
+
 }
 
 object UserService extends UserServiceT

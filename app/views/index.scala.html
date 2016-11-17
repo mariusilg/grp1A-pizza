@@ -1,4 +1,4 @@
-@(userForm: Form[forms.CreateUserForm], users: List[models.User])
+@(userForm: Form[forms.CreateUserForm], loginForm: Form[forms.CreateLoginForm], users: List[models.User])
 
 @import views.html.helper
 
@@ -10,25 +10,24 @@
                 switch(temp){
 
                     case "Kunde":
-                        document.getElementById("userDiv").innerHTML="<select name='Name'"
+                        document.getElementById("userDiv").innerHTML="<select name='userName'>"
                                 @for(user <- users) {
                                     @if(!user.admin) {
-                                    + "<option value='@user.name'>@user.name</option>"
+                                        + "<option value=@user.name>@user.name</option>"
                                     }
                                 }
                                 + "</select>";
                         break;
                     case "Mitarbeiter":
-                        document.getElementById("userDiv").innerHTML="<select name='Name'"
+                        document.getElementById("userDiv").innerHTML="<select name='userName'>"
                                 @for(user <- users) {
-                                @if(user.admin) {
-                                + "<option value='@user.name'>@user.name</option>"
-                                }
+                                    @if(user.admin) {
+                                        + "<option value=@user.name>@user.name</option>"
+                                    }
                                 }
                                 + "</select>";
                         break;
                     default:
-                        document.getElementById("userDiv").innerHTML="Please select!";
                         break;
 
                 }
@@ -39,7 +38,7 @@
 
     <p>Login:
         @helper.form(action = routes.UserController.login()) {
-            <select id="role" name="Rolle" onchange="checkField()">
+            <select id="role" name="role" onchange="checkField()">
                 <option value="">Please select role..</option>
                 <option value="Kunde">Kunde</option>
                 <option value="Mitarbeiter">Mitarbeiter</option>

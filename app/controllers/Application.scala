@@ -16,7 +16,7 @@ object Application extends Controller {
    * @return main web page
    */
   def index : Action[AnyContent] = Action {
-    Ok(views.html.index(controllers.UserController.userForm, UserService.registeredUsers))
+    Ok(views.html.index(controllers.UserController.userForm, controllers.UserController.loginForm, UserService.registeredUsers))
   }
 
 }
