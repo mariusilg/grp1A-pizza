@@ -14,12 +14,15 @@ import forms.CreateLoginForm
  */
 object UserController extends Controller {
 
+
+  //val nonEmptyAlphaText: Mapping[String] = nonEmptyText.verifying("Must contain letters and spaces only.", name => name.matches("[A-z\\s]+") )
   /**
    * Form object for user data.
    */
   val userForm = Form(
     mapping(
-      "Name" -> text)(CreateUserForm.apply)(CreateUserForm.unapply))
+      "Name" -> text.verifying(
+        "Please specify a name", f => f.trim!=""))(CreateUserForm.apply)(CreateUserForm.unapply))
 
   val loginForm = Form(
     mapping(
@@ -34,12 +37,13 @@ object UserController extends Controller {
   def addUser : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(formWithErrors, null, UserService.registeredUsers))
+        BadRequest(views.html.index(formWithErrors, controllers.UserController.loginForm, UserService.registeredUsers))
       },
       userData => {
-        val newUser = services.UserService.addUser(userData.name)
-        Redirect(routes.UserController.welcomeUser(newUser.name)).
-          flashing("success" -> "User saved!")
+          val newUser = services.UserService.addUser(userData.name)
+          Redirect(routes.UserController.welcomeUser(newUser.name)).
+            flashing("success" -> "User saved!")
+      //}
       })
   }
 
@@ -47,16 +51,14 @@ object UserController extends Controller {
   def login : Action[AnyContent] = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(null, formWithErrors, UserService.registeredUsers))
+        BadRequest(views.html.index(controllers.UserController.userForm, formWithErrors, UserService.registeredUsers))
       },
       userData => {
-        val user = services.UserService.getUser(userData.userName).get
-        if (user.admin) {
-          Redirect(routes.UserController.welcomeAdmin(user.name)).
-          flashing("success" -> "successfully logged in as admin!")
-      } else {
-          Redirect(routes.UserController.welcomeUser(user.name)).
-            flashing("success" -> "successfully logged in as customer!")
+        val user = services.UserService.getUser(userData.userName)
+        user match {
+          case Some(user) => Redirect(routes.UserController.welcomeUser(user.name)).
+            flashing("success" -> "Login verified!")
+          case None => Forbidden("I don’t know you")
         }
       })
   }
@@ -65,12 +67,16 @@ object UserController extends Controller {
    * Shows the welcome view for a newly registered user.
    */
   def welcomeUser(username: String) : Action[AnyContent] = Action {
-    Ok(views.html.welcomeUser(username))
-  }
+    val user = services.UserService.getUser(username)
+    user match {
+      case Some(user) => if (user.admin) {
+        Ok(views.html.welcomeAdmin(){user})
+      } else {
+        Ok(views.html.welcomeUser(username))
+      }
+      case None => Forbidden("I don’t know you")
+    }
 
-  def welcomeAdmin(name : String) : Action[AnyContent] = Action {
-    val user = services.UserService.getUser(name).get
-    Ok(views.html.welcomeAdmin(){user})
   }
 
   /**
