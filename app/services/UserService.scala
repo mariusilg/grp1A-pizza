@@ -86,6 +86,18 @@ trait UserServiceT {
   }
 
 
+  /**
+    * Adds a new order to the system.
+    * @param id id of the new order.
+    * @return the new order.
+    */
+  def addOrder(custID: Long, itemID: Long, quantity: Int , costs: Int): Order = {
+    // create Category
+    val newOrder = Order(-1, custID, itemID, quantity, costs)
+    // persist and return Order
+    userDao.addOrder(newOrder)
+  }
+
 }
 
 object UserService extends UserServiceT

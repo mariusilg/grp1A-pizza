@@ -19,7 +19,7 @@ CREATE TABLE Items (
 );
 
 CREATE TABLE Orders (
-    order_id serial PRIMARY KEY,
+    id serial PRIMARY KEY,
     cust_id serial NOT NULL,
     item_id Int NOT NULL,
     quantity Int NOT NULL,
@@ -50,3 +50,4 @@ INSERT INTO Items (
 DROP TABLE Users;
 DROP TABLE Categories;
 DROP TABLE Items;
+DROP TABLE Orders;

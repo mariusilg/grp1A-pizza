@@ -2,10 +2,9 @@ package controllers
 
 import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.data.Form
-import play.api.data.Forms.{mapping,text}
+import play.api.data.Forms._ //{mapping,text,number}
 import services.UserService
-import forms.CreateUserForm
-import forms.CreateLoginForm
+import forms._
 
 /**
  * Controller for user specific operations.
@@ -23,6 +22,10 @@ object UserController extends Controller {
     mapping(
       "Name" -> text.verifying(
         "Please specify a name", f => f.trim!=""))(CreateUserForm.apply)(CreateUserForm.unapply))
+
+  val orderForm = Form(
+    mapping(
+      "itemID" -> longNumber)(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
   val loginForm = Form(
     mapping(
@@ -73,12 +76,25 @@ object UserController extends Controller {
                         else {
                             val category = services.UserService.getCategory(cID)
                             category match {
-                              case Some(category) => Ok(views.html.welcomeUser(username, cID))
+                              case Some(category) => Ok(views.html.welcomeUser(controllers.UserController.orderForm, username, cID))
                               case None => Forbidden("I don’t know this Category")
                             }
                         }
       case None => Forbidden("I don’t know you - Please try again to log in")
     }
+  }
+
+  def addOrder : Action[AnyContent] = Action { implicit request =>
+    orderForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.welcomeUser(formWithErrors, "Customer", 1))
+      },
+      userData => {
+        val order = services.UserService.addOrder(2, userData.itemID, 1, 1)
+        Redirect(routes.UserController.welcomeUser("Customer", 1)).
+          flashing("success" -> "User saved!")
+        //}
+      })
   }
 
   /**

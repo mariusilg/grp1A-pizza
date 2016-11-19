@@ -10,6 +10,7 @@ GET         /showUsers           controllers.UserController.showUsers
 
 POST        /addUser             controllers.UserController.addUser
 POST        /login               controllers.UserController.login
+POST        /addOrder            controllers.UserController.addOrder
 
 # REST API
 GET         /api                 rest.Api.api

@@ -132,6 +132,18 @@ trait UserDaoT {
     }
   }
 
+
+
+  def addOrder(order: Order): Order = {
+    DB.withConnection { implicit c =>
+      val id: Option[Long] =
+        SQL("insert into Orders(cust_id, item_id, quantity, costs) values ({custID}, {itemID}, {quantity}, {costs})").on(
+          'custID -> order.custID, 'itemID -> order.itemID, 'quantity -> order.quantity, 'costs -> order.costs).executeInsert()
+      //order.id = 1 //id.get
+    }
+    order
+  }
+
 }
 
 object UserDao extends UserDaoT
