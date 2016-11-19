@@ -4,7 +4,7 @@ import anorm.SQL
 import play.api.Play.current
 import play.api.db.DB
 import anorm.NamedParameter.symbol
-import models.User
+import models._
 
 /**
  * Data access object for user related operations.
@@ -67,6 +67,70 @@ trait UserDaoT {
       }
       }
     }
+
+
+  /**
+    * Creates the given category in the database.
+    * @param category the category object to be stored.
+    * @return the persisted category object
+    */
+  def addCategory(category: Category): Category = {
+    DB.withConnection { implicit c =>
+      val id: Option[Long] =
+        SQL("insert into Categories(name) values ({name})").on(
+          'name -> category.name).executeInsert()
+      category.id = id.get
+    }
+    category
+  }
+
+  /**
+    * Removes a category by id from the database.
+    * @param id the id of the category
+    * @return a boolean success flag
+    */
+  def rmCategory(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsCount = SQL("delete from Categories where id = ({id})").on('id -> id).executeUpdate()
+      rowsCount > 0
+    }
+  }
+
+  /**
+    * Returns a list of available categories from the database.
+    * @return a list of category objects.
+    */
+  def availableCategories: List[Category] = {
+    DB.withConnection { implicit c =>
+      val selectCategory= SQL("Select * from Categories;")
+      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"))).toList
+      categories
+    }
+  }
+
+  def getCategory(id: Long): Option[Category] = {
+    DB.withConnection { implicit c =>
+      val selectCategory = SQL("Select * from Categories where id = {id} limit 1;").on('id -> id).apply
+        .headOption
+      selectCategory match {
+        case Some(row) => Some(Category(row[Long]("id"), row[String]("name")))
+        case None => None
+      }
+    }
+  }
+
+
+  /**
+    * Returns a list of available items by category from the database.
+    * @return a list of item objects.
+    */
+  def getItemsByCategory(id: Long): List[Item] = {
+    DB.withConnection { implicit c =>
+      val selectItemsByCategory= SQL("Select id, name from Items where cat_id = {id};").on('id -> id)
+      val itemsByCategory = selectItemsByCategory().map(row => Item(row[Long]("id"), row[String]("name"))).toList
+      itemsByCategory
+    }
+  }
 
 }
 

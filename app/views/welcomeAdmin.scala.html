@@ -1,7 +1,9 @@
-@()(user: models.User)
+@(user: models.User, users: List[models.User])()
 
 @main(models.Company.name) {
 
     <h1>Willkommen Admin: @user.name bei @models.Company.name</h1>
+
+    <p><a href="/showUsers">Registrierte Benutzer</a></p>
     
 }

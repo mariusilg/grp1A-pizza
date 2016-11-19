@@ -1,7 +1,33 @@
-@(username: String)
+@(username: String, cID: Long)
 
 @main(models.Company.name) {
 
     <h1>Willkommen @username bei @models.Company.name</h1>
-    
+
+    @for(category <- services.UserService.availableCategories) {
+        <p><a href="@routes.UserController.welcomeUser(username, category.id)">@category.name</a></p>
+    }
+
+
+
+    @for(category <- services.UserService.getCategory(cID)) {
+        <h2>@category.name</h2>
+        <table>
+            <tr>
+                <td>Quantity</td>
+                <td>Name</td>
+                <td>Size</td>
+                <td>Prize</td>
+            </tr>
+
+            @for(item <- services.UserService.getItemsByCategory(cID)) {
+                <tr>
+                    <td>1</td>
+                    <td>@item.name</td>
+                    <td>2</td>
+                    <td>1€</td>
+                </tr>
+            }
+        </table>
+    }
 }

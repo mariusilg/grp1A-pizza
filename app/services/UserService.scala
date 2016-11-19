@@ -1,7 +1,7 @@
 package services
 
 import dbaccess.{UserDao, UserDaoT}
-import models.User
+import models._
 
 /**
  * Service class for user related operations.
@@ -46,6 +46,45 @@ trait UserServiceT {
   def getUser(name: String): Option[User] = {
     userDao.getUser(name)
   }
+
+
+
+  /**
+    * Adds a new category to the system.
+    * @param name name of the new category.
+    * @return the new category.
+    */
+  def addCategory(name: String): Category = {
+    // create Category
+    val newCategory = Category(-1, name)
+    // persist and return User
+    userDao.addCategory(newCategory)
+  }
+
+  /**
+    * Removes a category by id from the system.
+    * @param id id of category.
+    * @return a boolean success flag.
+    */
+  def rmCategory(id: Long): Boolean = userDao.rmCategory(id)
+
+  /**
+    * Gets a list of all available categories.
+    * @return list of categories.
+    */
+  def availableCategories: List[Category] = {
+    userDao.availableCategories
+  }
+
+  def getCategory(id: Long): Option[Category] = {
+    userDao.getCategory(id)
+  }
+
+
+  def getItemsByCategory(id: Long): List[Item] = {
+    userDao.getItemsByCategory(id)
+  }
+
 
 }
 

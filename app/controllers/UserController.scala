@@ -41,7 +41,7 @@ object UserController extends Controller {
       },
       userData => {
           val newUser = services.UserService.addUser(userData.name)
-          Redirect(routes.UserController.welcomeUser(newUser.name)).
+          Redirect(routes.UserController.welcomeUser(newUser.name, 1)).
             flashing("success" -> "User saved!")
       //}
       })
@@ -56,7 +56,7 @@ object UserController extends Controller {
       userData => {
         val user = services.UserService.getUser(userData.userName)
         user match {
-          case Some(user) => Redirect(routes.UserController.welcomeUser(user.name)).
+          case Some(user) => Redirect(routes.UserController.welcomeUser(user.name, 1)).
             flashing("success" -> "Login verified!")
           case None => Forbidden("I don’t know you")
         }
@@ -64,19 +64,21 @@ object UserController extends Controller {
   }
 
   /**
-   * Shows the welcome view for a newly registered user.
+   * Shows the welcome view for a (newly) registered user.
    */
-  def welcomeUser(username: String) : Action[AnyContent] = Action {
+  def welcomeUser(username: String, cID: Long) : Action[AnyContent] = Action {
     val user = services.UserService.getUser(username)
     user match {
-      case Some(user) => if (user.admin) {
-        Ok(views.html.welcomeAdmin(){user})
-      } else {
-        Ok(views.html.welcomeUser(username))
-      }
-      case None => Forbidden("I don’t know you")
+      case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user, UserService.registeredUsers))}
+                        else {
+                            val category = services.UserService.getCategory(cID)
+                            category match {
+                              case Some(category) => Ok(views.html.welcomeUser(username, cID))
+                              case None => Forbidden("I don’t know this Category")
+                            }
+                        }
+      case None => Forbidden("I don’t know you - Please try again to log in")
     }
-
   }
 
   /**

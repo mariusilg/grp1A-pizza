@@ -5,7 +5,7 @@
 # Home page
 GET         /                    controllers.Application.index
 
-GET         /welcomeUser         controllers.UserController.welcomeUser(username)
+GET         /welcomeUser         controllers.UserController.welcomeUser(username, cId: Long)
 GET         /showUsers           controllers.UserController.showUsers
 
 POST        /addUser             controllers.UserController.addUser
