@@ -1,0 +1,30 @@
+@()(user: models.User)
+
+@main(models.Company.name) {
+
+    <h1>Willkommen bei @models.Company.name</h1>
+    
+    <p>Bestellungen von @user.name :</p>
+    
+    <ul>
+
+        <table>
+            <tr>
+                <td>Quantity</td>
+                <td>Name</td>
+                <td>Size</td>
+                <td>Costs</td>
+            </tr>
+
+            @for(order <- services.UserService.getOrdersByCustID(user.id)) {
+                <tr>
+                    <td>@order.id</td>
+                    <td>@order.quantity</td>
+                    <td>@order.itemID</td>
+                    <td>@order.size</td>
+                </tr>
+            }
+        </table>
+    </ul>
+    
+}

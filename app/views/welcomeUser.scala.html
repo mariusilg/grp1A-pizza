@@ -8,6 +8,8 @@
         <p><a href="@routes.UserController.welcomeUser(username, category.id)">@category.name</a></p>
     }
 
+    <p><a href="@routes.UserController.showOrders(username)">Show Orders</a></p>
+
 
 
     @for(category <- services.UserService.getCategory(cID)) {
@@ -23,11 +25,11 @@
 
             @for(item <- services.UserService.getItemsByCategory(cID)) {
                 <tr>
-                @helper.form(action = routes.UserController.addOrder()) {
-                    <td>1</td>
+                @helper.form(action = routes.UserController.addOrder(username, cID)) {
+                    <td><input type="number" name="quantity" value="1" min="1"/></td>
                     <td><input type="hidden" name="itemID" value="@item.id">@item.name</input></td>
-                    <td>2</td>
-                    <td>1€</td>
+                    <td><input type="number" name="size" value="1" min="1"/></td>
+                    <td><input type="hidden" name="costs" value="@item.price">@item.price</input></td>
                     <td><input type="submit" value="submit order" /></td>
                 }
                 </tr>

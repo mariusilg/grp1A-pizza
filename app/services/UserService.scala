@@ -91,11 +91,19 @@ trait UserServiceT {
     * @param id id of the new order.
     * @return the new order.
     */
-  def addOrder(custID: Long, itemID: Long, quantity: Int , costs: Int): Order = {
+  def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, costs: Int): Order = {
     // create Category
-    val newOrder = Order(-1, custID, itemID, quantity, costs)
+    val newOrder = Order(-1, custID, itemID, quantity, size, costs)
     // persist and return Order
     userDao.addOrder(newOrder)
+  }
+
+  /**
+    * Gets a list of all orders of a customer.
+    * @return list of orders.
+    */
+  def getOrdersByCustID(custID: Long): List[Order] = {
+    userDao.getOrdersByCustID(custID)
   }
 
 }

@@ -6,11 +6,12 @@
 GET         /                    controllers.Application.index
 
 GET         /welcomeUser         controllers.UserController.welcomeUser(username, cId: Long)
+GET         /showOrders          controllers.UserController.showOrders(username)
 GET         /showUsers           controllers.UserController.showUsers
 
 POST        /addUser             controllers.UserController.addUser
 POST        /login               controllers.UserController.login
-POST        /addOrder            controllers.UserController.addOrder
+POST        /addOrder            controllers.UserController.addOrder(username, cID: Long)
 
 # REST API
 GET         /api                 rest.Api.api

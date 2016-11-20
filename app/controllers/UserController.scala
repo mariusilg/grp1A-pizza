@@ -25,7 +25,11 @@ object UserController extends Controller {
 
   val orderForm = Form(
     mapping(
-      "itemID" -> longNumber)(CreateOrderForm.apply)(CreateOrderForm.unapply))
+      "itemID" -> longNumber,
+      "quantity" -> number,
+      "size" -> number,
+      "costs" -> number
+    )(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
   val loginForm = Form(
     mapping(
@@ -84,14 +88,15 @@ object UserController extends Controller {
     }
   }
 
-  def addOrder : Action[AnyContent] = Action { implicit request =>
+  def addOrder(username: String, cID: Long) : Action[AnyContent] = Action { implicit request =>
     orderForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.welcomeUser(formWithErrors, "Customer", 1))
+        BadRequest(views.html.welcomeUser(formWithErrors, username, 1))
       },
       userData => {
-        val order = services.UserService.addOrder(2, userData.itemID, 1, 1)
-        Redirect(routes.UserController.welcomeUser("Customer", 1)).
+        val user = services.UserService.getUser(username).get
+        val order = services.UserService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
+        Redirect(routes.UserController.showOrders(username)).
           flashing("success" -> "User saved!")
         //}
       })
@@ -100,8 +105,15 @@ object UserController extends Controller {
   /**
    * List all users currently available in the system.
    */
-  def showUsers : Action[AnyContent] = Action {
+  def showUsers() : Action[AnyContent] = Action {
     Ok(views.html.users(UserService.registeredUsers))
   }
 
+  /**
+    * List all users currently available in the system.
+    */
+  def showOrders(username: String) : Action[AnyContent] = Action {
+    val user = services.UserService.getUser(username).get
+    Ok(views.html.orders(){user})
+  }
 }

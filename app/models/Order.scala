@@ -1,3 +1,3 @@
 package models
 
-case class Order(id: Long, custID: Long, itemID: Long, quantity: Int , costs: Int)
+case class Order(id: Long, custID: Long, itemID: Long, size: Int, quantity: Int , costs: Int)

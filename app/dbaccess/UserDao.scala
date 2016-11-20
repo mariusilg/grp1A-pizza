@@ -126,8 +126,8 @@ trait UserDaoT {
     */
   def getItemsByCategory(id: Long): List[Item] = {
     DB.withConnection { implicit c =>
-      val selectItemsByCategory= SQL("Select id, name from Items where cat_id = {id};").on('id -> id)
-      val itemsByCategory = selectItemsByCategory().map(row => Item(row[Long]("id"), row[String]("name"))).toList
+      val selectItemsByCategory= SQL("Select id, name, price from Items where cat_id = {id};").on('id -> id)
+      val itemsByCategory = selectItemsByCategory().map(row => Item(row[Long]("id"), row[String]("name"), row[Int]("price"))).toList
       itemsByCategory
     }
   }
@@ -137,11 +137,20 @@ trait UserDaoT {
   def addOrder(order: Order): Order = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Orders(cust_id, item_id, quantity, costs) values ({custID}, {itemID}, {quantity}, {costs})").on(
-          'custID -> order.custID, 'itemID -> order.itemID, 'quantity -> order.quantity, 'costs -> order.costs).executeInsert()
+        SQL("insert into Orders(cust_id, item_id, quantity, size, costs) values ({custID}, {itemID}, {quantity}, {size}, {costs})").on(
+          'custID -> order.custID, 'itemID -> order.itemID, 'quantity -> order.quantity, 'size -> order.size, 'costs -> order.costs).executeInsert()
       //order.id = 1 //id.get
     }
     order
+  }
+
+
+  def getOrdersByCustID(custID: Long): List[Order] = {
+    DB.withConnection { implicit c =>
+      val selectOrdersByCustID= SQL("Select id, item_id, quantity, size, costs from Orders where cust_id = {id};").on('id -> custID)
+      val orderByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Long]("item_id"),  row[Int]("quantity"), row[Int]("size"), row[Int]("costs"))).toList
+      orderByCustID
+    }
   }
 
 }
