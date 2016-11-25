@@ -88,14 +88,14 @@ object UserController extends Controller {
     }
   }
 
-  def addOrder(username: String, cID: Long) : Action[AnyContent] = Action { implicit request =>
+  def addOrder(username: String) : Action[AnyContent] = Action { implicit request =>
     orderForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(views.html.welcomeUser(formWithErrors, username, 1))
       },
       userData => {
         val user = services.UserService.getUser(username).get
-        val order = services.UserService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
+        val order = services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
         Redirect(routes.UserController.showOrders(username)).
           flashing("success" -> "User saved!")
         //}
@@ -110,7 +110,7 @@ object UserController extends Controller {
   }
 
   /**
-    * List all users currently available in the system.
+    * List all orders of user in the system.
     */
   def showOrders(username: String) : Action[AnyContent] = Action {
     val user = services.UserService.getUser(username).get

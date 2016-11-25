@@ -1,6 +1,6 @@
 package dbaccess
 
-import anorm.SQL
+import anorm._
 import play.api.Play.current
 import play.api.db.DB
 import anorm.NamedParameter.symbol
@@ -9,7 +9,7 @@ import models._
 /**
  * Data access object for user related operations.
  *
- * @author ob, scs
+ * @author ob, scsn, ne
  */
 trait UserDaoT {
 
@@ -59,12 +59,12 @@ trait UserDaoT {
     */
   def getUser(name: String): Option[User] = {
     DB.withConnection { implicit c =>
-      val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
-        .headOption
-      selectUser match {
-        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag")))
-        case None => None
-      }
+        val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
+          .headOption
+        selectUser match {
+          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag")))
+          case None => None
+        }
       }
     }
 
@@ -129,27 +129,6 @@ trait UserDaoT {
       val selectItemsByCategory= SQL("Select id, name, price from Items where cat_id = {id};").on('id -> id)
       val itemsByCategory = selectItemsByCategory().map(row => Item(row[Long]("id"), row[String]("name"), row[Int]("price"))).toList
       itemsByCategory
-    }
-  }
-
-
-
-  def addOrder(order: Order): Order = {
-    DB.withConnection { implicit c =>
-      val id: Option[Long] =
-        SQL("insert into Orders(cust_id, item_id, quantity, size, costs) values ({custID}, {itemID}, {quantity}, {size}, {costs})").on(
-          'custID -> order.custID, 'itemID -> order.itemID, 'quantity -> order.quantity, 'size -> order.size, 'costs -> order.costs).executeInsert()
-      //order.id = 1 //id.get
-    }
-    order
-  }
-
-
-  def getOrdersByCustID(custID: Long): List[Order] = {
-    DB.withConnection { implicit c =>
-      val selectOrdersByCustID= SQL("Select id, item_id, quantity, size, costs from Orders where cust_id = {id};").on('id -> custID)
-      val orderByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Long]("item_id"),  row[Int]("quantity"), row[Int]("size"), row[Int]("costs"))).toList
-      orderByCustID
     }
   }
 

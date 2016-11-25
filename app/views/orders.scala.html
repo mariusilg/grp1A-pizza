@@ -7,24 +7,34 @@
     <p>Bestellungen von @user.name :</p>
     
     <ul>
-
+    @for(order <- services.OrderService.getOrdersByCustID(user.id)) {
+        <h2>Vorgangsnummer: @order.id - @order.date.toString</h2>
         <table>
             <tr>
-                <td>Quantity</td>
-                <td>Name</td>
-                <td>Size</td>
-                <td>Costs</td>
+                <td>Anz.</td>
+                <td>Artikel + Zutaten</td>
+                <td>Art.-Nr</td>
+                <td>Größe</td>
+                <td>Einzelpreis</td>
+                <td>Gesamtpreis</td>
             </tr>
 
-            @for(order <- services.UserService.getOrdersByCustID(user.id)) {
+            @for(orderItem <- order.orderItems) {
                 <tr>
-                    <td>@order.id</td>
-                    <td>@order.quantity</td>
-                    <td>@order.itemID</td>
-                    <td>@order.size</td>
+                    <td>@orderItem.quantity x</td>
+                    <td>@orderItem.name</td>
+                    <td>@orderItem.id</td>
+                    <td>@orderItem.size</td>
+                    <td>@orderItem.price €</td>
+                    <td>@orderItem.price €</td>
                 </tr>
             }
+            <tr>
+                <td>Rechnungsbetrag</td>
+                <td>@order.costs €</td>
+            </tr>
         </table>
+    }
     </ul>
     
 }

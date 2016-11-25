@@ -1,0 +1,7 @@
+@(username: String)
+
+    @for(category <- services.UserService.availableCategories) {
+        <p><a href="@routes.UserController.welcomeUser(username, category.id)">@category.name</a></p>
+    }
+
+    <p><a href="@routes.UserController.showOrders(username)">Show Orders</a></p>

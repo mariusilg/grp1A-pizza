@@ -11,7 +11,7 @@ GET         /showUsers           controllers.UserController.showUsers
 
 POST        /addUser             controllers.UserController.addUser
 POST        /login               controllers.UserController.login
-POST        /addOrder            controllers.UserController.addOrder(username, cID: Long)
+POST        /addOrder            controllers.UserController.addOrder(username)
 
 # REST API
 GET         /api                 rest.Api.api

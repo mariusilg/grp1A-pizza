@@ -1,3 +1,3 @@
 package forms
 
-case class CreateOrderForm(itemID: Long, size: Int, quantity: Int, costs: Int)
+case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, costs: Int)
