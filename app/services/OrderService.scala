@@ -19,8 +19,8 @@ trait OrderServiceT {
     */
   def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, costs: Int): Order = {
     // create Category
-    val newOrderList : List[OrderItem] = List(OrderItem(itemID, "name", quantity, size, costs))
-    val newOrder = Order(-1, custID, null, newOrderList, costs)
+    var newOrderItems = List[OrderItem](OrderItem(itemID, "name", quantity, size, costs))
+    var newOrder = Order(-1, custID, null, newOrderItems, costs)
     // persist and return Order
     orderDao.addOrder(newOrder)
   }

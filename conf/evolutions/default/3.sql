@@ -3,7 +3,7 @@
 # --- !Ups
 CREATE TABLE Items (
     id serial PRIMARY KEY,
-    cat_id serial NOT NULL,
+    cat_id INT NOT NULL,
     name varchar(255) NOT NULL,
     price Int NOT NULL
 );

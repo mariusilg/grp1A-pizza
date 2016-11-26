@@ -3,7 +3,7 @@
 # --- !Ups
 CREATE TABLE Orders (
     id serial PRIMARY KEY,
-    cust_id serial NOT NULL,
+    cust_id INT NOT NULL,
     order_date DATETIME DEFAULT SYSDATE,
     costs INT NOT NULL
 );

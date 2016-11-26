@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.data.Form
 import play.api.data.Forms._ //{mapping,text,number}
-import services.UserService
+import services._
 import forms._
 
 /**
@@ -50,7 +50,6 @@ object UserController extends Controller {
           val newUser = services.UserService.addUser(userData.name)
           Redirect(routes.UserController.welcomeUser(newUser.name, 1)).
             flashing("success" -> "User saved!")
-      //}
       })
   }
 
@@ -95,10 +94,9 @@ object UserController extends Controller {
       },
       userData => {
         val user = services.UserService.getUser(username).get
-        val order = services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
+        services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
         Redirect(routes.UserController.showOrders(username)).
           flashing("success" -> "User saved!")
-        //}
       })
   }
 
