@@ -9,5 +9,4 @@ object Company {
 
   final val name = "Fast-Pizza-Line"
 
-
 }

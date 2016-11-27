@@ -20,13 +20,13 @@
                         <td>@orderItem.name</td>
                         <td>@orderItem.id</td>
                         <td>@orderItem.size</td>
-                        <td>@orderItem.price €</td>
-                        <td>@orderItem.price €</td>
+                        <td>@services.OrderService.costsToString(orderItem.price/orderItem.quantity)</td>
+                        <td>@services.OrderService.costsToString(orderItem.price)</td>
                     </tr>
                 }
                 <tr>
                     <td>Rechnungsbetrag</td>
-                    <td>@order.costs €</td>
+                    <td>@services.OrderService.costsToString(order.costs)</td>
                 </tr>
             </table>
         }

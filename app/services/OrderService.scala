@@ -36,6 +36,10 @@ trait OrderServiceT {
     orderDao.getAllOrders
   }
 
+  def costsToString(cents: Int) : String  =  {
+    "%.2f€".format(cents.toDouble/100)
+  }
+
 }
 
 object OrderService extends OrderServiceT

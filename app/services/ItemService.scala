@@ -20,6 +20,15 @@ trait ItemServiceT {
     itemDao.getItem(id)
   }
 
+
+  /**
+    * Return a list of items by catergory id.
+    * @return list of items.
+    */
+  def getItemsByCategory(id: Long): List[Item] = {
+    itemDao.getItemsByCategory(id)
+  }
+
 }
 
 object ItemService extends ItemServiceT

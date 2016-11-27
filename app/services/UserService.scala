@@ -88,11 +88,6 @@ trait UserServiceT {
     userDao.getCategory(id)
   }
 
-
-  def getItemsByCategory(id: Long): List[Item] = {
-    userDao.getItemsByCategory(id)
-  }
-
 }
 
 object UserService extends UserServiceT

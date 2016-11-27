@@ -27,6 +27,18 @@ trait ItemDaoT {
     }
   }
 
+  /**
+    * Returns a list of available items by category from the database.
+    * @return a list of item objects.
+    */
+  def getItemsByCategory(id: Long): List[Item] = {
+    DB.withConnection { implicit c =>
+      val selectItemsByCategory= SQL("Select id, name, price from Items where cat_id = {id};").on('id -> id)
+      val itemsByCategory = selectItemsByCategory().map(row => Item(row[Long]("id"), row[String]("name"), row[Int]("price"))).toList
+      itemsByCategory
+    }
+  }
+
 
 }
 
