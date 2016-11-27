@@ -1,10 +1,10 @@
-@(orderForm: Form[forms.CreateOrderForm], username: String, cID: Long)
+@(orderForm: Form[forms.CreateOrderForm], user: models.User, cID: Long)
 
 @main(models.Company.name) {
 
-    <h1>Willkommen @username bei @models.Company.name</h1>
+    <h1>Willkommen @user.name bei @models.Company.name</h1>
 
-    @userMenu(username)
+    @userMenu(user)
 
     @for(category <- services.UserService.getCategory(cID)) {
         <h2>@category.name</h2>
@@ -19,7 +19,7 @@
 
             @for(item <- services.UserService.getItemsByCategory(cID)) {
                 <tr>
-                @helper.form(action = routes.UserController.addOrder(username)) {
+                @helper.form(action = routes.OrderController.addOrder(user.name)) {
                     <td><input type="number" name="quantity" value="1" min="1"/></td>
                     <td><input type="hidden" name="itemID" value="@item.id">@item.name</input></td>
                     <td><input type="number" name="size" value="1" min="1"/></td>

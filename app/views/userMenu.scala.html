@@ -1,7 +1,9 @@
-@(username: String)
+@(user: models.User)
 
     @for(category <- services.UserService.availableCategories) {
-        <p><a href="@routes.UserController.welcomeUser(username, category.id)">@category.name</a></p>
+        <p><a href="@routes.UserController.welcomeUser(user.name, category.id)">@category.name</a></p>
     }
 
-    <p><a href="@routes.UserController.showOrders(username)">Show Orders</a></p>
+    <p><a href="@routes.OrderController.showOrders(user.name, user.id)">Show Orders</a></p>
+
+    <p><a href="/">logout</a></p>

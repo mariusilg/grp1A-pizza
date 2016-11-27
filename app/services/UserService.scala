@@ -40,6 +40,14 @@ trait UserServiceT {
   }
 
   /**
+    * Gets a list of all registered customers.
+    * @return list of customers.
+    */
+  def registeredCustomers: List[User] = {
+    userDao.registeredCustomers
+  }
+
+  /**
     * Return whether user is admin or not.
     * @return whether user is admin or not.
     */

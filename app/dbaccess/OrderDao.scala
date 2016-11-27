@@ -37,9 +37,17 @@ trait OrderDaoT {
 
   def getOrdersByCustID(custID: Long): List[Order] = {
     DB.withConnection { implicit c =>
-      val selectOrdersByCustID = SQL("Select id, order_date, costs from Orders where cust_id = {custID};").on('custID -> custID)
+      val selectOrdersByCustID = SQL("Select id, order_date, costs from Orders where cust_id = {custID} order by order_date desc;").on('custID -> custID)
       val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("costs"))).toList
       ordersByCustID
+    }
+  }
+
+  def getAllOrders: List[Order] = {
+    DB.withConnection { implicit c =>
+      val selectAllOrders = SQL("Select id, cust_id, order_date, costs from Orders order by order_date desc;")
+      val allOrders = selectAllOrders().map(row => Order(row[Long]("id"), row[Long]("cust_id"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("costs"))).toList
+      allOrders
     }
   }
 

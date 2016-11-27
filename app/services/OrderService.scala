@@ -4,9 +4,9 @@ import dbaccess.{OrderDao, OrderDaoT}
 import models._
 
 /**
- * Service class for user related operations.
+ * Service class for order related operations.
  *
- * @author ob, scs
+ * @author ne
  */
 trait OrderServiceT {
 
@@ -18,10 +18,9 @@ trait OrderServiceT {
     * @return the new order.
     */
   def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, costs: Int): Order = {
-    // create Category
-    var newOrderItems = List[OrderItem](OrderItem(itemID, "name", quantity, size, costs))
+    val item = ItemService.getItem(itemID).get
+    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, costs))
     var newOrder = Order(-1, custID, null, newOrderItems, costs)
-    // persist and return Order
     orderDao.addOrder(newOrder)
   }
 
@@ -31,6 +30,10 @@ trait OrderServiceT {
     */
   def getOrdersByCustID(custID: Long): List[Order] = {
     orderDao.getOrdersByCustID(custID)
+  }
+
+  def getAllOrders: List[Order] = {
+    orderDao.getAllOrders
   }
 
 }

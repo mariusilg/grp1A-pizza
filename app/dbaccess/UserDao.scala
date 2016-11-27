@@ -54,8 +54,21 @@ trait UserDaoT {
   }
 
   /**
-    * Returns a admin_flag of specific user from the database.
-    * @return whether user is admin or not.
+    * Returns a list of available customers from the database.
+    * @return a list of user objects.
+    */
+  def registeredCustomers: List[User] = {
+    DB.withConnection { implicit c =>
+      val selectCustomers = SQL("Select id, name, admin_flag from Users where admin_flag = false;")
+      // Transform the resulting Stream[Row] to a List[(String,String)]
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag"))).toList
+      customers
+    }
+  }
+
+  /**
+    * Returns a user from the database.
+    * @return user.
     */
   def getUser(name: String): Option[User] = {
     DB.withConnection { implicit c =>
@@ -118,7 +131,6 @@ trait UserDaoT {
       }
     }
   }
-
 
   /**
     * Returns a list of available items by category from the database.

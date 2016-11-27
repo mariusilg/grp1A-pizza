@@ -20,16 +20,7 @@ object UserController extends Controller {
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying(
-        "Please specify a name", f => f.trim!=""))(CreateUserForm.apply)(CreateUserForm.unapply))
-
-  val orderForm = Form(
-    mapping(
-      "itemID" -> longNumber,
-      "quantity" -> number,
-      "size" -> number,
-      "costs" -> number
-    )(CreateOrderForm.apply)(CreateOrderForm.unapply))
+      "Name" -> text.verifying("Please specify a name", f => f.trim!=""))(CreateUserForm.apply)(CreateUserForm.unapply))
 
   val loginForm = Form(
     mapping(
@@ -79,25 +70,12 @@ object UserController extends Controller {
                         else {
                             val category = services.UserService.getCategory(cID)
                             category match {
-                              case Some(category) => Ok(views.html.welcomeUser(controllers.UserController.orderForm, username, cID))
+                              case Some(category) => Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, cID))
                               case None => Forbidden("I don’t know this Category")
                             }
                         }
       case None => Forbidden("I don’t know you - Please try again to log in")
     }
-  }
-
-  def addOrder(username: String) : Action[AnyContent] = Action { implicit request =>
-    orderForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(views.html.welcomeUser(formWithErrors, username, 1))
-      },
-      userData => {
-        val user = services.UserService.getUser(username).get
-        services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs)
-        Redirect(routes.UserController.showOrders(username)).
-          flashing("success" -> "User saved!")
-      })
   }
 
   /**
@@ -107,11 +85,4 @@ object UserController extends Controller {
     Ok(views.html.users(UserService.registeredUsers))
   }
 
-  /**
-    * List all orders of user in the system.
-    */
-  def showOrders(username: String) : Action[AnyContent] = Action {
-    val user = services.UserService.getUser(username).get
-    Ok(views.html.orders(){user})
-  }
 }

@@ -1,40 +1,28 @@
-@()(user: models.User)
+@(admin: Boolean, ofUser: Long)(user: models.User)
 
 @main(models.Company.name) {
 
-    <h1>Willkommen bei @models.Company.name</h1>
-    
-    <p>Bestellungen von @user.name :</p>
-    
-    <ul>
-    @for(order <- services.OrderService.getOrdersByCustID(user.id)) {
-        <h2>Vorgangsnummer: @order.id - @order.date.toString</h2>
-        <table>
-            <tr>
-                <td>Anz.</td>
-                <td>Artikel + Zutaten</td>
-                <td>Art.-Nr</td>
-                <td>Größe</td>
-                <td>Einzelpreis</td>
-                <td>Gesamtpreis</td>
-            </tr>
+    @if(admin) {
+        @adminMenu(user)
+        @helper.form(action = routes.OrderController.refresh(user.name)) {
+            <select name="custID">
+                <option value="">Select..</option>
+                <option value="0" @if(ofUser == 0){selected}>Alle Bestellungen</option>
+                @for(customer <- services.UserService.registeredCustomers) {
+                    <option value="@customer.id" @if(customer.id == ofUser){selected}>@customer.name</option>
+                }
+                <input type="submit" value="show orders" />
+            </select>
+        }
+        @if(ofUser == 0) {
+            @showOrders(services.OrderService.getAllOrders)
+        } else {
+            @showOrders(services.OrderService.getOrdersByCustID(ofUser))
+        }
 
-            @for(orderItem <- order.orderItems) {
-                <tr>
-                    <td>@orderItem.quantity x</td>
-                    <td>@orderItem.name</td>
-                    <td>@orderItem.id</td>
-                    <td>@orderItem.size</td>
-                    <td>@orderItem.price €</td>
-                    <td>@orderItem.price €</td>
-                </tr>
-            }
-            <tr>
-                <td>Rechnungsbetrag</td>
-                <td>@order.costs €</td>
-            </tr>
-        </table>
+    } else {
+        <h1>Willkommen bei @models.Company.name</h1>
+        @userMenu(user)
+        @showOrders(services.OrderService.getOrdersByCustID(ofUser))
     }
-    </ul>
-    
 }
