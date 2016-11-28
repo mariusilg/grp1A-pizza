@@ -7,4 +7,4 @@ package forms
   * @param size size of item
   * @param costs costs of order
   */
-case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, costs: Int)
+case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, costs: Int, eQuantity: Option[Int])

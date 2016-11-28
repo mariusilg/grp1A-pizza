@@ -18,7 +18,8 @@ object OrderController extends Controller {
       "itemID" -> longNumber,
       "quantity" -> number,
       "size" -> number,
-      "costs" -> number
+      "costs" -> number,
+      "eQuantity" -> optional(number)
     )(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
   val idForm = Form(
@@ -33,6 +34,10 @@ object OrderController extends Controller {
       },
       userData => {
         val user = services.UserService.getUser(username).get
+        userData.eQuantity match {
+          case Some(eQuantity) => println(eQuantity)
+          case None => println("nix übergeben")
+        }
         services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.costs * userData.size * userData.quantity)
         Redirect(routes.OrderController.showOrders(username, user.id)).
           flashing("success" -> "User saved!")

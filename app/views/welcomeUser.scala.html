@@ -2,6 +2,20 @@
 
 @main(models.Company.name) {
 
+    <script type="text/javascript">
+            function changePrice(id) {
+                var p = document.getElementById(id).value * document.getElementById("s"+id).value * document.getElementById("q"+id).value;
+                document.getElementById("p"+id).innerText = Number(p/100).toFixed(2) + "€";
+            }
+
+            function addExtra(id) {
+                document.getElementById("eq"+id).value=1;
+                document.getElementById("eq"+id).style.display = "";
+                //document.getElementById("eq"+id).innerHTML="<input type='hidden' name='eQuantity' value='1'/>";
+            }
+    </script>
+
+
     <h1>Willkommen @user.name bei @models.Company.name</h1>
 
     @userMenu(user)
@@ -10,23 +24,43 @@
         <h2>@category.name</h2>
         <table>
             <tr>
-                <td>Quantity</td>
-                <td>Name</td>
-                <td>Size</td>
-                <td>Prize</td>
+                <td>Anz.</td>
+                <td>Art.</td>
+                <td>Größe (in cm)</td>
+                <td>Preis</td>
                 <td></td>
             </tr>
 
             @for(item <- services.ItemService.getItemsByCategory(cID)) {
-                <tr>
                 @helper.form(action = routes.OrderController.addOrder(user.name)) {
-                    <td><input type="number" name="quantity" value="1" min="1"/></td>
-                    <td><input type="hidden" name="itemID" value="@item.id">@item.name</input></td>
-                    <td><input type="number" name="size" value="1" min="1"/></td>
-                    <td><input type="hidden" name="costs" value="@item.price">@item.price</input></td>
-                    <td><input type="submit" value="submit order" /></td>
+                    <tr>
+                        <td><input id="q@item.id" type="number" name="quantity" value="1" min="1" onchange="changePrice(@item.id)"/></td>
+                        <td>
+                            <input type="hidden" name="itemID" value="@item.id"/>
+                            @item.name
+                            @if(cID == 1) {
+                                <input style="display: none;" id="eq@item.id" name="eQuantity" type="number" value="" min="1"/>
+                                <select id="se@item.id" onchange="addExtra(@item.id)">
+                                    <option value="">..add extra?</option>
+                                    @for(extra <- services.ItemService.getExtras) {
+                                        <option value="@extra.id">@extra.name</option>
+                                    }
+                                </select>
+                            }
+                            @**helper.select(orderForm, helper.options(List("extra1","2")),'label -> "select extras")**@
+                            <input id="addExtras" type="button" value="add extras" onclick="addExtra(@item.id);"/>
+                        </td>
+                        <td><input id="s@item.id" type="number" name="size" value="1" min="1" onchange="changePrice(@item.id)"/></td>
+                        <input id="@item.id" type="hidden" name="costs" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <td><input type="submit" value="submit order" /></td>
+                        <td id="e@item.id"></td>
+                    </tr>
+                        @**<td><input id="eq@item.id" type='number' name='eQuantity' value=''/></td>
+                        <td>extraID</td>
+                        <td>extraName</td>
+                        <td>+0,50€</td>
+                        <td></td>**@
                 }
-                </tr>
             }
         </table>
     }

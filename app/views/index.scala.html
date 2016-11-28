@@ -6,9 +6,7 @@
     <script>
             function checkField(){
                 var temp = document.getElementById('role').value;
-
                 switch(temp){
-
                     case "Kunde":
                         document.getElementById("userDiv").innerHTML="<select name='userName'>"
                                 @for(user <- users) {
@@ -30,7 +28,6 @@
                     default:
                         document.getElementById("userDiv").innerHTML=""
                         break;
-
                 }
 
             }

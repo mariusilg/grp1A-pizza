@@ -11,6 +11,7 @@ INSERT INTO Extras (
     name,
     price
 )   VALUES  ('Käse', 50),
+    ('Soße', 50),
     ('Knoblauch', 50),
     ('Cheesy Crust', 50),
     ('Salami', 50),
