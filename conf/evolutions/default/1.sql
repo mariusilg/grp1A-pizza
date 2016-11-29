@@ -10,7 +10,7 @@ CREATE TABLE Users (
 INSERT INTO Users (
     name,
     admin_flag
-)   VALUES ('Padrone',1), ('Customer',0);
+)   VALUES ('Padrone',1), ('Emil',0);
 
 # --- !Downs
 DROP TABLE Users;

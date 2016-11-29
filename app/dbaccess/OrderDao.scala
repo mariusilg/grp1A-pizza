@@ -31,7 +31,18 @@ trait OrderDaoT {
         val id: Option[Long] =
             SQL("insert into order_items(order_id, item_id, item_name, size, quantity, costs) values ({order_id}, {item_id}, {item_name}, {size}, {quantity}, {costs})").on('order_id -> orderID,
               'item_id -> orderItem.id, 'item_name -> orderItem.name, 'size -> orderItem.size, 'quantity -> orderItem.quantity, 'costs -> orderItem.price).executeInsert()
+        addItemExtras(orderItem.orderExtras, id.get)
         }
+    }
+  }
+
+  def addItemExtras(itemExtras: List[OrderExtra], orderItemID: Long): Unit = {
+    for(itemExtra <- itemExtras) {
+      DB.withConnection { implicit c =>
+        val id: Option[Long] =
+          SQL("insert into order_extras(order_item_id, extra_id, extra_name, quantity, costs) values ({orderItemID}, {extraID}, {extraName}, {quantity}, {costs})").on('orderItemID -> orderItemID,
+            'extraID -> itemExtra.id, 'extraName -> itemExtra.name, 'quantity -> itemExtra.quantity, 'costs -> itemExtra.price).executeInsert()
+      }
     }
   }
 
@@ -53,12 +64,19 @@ trait OrderDaoT {
 
   def getOrderItemsByOrderID(orderID: Long): List[OrderItem] = {
     DB.withConnection { implicit c =>
-      val selectItemsByOrderID = SQL("Select item_id, item_name, quantity, size, costs from order_items where order_id = {orderID}").on('orderID -> orderID)
-      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), row[Int]("costs"))).toList
+      val selectItemsByOrderID = SQL("Select * from order_items where order_id = {orderID}").on('orderID -> orderID)
+      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), getItemExtrasByOrderItemID(row[Long]("id")), row[Int]("costs"))).toList
       itemsByOrderID
     }
   }
 
+  def getItemExtrasByOrderItemID(orderItemID: Long): List[OrderExtra] = {
+    DB.withConnection { implicit c =>
+      val selectItemExtras = SQL("Select extra_id, extra_name, quantity, costs from order_extras where  order_item_id = {orderItemID}").on('orderItemID -> orderItemID)
+      val itemExtras = selectItemExtras().map(row => OrderExtra(row[Long]("extra_id"), row[String]("extra_name"), row[Int]("quantity"), row[Int]("costs"))).toList
+      itemExtras
+    }
+  }
 }
 
 object OrderDao extends OrderDaoT

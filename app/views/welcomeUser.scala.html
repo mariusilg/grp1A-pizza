@@ -4,14 +4,53 @@
 
     <script type="text/javascript">
             function changePrice(id) {
-                var p = document.getElementById(id).value * document.getElementById("s"+id).value * document.getElementById("q"+id).value;
+                var p = document.getElementById(id).value * document.getElementById("s"+id).value;
                 document.getElementById("p"+id).innerText = Number(p/100).toFixed(2) + "€";
+                var tp = p * document.getElementById("q"+id).value;
+                document.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + "€";
+                var etp = document.getElementById("q"+id).value * document.getElementById("eq"+id).value * 50;
+                document.getElementById("etp"+id).innerText = "+" + Number(etp/100).toFixed(2) + "€";
+            }
+
+            function showExtra(id) {
+                document.getElementById("tr"+id).style.display = "";
+                //document.getElementById("eq"+id).innerHTML="<input type='hidden' name='eQuantity' value='1'/>";
             }
 
             function addExtra(id) {
+                var p = document.getElementById("eq"+id).value * 50;
+                var tp = p * document.getElementById("q"+id).value;
+                document.getElementById("ep"+id).innerText = Number(p/100).toFixed(2) + "€ pro Pizza";
+                document.getElementById("etp"+id).innerText = "+" + Number(tp/100).toFixed(2) + "€";
+            }
+
+            function changeExtra(id) {
+                var opt = document.getElementById("se"+id);
+                if(opt.selectedIndex == 0) {
+                    document.getElementById("eq"+id).style.display = "none";
+                    document.getElementById("ep"+id).innerText = "";
+                    document.getElementById("etp"+id).innerText = "";
+                    document.getElementById("eq"+id).value="";
+                    return;
+                }
                 document.getElementById("eq"+id).value=1;
+                var p = document.getElementById("eq"+id).value * 50;
+                var tp = p * document.getElementById("q"+id).value;
                 document.getElementById("eq"+id).style.display = "";
-                //document.getElementById("eq"+id).innerHTML="<input type='hidden' name='eQuantity' value='1'/>";
+                document.getElementById("eq"+id).style.display = "";
+                document.getElementById("etp"+id).style.display = "";
+                document.getElementById("ep"+id).innerText = Number(p/100).toFixed(2) + "€ pro Pizza";
+                document.getElementById("etp"+id).innerText = "+" + Number(tp/100).toFixed(2) + "€";
+            }
+
+            function delExtra(id) {
+                document.getElementById("eq"+id).style.display = "none";
+                document.getElementById("tr"+id).style.display = "none";
+                document.getElementById("etp"+id).style.display = "";
+                document.getElementById("ep"+id).innerText = "";
+                document.getElementById("etp"+id).innerText = "";
+                document.getElementById("eq"+id).value="";
+                document.getElementById("se"+id).selectedIndex = 0;
             }
     </script>
 
@@ -24,43 +63,51 @@
         <h2>@category.name</h2>
         <table>
             <tr>
+                <td></td>
                 <td>Anz.</td>
                 <td>Art.</td>
                 <td>Größe (in cm)</td>
                 <td>Preis</td>
+                <td>Gesamt</td>
                 <td></td>
             </tr>
 
             @for(item <- services.ItemService.getItemsByCategory(cID)) {
                 @helper.form(action = routes.OrderController.addOrder(user.name)) {
                     <tr>
+                        <td></td>
                         <td><input id="q@item.id" type="number" name="quantity" value="1" min="1" onchange="changePrice(@item.id)"/></td>
                         <td>
                             <input type="hidden" name="itemID" value="@item.id"/>
                             @item.name
                             @if(cID == 1) {
-                                <input style="display: none;" id="eq@item.id" name="eQuantity" type="number" value="" min="1"/>
-                                <select id="se@item.id" onchange="addExtra(@item.id)">
-                                    <option value="">..add extra?</option>
-                                    @for(extra <- services.ItemService.getExtras) {
-                                        <option value="@extra.id">@extra.name</option>
-                                    }
-                                </select>
+                                <input id="addExtras" type="button" value="add extras" onclick="showExtra(@item.id);"/>
                             }
                             @**helper.select(orderForm, helper.options(List("extra1","2")),'label -> "select extras")**@
-                            <input id="addExtras" type="button" value="add extras" onclick="addExtra(@item.id);"/>
                         </td>
                         <td><input id="s@item.id" type="number" name="size" value="1" min="1" onchange="changePrice(@item.id)"/></td>
-                        <input id="@item.id" type="hidden" name="costs" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
-                        <td><input type="submit" value="submit order" /></td>
+                        <input id="@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <td id="tp@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <td><input type="submit" value="bestellen" /></td>
                         <td id="e@item.id"></td>
                     </tr>
-                        @**<td><input id="eq@item.id" type='number' name='eQuantity' value=''/></td>
-                        <td>extraID</td>
-                        <td>extraName</td>
-                        <td>+0,50€</td>
-                        <td></td>**@
+                    <tr id="tr@item.id" style="display: none;">
+                        <td><input type="button" value="-" onclick="delExtra(@item.id);"/></td>
+                        <td><input id="eq@item.id" style="display: none;" name="eQuantity" type="number" value="" min="1" onchange="addExtra(@item.id)"/></td>
+                        <td>
+                            <select id="se@item.id" name="extraID" onchange="changeExtra(@item.id)">
+                                <option value="">wähle..</option>
+                                @for(extra <- services.ExtraService.getExtras) {
+                                    <option value="@extra.id">@extra.name</option>
+                                }
+                            </select>
+                        </td>
+                        <td></td>
+                        <td id="ep@item.id" style="text-align: right;"></td>
+                        <td id="etp@item.id" style="display: none; text-align: right;"></td>
+                    </tr>
                 }
+                <tr><td></td></tr>
             }
         </table>
     }

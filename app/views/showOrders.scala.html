@@ -4,10 +4,11 @@
     @if(!orders.isEmpty) {
         @for(order <- orders) {
             <h2>@order.date.toString - RG: @order.id</h2>
-            <table>
+            <table style="width: 50%;">
                 <tr>
                     <td>Anz.</td>
-                    <td>Artikel + Zutaten</td>
+                    <td></td>
+                    <td>Artikel</td>
                     <td>Art.-Nr</td>
                     <td>Größe</td>
                     <td>Einzelpreis</td>
@@ -17,14 +18,31 @@
                 @for(orderItem <- order.orderItems) {
                     <tr>
                         <td>@orderItem.quantity x</td>
+                        <td></td>
                         <td>@orderItem.name</td>
                         <td>@orderItem.id</td>
-                        <td>@orderItem.size</td>
+                        <td>@orderItem.size cm</td>
                         <td>@services.OrderService.costsToString(orderItem.price/orderItem.quantity)</td>
                         <td>@services.OrderService.costsToString(orderItem.price)</td>
                     </tr>
+                    @for(orderExtra <- orderItem.orderExtras) {
+                        <tr>
+                            <td></td>
+                            <td>je @orderExtra.quantity x</td>
+                            <td>+ @orderExtra.name</td>
+                            <td>@orderExtra.id (e)</td>
+                            <td></td>
+                            <td>@services.OrderService.costsToString(orderExtra.price/orderItem.quantity)</td>
+                            <td>@services.OrderService.costsToString(orderExtra.price)</td>
+                        </tr>
+                    }
                 }
                 <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                     <td>Rechnungsbetrag</td>
                     <td>@services.OrderService.costsToString(order.costs)</td>
                 </tr>

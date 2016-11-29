@@ -28,17 +28,6 @@ trait ItemServiceT {
   def getItemsByCategory(id: Long): List[Item] = {
     itemDao.getItemsByCategory(id)
   }
-
-  /**
-    * Return a list of extras.
-    * @return list of items.
-    */
-  def getExtras: List[Item] = {
-    itemDao.getExtras
   }
-
-
-
-}
 
 object ItemService extends ItemServiceT

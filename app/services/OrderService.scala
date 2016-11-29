@@ -17,9 +17,31 @@ trait OrderServiceT {
     * @param id id of the new order.
     * @return the new order.
     */
-  def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, costs: Int): Order = {
+  def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, eQuantity: Option[Int], extraID: Option[Long]): Order = {
     val item = ItemService.getItem(itemID).get
-    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, costs))
+    var newOrderExtras = List[OrderExtra]()
+    eQuantity match{
+      case Some(eQuantity) => extraID match{
+                                case Some(extraID) => val extra = ExtraService.getExtra(extraID).get
+                                                      println(extraID)
+                                                      newOrderExtras = OrderExtra(extra.id, extra.name, eQuantity, eQuantity * extra.price) :: newOrderExtras
+                                case None =>
+                              }
+                              println(eQuantity)
+      case None =>
+    }
+    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, newOrderExtras, quantity * size * item.price))
+    var costs: Int = {
+      var sum: Int = 0
+      for(orderItem <- newOrderItems) {
+        for(orderExtra <- orderItem.orderExtras){
+          sum += orderExtra.price * orderItem.quantity
+        }
+        sum += orderItem.price
+      }
+      sum
+    }
+
     var newOrder = Order(-1, custID, null, newOrderItems, costs)
     orderDao.addOrder(newOrder)
   }

@@ -39,18 +39,6 @@ trait ItemDaoT {
     }
   }
 
-  /**
-    * Returns a list of available extras from the database.
-    * @return a list of item objects.
-    */
-  def getExtras: List[Item] = {
-    DB.withConnection { implicit c =>
-      val selectExtras= SQL("Select id, name, price from Extras;")
-      val extras = selectExtras().map(row => Item(row[Long]("id"), row[String]("name"), row[Int]("price"))).toList
-      extras
-    }
-  }
-
 }
 
 object ItemDao extends ItemDaoT
