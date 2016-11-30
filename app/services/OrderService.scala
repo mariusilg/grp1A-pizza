@@ -23,11 +23,9 @@ trait OrderServiceT {
     eQuantity match{
       case Some(eQuantity) => extraID match{
                                 case Some(extraID) => val extra = ExtraService.getExtra(extraID).get
-                                                      println(extraID)
                                                       newOrderExtras = OrderExtra(extra.id, extra.name, eQuantity, eQuantity * extra.price) :: newOrderExtras
                                 case None =>
                               }
-                              println(eQuantity)
       case None =>
     }
     var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, newOrderExtras, quantity * size * item.price))
