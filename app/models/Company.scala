@@ -3,10 +3,10 @@ package models
 /**
  * The Pizza Service company.
  *
- * @author ob, scs
+ * @author ob, scs, ne
  */
 object Company {
 
-  final val name = "Fast-Pizza-Line"
+  final val name = "PizzaPizza"
 
 }
