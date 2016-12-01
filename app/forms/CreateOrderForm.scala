@@ -8,4 +8,6 @@ package forms
   * @param eQuantity optional quantity of extra.
   * @param extraID optional id of extra.
   */
-case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, eQuantity: Option[Int], extraID: Option[Long])
+//case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, eQuantity: Option[Int], extraID: Option[Long])
+
+case class CreateOrderForm(itemID: Long, quantity: Int, size: Int, extraID: List[Long])

@@ -32,8 +32,8 @@
                             <td>+ @orderExtra.name</td>
                             <td>@orderExtra.id (e)</td>
                             <td></td>
-                            <td>@services.OrderService.costsToString(orderExtra.price/orderItem.quantity)</td>
                             <td>@services.OrderService.costsToString(orderExtra.price)</td>
+                            <td>@services.OrderService.costsToString(orderExtra.price*orderItem.quantity)</td>
                         </tr>
                     }
                 }

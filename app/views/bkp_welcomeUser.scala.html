@@ -25,23 +25,16 @@
             }
 
             function changeExtra(id) {
-                /*var opt = document.getElementById("se"+id);
+                var opt = document.getElementById("se"+id);
                 if(opt.selectedIndex == 0) {
                     document.getElementById("eq"+id).style.display = "none";
                     document.getElementById("ep"+id).innerText = "";
                     document.getElementById("etp"+id).innerText = "";
                     document.getElementById("eq"+id).value="";
                     return;
-                }*/
-                document.getElementById("eq"+id).value=1;
-                //var p = document.getElementById("eq"+id).value * 50;
-                for (var i = 0, box; box = document.getElementById(id+" e")[i++]; ) {
-                    var q = 0;
-                    if(box.checked) {
-                        q += 1;
-                    }
                 }
-                var p = q * 50;
+                document.getElementById("eq"+id).value=1;
+                var p = document.getElementById("eq"+id).value * 50;
                 var tp = p * document.getElementById("q"+id).value;
                 document.getElementById("eq"+id).style.display = "";
                 document.getElementById("eq"+id).style.display = "";
@@ -57,11 +50,7 @@
                 document.getElementById("ep"+id).innerText = "";
                 document.getElementById("etp"+id).innerText = "";
                 document.getElementById("eq"+id).value="";
-                //document.getElementById("se"+id).selectedIndex = 0;
-                var boxes = document.getElementById("e"+id).getElementsByTagName('input');
-                for (var i = 0, box; box = boxes[i++];) {
-                    box.checked = false;
-                }
+                document.getElementById("se"+id).selectedIndex = 0;
             }
     </script>
 
@@ -92,7 +81,7 @@
                             <input type="hidden" name="itemID" value="@item.id"/>
                             @item.name
                             @if(cID == 1) {
-                                <input id="addExtras" type="button" value="extras" onclick="showExtra(@item.id);"/>
+                                <input id="addExtras" type="button" value="add extras" onclick="showExtra(@item.id);"/>
                             }
                             @**helper.select(orderForm, helper.options(List("extra1","2")),'label -> "select extras")**@
                         </td>
@@ -100,23 +89,18 @@
                         <input id="@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
                         <td id="tp@item.id">@services.OrderService.costsToString(item.price)</td>
                         <td><input type="submit" value="bestellen" /></td>
-                        <td></td>
+                        <td id="e@item.id"></td>
                     </tr>
                     <tr id="tr@item.id" style="display: none;">
                         <td><input type="button" value="-" onclick="delExtra(@item.id);"/></td>
                         <td><input id="eq@item.id" style="display: none;" name="eQuantity" type="number" value="" min="1" onchange="addExtra(@item.id)"/></td>
-                        <td id="e@item.id">
-                            @**<select id="se@item.id" name="extraID" onchange="changeExtra(@item.id)">
+                        <td>
+                            <select id="se@item.id" name="extraID" onchange="changeExtra(@item.id)">
                                 <option value="">wähle..</option>
                                 @for(extra <- services.ExtraService.getExtras) {
                                     <option value="@extra.id">@extra.name</option>
                                 }
-                            </select>**@
-                            @for(extra <- services.ExtraService.getExtras) {
-                                <label  class="checkbox-inline">
-                                    <input type="checkbox" name="extraID[@{extra.id-1}]" value="@extra.id" />@extra.name
-                                </label>
-                            }
+                            </select>
                         </td>
                         <td></td>
                         <td id="ep@item.id" style="text-align: right;"></td>
