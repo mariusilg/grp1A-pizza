@@ -1,6 +1,6 @@
 @(user: models.User)
 
-    <p><a href="@routes.OrderController.showOrders(user.name, user.id)">Show Orders</a></p>
+    <p><a href="@routes.OrderController.showOrders(user.name, 0)">Show Orders</a></p>
 
     @**<p><a href="@routes.OrderController.showAllOrders(username)">Show All Orders</a></p>**@
 

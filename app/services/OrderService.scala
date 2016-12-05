@@ -85,6 +85,22 @@ trait OrderServiceT {
     orderDao.getAllOrders
   }
 
+  def getTotalBusinessVolumeByCustID(id: Long) : Int = {
+    val turnover = orderDao.getTotalBusinessVolumeByCustID(id)
+    turnover match {
+      case Some(turnover) => turnover
+      case None => 0
+    }
+  }
+
+  def getTotalBusinessVolume : Int = {
+    val turnover = orderDao.getTotalBusinessVolume
+    turnover match {
+      case Some(turnover) => turnover
+      case None => 0
+    }
+  }
+
   def costsToString(cents: Int) : String  =  {
     "%.2f€".format(cents.toDouble/100)
   }

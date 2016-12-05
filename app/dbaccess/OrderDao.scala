@@ -72,11 +72,34 @@ trait OrderDaoT {
 
   def getItemExtrasByOrderItemID(orderItemID: Long): List[OrderExtra] = {
     DB.withConnection { implicit c =>
-      val selectItemExtras = SQL("Select extra_id, extra_name, quantity, costs from order_extras where  order_item_id = {orderItemID}").on('orderItemID -> orderItemID)
+      val selectItemExtras = SQL("Select extra_id, extra_name, quantity, costs from order_extras where order_item_id = {orderItemID}").on('orderItemID -> orderItemID)
       val itemExtras = selectItemExtras().map(row => OrderExtra(row[Long]("extra_id"), row[String]("extra_name"), row[Int]("quantity"), row[Int]("costs"))).toList
       itemExtras
     }
   }
+
+  def getTotalBusinessVolumeByCustID(custID: Long) : Option[Int] = {
+    DB.withConnection { implicit c =>
+      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders where cust_id = {custID}").on('custID -> custID).apply
+        .headOption
+      businessVolume match {
+        case Some(row) => Some(row[Long]("turnover").toInt)
+        case None => None
+      }
+    }
+  }
+
+  def getTotalBusinessVolume : Option[Int] = {
+    DB.withConnection { implicit c =>
+      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders").apply
+        .headOption
+      businessVolume match {
+        case Some(row) => Some(row[Long]("turnover").toInt)
+        case None => None
+      }
+    }
+  }
+
 }
 
 object OrderDao extends OrderDaoT

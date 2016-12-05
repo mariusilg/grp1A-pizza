@@ -1,9 +1,14 @@
-@(orders: List[Order])
+@(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int)
 
     <ul>
     @if(!orders.isEmpty) {
+        <h3>Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume)</h3>
         @for(order <- orders) {
-            <h2>@order.date.toString.substring(0, 16) - RG: @order.id</h2>
+            <h2>
+                @order.date.toString.substring(0, 16) - RG: @order.id @if(allOrders) {
+                                                                            <a href="/showUsers">Kd.-Nr.: @order.custID</a>
+                                                                        }
+            </h2>
             <table style="width: 50%;">
                 <tr>
                     <td>Anz.</td>

@@ -6,7 +6,7 @@
         @adminMenu(user)
         @helper.form(action = routes.OrderController.refresh(user.name)) {
             <select name="custID">
-                <option value="">Select..</option>
+                <option value="-1">Select..</option>
                 <option value="0" @if(ofUser == 0){selected}>Alle Bestellungen</option>
                 @for(customer <- services.UserService.registeredCustomers) {
                     <option value="@customer.id" @if(customer.id == ofUser){selected}>@customer.name</option>
@@ -15,14 +15,20 @@
             </select>
         }
         @if(ofUser == 0) {
-            @showOrders(services.OrderService.getAllOrders)
-        } else {
-            @showOrders(services.OrderService.getOrdersByCustID(ofUser))
+            <h2>Bestellungen von allen Kunden:</h2>
+            @showOrders(true, services.OrderService.getAllOrders, services.OrderService.getTotalBusinessVolume)
+        } else { @if(ofUser == -1) {
+            Bitte eine Auswahl treffen!
+            } else {
+            <h2>Bestellungen von Kunden-Nr:@ofUser :</h2>
+            @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser))
+            }
         }
 
     } else {
         <h1>Willkommen bei @models.Company.name</h1>
         @userMenu(user)
-        @showOrders(services.OrderService.getOrdersByCustID(ofUser))
+        <h2>Meine Bestellungen:</h2>
+        @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser))
     }
 }
