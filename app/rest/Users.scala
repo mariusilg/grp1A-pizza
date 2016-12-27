@@ -22,6 +22,7 @@ object Users extends Controller {
       "user" -> Json.obj(
         "id" -> huser.user.id,
         "name" -> huser.user.name
+        //"password" -> huser.user.password
       ),
       "links" -> Json.arr(
         Json.obj(
@@ -102,7 +103,7 @@ object Users extends Controller {
       },
       username => {
         Ok(Json.obj("status" -> "OK",
-          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.name)))))
+          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.name, "password", false)))))
       }
     )
   }

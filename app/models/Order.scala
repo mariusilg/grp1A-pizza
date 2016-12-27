@@ -7,4 +7,10 @@ import java.util.Date
   * @param orderItem item of order
   * @param costs costs of order.
   */
-case class Order(var id: Long, var custID: Long, var date: Date, var orderItems: List[OrderItem], var costs: Int)
+case class Order(var id: Long, var custID: Long, var date: Date, var orderItems: List[OrderItem], var costs: Int) {
+
+  def costsToString : String = {
+    "%.2f €".format(this.costs.toDouble/100)
+  }
+
+}

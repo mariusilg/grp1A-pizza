@@ -70,7 +70,7 @@
 
     @userMenu(user)
 
-    @for(category <- services.UserService.getCategory(cID)) {
+    @for(category <- services.CategoryService.getCategory(cID)) {
         <h2>@category.name</h2>
         <table>
             <tr>
@@ -116,7 +116,6 @@
                                 <label  class="checkbox-inline">
                                     <input type="checkbox" name="extraID[@{extra.id-1}]" value="@extra.id" />@extra.name
                                 </label>
-
                             }
                         </td>
                         <td></td>

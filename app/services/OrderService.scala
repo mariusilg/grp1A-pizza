@@ -93,6 +93,15 @@ trait OrderServiceT {
     }
   }
 
+  def getAverageBusinessVolume(id: Option[Long]) : Int = {
+    id match {
+      case Some(id) => orderDao.getAverageBusinessVolume(id)
+      case None => orderDao.getAverageBusinessVolume
+    }
+  }
+
+
+
   def getTotalBusinessVolume : Int = {
     val turnover = orderDao.getTotalBusinessVolume
     turnover match {

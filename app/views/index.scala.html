@@ -3,55 +3,45 @@
 @import views.html.helper
 
 @main(models.Company.name) {
-    <script>
-            function checkField(){
-                var temp = document.getElementById('role').value;
-                switch(temp){
-                    case "Kunde":
-                        document.getElementById("userDiv").innerHTML="<select name='userName'>"
-                                @for(user <- users) {
-                                    @if(!user.admin) {
-                                        + "<option value=@user.name>@user.name</option>"
-                                    }
-                                }
-                                + "</select>";
-                        break;
-                    case "Mitarbeiter":
-                        document.getElementById("userDiv").innerHTML="<select name='userName'>"
-                                @for(user <- users) {
-                                    @if(user.admin) {
-                                        + "<option value=@user.name>@user.name</option>"
-                                    }
-                                }
-                                + "</select>";
-                        break;
-                    default:
-                        document.getElementById("userDiv").innerHTML=""
-                        break;
-                }
-
-            }
-    </script>
     <h1>Willkommen bei @models.Company.name</h1>
 
-    <p>Login:
-        @helper.form(action = routes.UserController.login()) {
-            <select id="role" name="role" onchange="checkField()">
-                <option value="">Please select role..</option>
-                <option value="Kunde">Kunde</option>
-                <option value="Mitarbeiter">Mitarbeiter</option>
-            </select>
-            <div id="userDiv"></div>
-            <input type="submit" value="Login" />
-        }
+    <p>
+        Login:
+    @helper.form(action = routes.UserController.login) {
+        @helper.inputText(loginForm("Username"))
+        @helper.inputPassword(loginForm("Password"))
+        <input type="submit" value="Login" />
+    }
+
+    <div class="upper">
+        <input type="button" class="button" value="hier registrieren"/>
+        <div class="dialog" title="Account anlegen:">
+        @helper.form(action = routes.UserController.register) {
+            @helper.inputText(userForm("Name"))
+            @helper.inputPassword(userForm("Password"))
+            <input id="register" type="submit" value="registrieren">
+            }
+        </div>
+    </div>
 	</p>
 
+    <div id="messageBox">
+    @userForm.errors.map { errors =>
+        <div id="error" >@errors.message</div>
+    }
+        @loginForm.errors.map { errors =>
+            <div id="error" >@errors.message</div>
+        }
+    </div>
 
 
-    <p>Registrieren:
-        @helper.form(action = routes.UserController.addUser()) {
+@**
+    <p>
+        Registrieren:
+        @helper.form(action = routes.UserController.register()) {
             @helper.inputText(userForm("Name"))
+            @helper.inputPassword(userForm("Password"))
             <input type="submit" value="Speichern" />
         }
-    </p>
+    </p>**@
 }

@@ -5,13 +5,14 @@ CREATE TABLE Items (
     id serial PRIMARY KEY,
     cat_id INT NOT NULL,
     name varchar(255) NOT NULL,
-    price Int NOT NULL
+    price Int NOT NULL,
+    visibility BIT DEFAULT TRUE
 );
 
 INSERT INTO Items (
     cat_id,
     name,
-    price
+    price,
 )   VALUES  (1,'Hawaii', 21),
     (1,'Pizza Margerita', 20),
     (1,'Pizza Funghi', 22),

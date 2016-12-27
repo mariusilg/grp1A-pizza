@@ -18,8 +18,6 @@ object OrderController extends Controller {
       "itemID" -> longNumber,
       "quantity" -> number,
       "size" -> number,
-      //"eQuantity" -> optional(number),
-      //"extraID" -> optional(longNumber)
       "extraID" -> list(longNumber)
     )(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
@@ -35,13 +33,12 @@ object OrderController extends Controller {
       },
       userData => {
         val user = services.UserService.getUser(username).get
-        //userData.eQuantity
         for(id <- userData.extraID) {
           println(id)
         }
         //services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, 1, userData.extraID)
         services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.extraID)
-        Redirect(routes.OrderController.showOrders(username, user.id)).
+        Redirect(routes.OrderController.showOrders(user.id)).
           flashing("success" -> "User saved!")
       })
   }
@@ -55,7 +52,7 @@ object OrderController extends Controller {
       },
       userData => {
         val user = services.UserService.getUser(username).get
-        Redirect(routes.OrderController.showOrders(username, userData.custID)).
+        Redirect(routes.OrderController.showOrders(userData.custID)).
           flashing("success" -> "User saved!")
       })
   }
@@ -64,11 +61,16 @@ object OrderController extends Controller {
   /**
     * List all orders of user in the system.
     */
-  def showOrders(username: String, ofUser: Long) : Action[AnyContent] = Action {
-    val user = services.UserService.getUser(username).get
-    if (user.admin) Ok(views.html.orders(true, ofUser){user})
-    else if(user.id == ofUser) Ok(views.html.orders(false, ofUser){user})
-    else Forbidden("Kein Zugriff auf diese Bestellungen")
+  def showOrders(ofUser: Long) : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong).get
+      if (user.admin) Ok(views.html.orders(true, ofUser){user})
+      else if(user.id == ofUser) Ok(views.html.orders(false, ofUser){user})
+      else Forbidden("Kein Zugriff auf diese Bestellungen")
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
+
   }
 
 

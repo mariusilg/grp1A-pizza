@@ -21,8 +21,8 @@ trait UserDaoT {
   def addUser(user: User): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(name) values ({name})").on(
-          'name -> user.name).executeInsert()
+        SQL("insert into Users(name, password, admin_flag) values ({name}, {password}, {admin})").on(
+          'name -> user.name, 'password -> user.password, 'admin -> user.admin).executeInsert()
       user.id = id.get
     }
     user
@@ -48,7 +48,7 @@ trait UserDaoT {
     DB.withConnection { implicit c =>
       val selectUsers = SQL("Select id, name, admin_flag from Users;")
       // Transform the resulting Stream[Row] to a List[(String,String)]
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag"))).toList
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"))).toList
       users
     }
   }
@@ -61,7 +61,7 @@ trait UserDaoT {
     DB.withConnection { implicit c =>
       val selectCustomers = SQL("Select id, name, admin_flag from Users where admin_flag = false;")
       // Transform the resulting Stream[Row] to a List[(String,String)]
-      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag"))).toList
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"))).toList
       customers
     }
   }
@@ -75,7 +75,7 @@ trait UserDaoT {
         val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
           .headOption
         selectUser match {
-          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[Boolean]("admin_flag")))
+          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag")))
           case None => None
         }
       }
@@ -83,51 +83,57 @@ trait UserDaoT {
 
 
   /**
-    * Creates the given category in the database.
-    * @param category the category object to be stored.
-    * @return the persisted category object
+    * Updates a user from the database.
+    * @return whether update was successful or not.
     */
-  def addCategory(category: Category): Category = {
+  def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
-      val id: Option[Long] =
-        SQL("insert into Categories(name) values ({name})").on(
-          'name -> category.name).executeInsert()
-      category.id = id.get
-    }
-    category
-  }
-
-  /**
-    * Removes a category by id from the database.
-    * @param id the id of the category
-    * @return a boolean success flag
-    */
-  def rmCategory(id: Long): Boolean = {
-    DB.withConnection { implicit c =>
-      val rowsCount = SQL("delete from Categories where id = ({id})").on('id -> id).executeUpdate()
-      rowsCount > 0
+      val rowsUpdated = SQL("update Users SET name={name}, admin_flag={admin} where id = {id}").on('name -> user.name, 'admin -> user.admin, 'id -> user.id).executeUpdate()
+      rowsUpdated == 1
     }
   }
 
   /**
-    * Returns a list of available categories from the database.
-    * @return a list of category objects.
+    * Returns a user from the database.
+    * @return user.
     */
-  def availableCategories: List[Category] = {
+  def getUserByID(id: Long): Option[User] = {
     DB.withConnection { implicit c =>
-      val selectCategory= SQL("Select * from Categories;")
-      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"))).toList
-      categories
-    }
-  }
-
-  def getCategory(id: Long): Option[Category] = {
-    DB.withConnection { implicit c =>
-      val selectCategory = SQL("Select * from Categories where id = {id} limit 1;").on('id -> id).apply
+      val selectUser = SQL("Select * from Users where id = {id};").on('id -> id).apply
         .headOption
-      selectCategory match {
-        case Some(row) => Some(Category(row[Long]("id"), row[String]("name")))
+      selectUser match {
+        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag")))
         case None => None
+      }
+    }
+  }
+
+  /**
+    * Returns a user from the database.
+    * @return user.
+    */
+  def login(name: String, password: String): Option[Long] = {
+    DB.withConnection { implicit c =>
+      val checkUser = SQL("Select id from Users where name = {name} and password = {password} limit 1;").on('name -> name, 'password -> password).apply
+        .headOption
+      checkUser match {
+        case Some(row) => Some(row[Long]("id"))
+        case None => None
+      }
+    }
+  }
+
+  /**
+    * Returns a user from the database.
+    * @return user.
+    */
+  def checkName(name: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name});").on('name -> name).apply
+        .headOption
+      checkName match {
+        case Some(row) => row[Long]("cnt") == 1
+        case None => false
       }
     }
   }

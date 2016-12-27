@@ -1,9 +1,11 @@
 @(user: models.User)
 
-    @for(category <- services.UserService.availableCategories) {
-        <p><a href="@routes.UserController.welcomeUser(user.name, category.id)">@category.name</a></p>
+    @for(category <- services.CategoryService.visibleCategories) {
+        <p><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></p>
     }
 
-    <p><a href="@routes.OrderController.showOrders(user.name, user.id)">Show Orders</a></p>
+    <p><a href="@routes.OrderController.showOrders(user.id)">Meine Bestellungen</a></p>
 
-    <p><a href="/">logout</a></p>
+    <p><a href="@routes.UserController.editUser(None)">Mein Konto</a></p>
+
+    <p><a href="@routes.UserController.logout">logout</a></p>

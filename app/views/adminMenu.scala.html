@@ -1,9 +1,11 @@
 @(user: models.User)
 
-    <p><a href="@routes.OrderController.showOrders(user.name, 0)">Show Orders</a></p>
+    <p><a href="@routes.OrderController.showOrders(0)">Bestellungen einsehen</a></p>
 
     @**<p><a href="@routes.OrderController.showAllOrders(username)">Show All Orders</a></p>**@
 
-    <p><a href="/showUsers">Registrierte Benutzer</a></p>
+    <p><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></p>
 
-    <p><a href="/">logout</a></p>
+    <p><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></p>
+
+    <p><a href="@routes.UserController.logout">logout</a></p>

@@ -1,11 +1,14 @@
-@(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int)
+@(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int, averageBusinessVolume: Int)
 
     <ul>
     @if(!orders.isEmpty) {
-        <h3>Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume)</h3>
+        <h3>
+            Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume) <br/>
+                    &Oslash; Bestellwert: @services.OrderService.costsToString(averageBusinessVolume)
+        </h3>
         @for(order <- orders) {
             <h2>
-                @order.date.toString.substring(0, 16) - RG: @order.id @if(allOrders) {
+                @order.date.toString.substring(0, 16)@**DateFormat: yyyy-mm-dd hh:mm**@ - RG: @order.id @if(allOrders) {
                                                                             <a href="/showUsers">Kd.-Nr.: @order.custID</a>
                                                                         }
             </h2>
@@ -49,7 +52,7 @@
                     <td></td>
                     <td></td>
                     <td>Rechnungsbetrag</td>
-                    <td>@services.OrderService.costsToString(order.costs)</td>
+                    <td>@order.costsToString</td>
                 </tr>
             </table>
         }

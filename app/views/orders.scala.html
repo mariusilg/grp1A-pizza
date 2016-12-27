@@ -16,12 +16,12 @@
         }
         @if(ofUser == 0) {
             <h2>Bestellungen von allen Kunden:</h2>
-            @showOrders(true, services.OrderService.getAllOrders, services.OrderService.getTotalBusinessVolume)
+            @showOrders(true, services.OrderService.getAllOrders, services.OrderService.getTotalBusinessVolume, services.OrderService.getAverageBusinessVolume(None))
         } else { @if(ofUser == -1) {
             Bitte eine Auswahl treffen!
             } else {
             <h2>Bestellungen von Kunden-Nr:@ofUser :</h2>
-            @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser))
+            @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
             }
         }
 
@@ -29,6 +29,6 @@
         <h1>Willkommen bei @models.Company.name</h1>
         @userMenu(user)
         <h2>Meine Bestellungen:</h2>
-        @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser))
+        @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
     }
 }

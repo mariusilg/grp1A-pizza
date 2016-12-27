@@ -1,0 +1,30 @@
+@(item: models.Item)
+
+@main(models.Company.name) {
+
+
+        <h2>Produkt @item.name verwalten:</h2>
+        @helper.form(action = routes.AssortmentController.updateItem()) {
+            <table>
+                <tr>
+                    <td>Artikel Nr.</td>
+                    <td>Kategorie</td>
+                    <td>Produktname</td>
+                    <td>Preis (in Cent)</td>
+                </tr>
+                <tr>
+                    <td><input type="hidden" name="ID" value="@item.id">@item.id</td>
+                    <td>
+                        <select name='CategoryID'>"
+                            @for(category <- services.CategoryService.availableCategories) {
+                                <option value="@category.id" @{if(category.id == item.categoryID) "selected"}>@category.name</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input type="text" name="Name" value="@item.name"/></td>
+                    <td><input type="number" name="Price" min=0 value="@item.price"/></td>
+                </tr>
+            </table>
+            <input type="submit" value="Speichern" />
+        }
+}

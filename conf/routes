@@ -5,11 +5,23 @@
 # Home page
 GET         /                    controllers.Application.index
 
-GET         /welcomeUser         controllers.UserController.welcomeUser(username, cId: Long)
-GET         /showOrders          controllers.OrderController.showOrders(username, ofUser: Long)
-GET         /showUsers           controllers.UserController.showUsers
+GET         /register            controllers.Application.index
+GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
+GET         /showOrders          controllers.OrderController.showOrders(ofUser: Long)
+GET         /manageUser          controllers.UserController.manageUser
+GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
+GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
+GET         /manageAssortment    controllers.AssortmentController.manageAssortment
+GET         /logout              controllers.UserController.logout
 
+POST        /register            controllers.UserController.register
 POST        /addUser             controllers.UserController.addUser
+POST        /updateUser          controllers.UserController.updateUser
+POST        /updateItem          controllers.AssortmentController.updateItem
+POST        /addItem             controllers.AssortmentController.addItem
+POST        /addCategory         controllers.AssortmentController.addCategory
+POST        /updateCategory      controllers.AssortmentController.updateCategory
+POST        /removeCategory      controllers.AssortmentController.rmCategory(id: Option[Long])
 POST        /login               controllers.UserController.login
 POST        /addOrder            controllers.OrderController.addOrder(username)
 POST        /refresh             controllers.OrderController.refresh(username)

@@ -11,3 +11,24 @@ p {
     font-family: "Times New Roman";
     font-size: 20px;
 }
+
+#messageBox {
+    position: absolute;
+    right: 5%;
+    top: 5%;
+    display: none;
+}
+
+#error {
+    position: relative;
+    margin-bottom: 5%;
+    background-color: red;
+    color: white;
+}
+
+#success {
+    position: relative;
+    margin-bottom: 5%;
+    background-color: green;
+    color: white;
+}

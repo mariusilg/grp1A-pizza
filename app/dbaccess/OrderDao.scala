@@ -100,6 +100,28 @@ trait OrderDaoT {
     }
   }
 
+  def getAverageBusinessVolume : Int = {
+    DB.withConnection { implicit c =>
+      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders").apply
+        .headOption
+      businessVolume match {
+        case Some(row) => row[Long]("turnover").toInt
+        case None => 0
+      }
+    }
+  }
+
+  def getAverageBusinessVolume(custID: Long) : Int = {
+    DB.withConnection { implicit c =>
+      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders where cust_id = {custID}").on('custID -> custID).apply
+        .headOption
+      businessVolume match {
+        case Some(row) => row[Long]("turnover").toInt
+        case None => 0
+      }
+    }
+  }
+
 }
 
 object OrderDao extends OrderDaoT

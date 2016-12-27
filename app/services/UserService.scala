@@ -17,9 +17,9 @@ trait UserServiceT {
    * @param name name of the new user.
    * @return the new user.
    */
-  def addUser(name: String): User = {
+  def addUser(name: String, password: String, admin: Boolean): User = {
     // create User
-    val newUser = User(-1, name, false)
+    val newUser = User(-1, name, password, admin)
     // persist and return User
     userDao.addUser(newUser)
   }
@@ -55,37 +55,36 @@ trait UserServiceT {
     userDao.getUser(name)
   }
 
-
-
   /**
-    * Adds a new category to the system.
-    * @param name name of the new category.
-    * @return the new category.
+    * Return user if he exists.
+    * @return optional user object.
     */
-  def addCategory(name: String): Category = {
-    // create Category
-    val newCategory = Category(-1, name)
-    // persist and return User
-    userDao.addCategory(newCategory)
+  def getUserByID(id: Long): Option[User] = {
+    userDao.getUserByID(id)
   }
 
   /**
-    * Removes a category by id from the system.
-    * @param id id of category.
-    * @return a boolean success flag.
+    * Return id of user if he exists.
+    * @return id of the user.
     */
-  def rmCategory(id: Long): Boolean = userDao.rmCategory(id)
-
-  /**
-    * Gets a list of all available categories.
-    * @return list of categories.
-    */
-  def availableCategories: List[Category] = {
-    userDao.availableCategories
+  def login(name: String, password: String): Option[Long] = {
+    userDao.login(name, password)
   }
 
-  def getCategory(id: Long): Option[Category] = {
-    userDao.getCategory(id)
+  /**
+    * Return whether username exists or not.
+    * @return true or false.
+    */
+  def checkName(name: String): Boolean = {
+    userDao.checkName(name)
+  }
+
+  /**
+    * Return whether username exists or not.
+    * @return true or false.
+    */
+  def updateUser(user: User): Unit = {
+    userDao.updateUser(user)
   }
 
 }
