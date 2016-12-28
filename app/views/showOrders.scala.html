@@ -1,6 +1,5 @@
 @(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int, averageBusinessVolume: Int)
 
-    <ul>
     @if(!orders.isEmpty) {
         <h3>
             Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume) <br/>
@@ -59,4 +58,3 @@
     } else {
         <p>Keine Bestellungen vorhanden!</p>
     }
-    </ul>

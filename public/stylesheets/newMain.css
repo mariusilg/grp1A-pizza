@@ -1,0 +1,98 @@
+@import url("http://fonts.googleapis.com/css?family=Roboto:400,500,300,700");
+
+html {
+    background: rgba(0, 0, 0, 0) linear-gradient(to right, #25c481, #25b7c4) repeat scroll 0% 0%;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+body {
+    background: #ffffff none repeat scroll 0% 0%;
+    bottom: 0px;
+    font-family: "Roboto",sans-serif;
+    margin: auto;
+    min-height: 80%;
+    min-width: 200pt;
+    width: 80%;
+    margin-top: 40pt;
+    margin-bottom: 40pt;
+}
+
+h1 {
+    color: orange;
+    text-align: center;
+    margin: 0;
+    padding-top: 20pt;
+    padding-bottom: 20pt;
+}
+
+p {
+    font-family: "Times New Roman";
+    font-size: 20px;
+}
+
+#messageBox {
+    display: none;
+    position: absolute;
+    right: 5%;
+    top: 5%;
+}
+
+#error {
+    background-color: red;
+    color: white;
+    margin-bottom: 5%;
+    position: relative;
+}
+
+#success {
+    background-color: green;
+    color: white;
+    margin-bottom: 5%;
+    position: relative;
+}
+
+h1 {
+    color: black;
+    font-size: 30px;
+    font-weight: 300;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.tbl-header {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.tbl-content {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    height: 300px;
+    margin-top: 0px;
+    overflow-x: auto;
+}
+
+th {
+    color: black;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 20px 15px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: black;
+    font-size: 12px;
+    font-weight: 300;
+    padding: 15px;
+    text-align: left;
+    vertical-align: middle;
+}

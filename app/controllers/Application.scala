@@ -19,7 +19,20 @@ object Application extends Controller {
     request.session.get("id").map { id =>
       Redirect(routes.UserController.welcome(None))
     }.getOrElse {
-      Ok(views.html.index(controllers.UserController.userForm, controllers.UserController.loginForm, UserService.registeredUsers))
+      Ok(views.html.index(controllers.UserController.loginForm))
+    }
+  }
+
+  /**
+    * Registration page.
+    *
+    * @return registration page for unknown user
+    */
+  def register : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      Redirect(routes.UserController.welcome(None))
+    }.getOrElse {
+      Ok(views.html.registration(controllers.UserController.userForm))
     }
   }
 

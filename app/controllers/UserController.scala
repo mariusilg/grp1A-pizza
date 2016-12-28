@@ -52,7 +52,7 @@ object UserController extends Controller {
   def register : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(formWithErrors, controllers.UserController.loginForm, UserService.registeredUsers))
+        BadRequest(views.html.registration(formWithErrors))
       },
       userData => {
           val newUser = services.UserService.addUser(userData.name, userData.password, false, userData.distance)
@@ -80,7 +80,7 @@ object UserController extends Controller {
   def login : Action[AnyContent] = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.index(userForm, formWithErrors, UserService.registeredUsers))
+        BadRequest(views.html.index(formWithErrors))
       },
       userData => {
         val id = services.UserService.login(userData.userName, userData.userPassword)
@@ -92,25 +92,25 @@ object UserController extends Controller {
   }
 
   /**
-   * Shows the welcome view for a (newly) registered user.
-   */
+    * Shows the welcome view for a (newly) registered user.
+    */
   def welcome(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
-      request.session.get("id").map { id =>
-        val user = services.UserService.getUserByID(id.toLong)
-        user match {
-          case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user, UserService.registeredUsers))}
-          else {
-            val category = services.CategoryService.getCategory(categoryID.getOrElse(1))
-            category match {
-              case Some(category) => Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, category.id))
-              case None => Redirect(routes.UserController.welcome(None))
-            }
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user, UserService.registeredUsers))}
+        else {
+          val category = services.CategoryService.getCategory(categoryID.getOrElse(1))
+          category match {
+            case Some(category) => Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, category.id))
+            case None => Redirect(routes.UserController.welcome(None))
           }
-          case None => Redirect(routes.Application.index)
         }
-      }.getOrElse {
-        Redirect(routes.Application.index)
+        case None => Redirect(routes.Application.index)
       }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
   }
 
   /**
