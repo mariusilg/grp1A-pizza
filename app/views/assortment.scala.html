@@ -1,9 +1,8 @@
 @(categoryForm: Form[forms.CreateCategoryForm], itemForm: Form[forms.CreateItemForm])()
 
 @main(models.Company.name) {
-    <h1>Willkommen bei @models.Company.name</h1>
 
-    <p><a href="@routes.UserController.logout">logout</a></p>
+    @adminMenu()
 
     <h2>Sortimentverwaltung:</h2>
 
