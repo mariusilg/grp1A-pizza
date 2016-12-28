@@ -3,7 +3,7 @@
 @main(models.Company.name) {
 
     @if(admin) {
-        @adminMenu(user)
+        @adminMenu()
         @helper.form(action = routes.OrderController.refresh(user.name)) {
             <select name="custID">
                 <option value="-1">Select..</option>
@@ -27,7 +27,7 @@
 
     } else {
         <h1>Willkommen bei @models.Company.name</h1>
-        @userMenu(user)
+        @userMenu()
         <h2>Meine Bestellungen:</h2>
         @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
     }

@@ -19,7 +19,9 @@
         @helper.form(action = routes.UserController.register) {
             @helper.inputText(userForm("Name"))
             @helper.inputPassword(userForm("Password"))
-            <input id="register" type="submit" value="registrieren">
+            <label>Distanz:</label>
+            <input type="number" name="Distance" min="0" max="20" />
+            <input id="register" type="submit" value="registrieren" />
             }
         </div>
     </div>

@@ -1,8 +1,7 @@
 @(item: models.Item)
 
 @main(models.Company.name) {
-
-
+        @adminMenu()
         <h2>Produkt @item.name verwalten:</h2>
         @helper.form(action = routes.AssortmentController.updateItem()) {
             <table>

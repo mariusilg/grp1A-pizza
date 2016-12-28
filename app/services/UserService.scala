@@ -17,9 +17,9 @@ trait UserServiceT {
    * @param name name of the new user.
    * @return the new user.
    */
-  def addUser(name: String, password: String, admin: Boolean): User = {
+  def addUser(name: String, password: String, admin: Boolean, distance: Int): User = {
     // create User
-    val newUser = User(-1, name, password, admin)
+    val newUser = User(-1, name, password, admin, distance)
     // persist and return User
     userDao.addUser(newUser)
   }

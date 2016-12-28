@@ -1,8 +1,8 @@
-@(admin: Boolean, user: models.User)
+@(admin: Boolean, user: models.User)(implicit flash: Flash)
 
 @main(models.Company.name) {
-
     @if(admin) {
+        @adminMenu()
         <h2>Benutzer @user.name verwalten:</h2>
         @helper.form(action = routes.UserController.updateUser()) {
             <table>
@@ -11,20 +11,23 @@
                     <td>Name</td>
                     <td>Passwort</td>
                     <td>Mitarbeiter</td>
+                    <td>Distanz</td>
                 </tr>
                 <tr>
-                    <td><input type="hidden" name="Id" value="@user.id">@user.id</td>
+                    <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
                     <td><input type="text" name="Name" value="@user.name"/></td>
-                    <td><input type="text" name="Password" /></td>
+                    <td><input type="text" name="Password" value="@user.password"/></td>
                     <td><input type="checkbox" name="Admin" value="true" @{
                         if(user.admin) "checked"
                     }></td>
+                    <td><input type="number" name="Distance" value="@user.distance" min="0" max="20" /></td>
                 </tr>
             </table>
             <input type="submit" value="Speichern" />
         }
 
     } else {
+        @userMenu()
         <h2>Mein Konto verwalten:</h2>
         @helper.form(action = routes.UserController.updateUser()) {
             <table>
@@ -32,19 +35,22 @@
                     <td>Kundennummer</td>
                     <td>Name</td>
                     <td>Passwort</td>
+                    <td>Distanz</td>
                 </tr>
                 <tr>
-                    <td><input type="hidden" name="Id" value="@user.id">@user.id</td>
+                    <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
                     <td><input type="text" name="Name" value="@user.name"/></td>
-                    <td><input type="text" name="Password" /></td>
+                    <td><input type="text" name="Password" value="@user.password" /></td>
+                    <td><input type="number" name="Distance" value="@user.distance" min="0" max="20" /></td>
                 </tr>
             </table>
             <input type="submit" value="Speichern" />
         }
     }
 
-
-
-
+    <div id="messageBox">
+        <div id="success">@flash.get("success").getOrElse()</div>
+        <div id="error">@flash.get("fail").getOrElse()</div>
+    </div>
 
 }

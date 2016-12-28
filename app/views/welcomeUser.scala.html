@@ -68,7 +68,7 @@
 
     <h1>Willkommen @user.name bei @models.Company.name</h1>
 
-    @userMenu(user)
+    @userMenu()
 
     @for(category <- services.CategoryService.getCategory(cID)) {
         <h2>@category.name</h2>

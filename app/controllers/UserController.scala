@@ -22,17 +22,19 @@ object UserController extends Controller {
     mapping(
       "Name" -> text.verifying("Please specify a name", f => f.trim!="").verifying("Username existiert bereits", name => !services.UserService.checkName(name)),
       "Password" -> text.verifying("Please specify a password", f => f.trim!=""),
-      "Admin" -> optional(boolean)
+      "Admin" -> optional(boolean),
+      "Distance" -> number
     )(CreateUserForm.apply)(CreateUserForm.unapply))
 
 
 
   val editUserForm = Form(
     mapping(
-      "Id" -> longNumber,
+      "ID" -> longNumber,
       "Name" -> text.verifying("Please specify a name", f => f.trim!=""),
-      //"Password" -> text,
-      "Admin" -> boolean
+      "Password" -> text,
+      "Admin" -> boolean,
+      "Distance" -> number
     )(EditUserForm.apply)(EditUserForm.unapply))
 
 
@@ -53,8 +55,7 @@ object UserController extends Controller {
         BadRequest(views.html.index(formWithErrors, controllers.UserController.loginForm, UserService.registeredUsers))
       },
       userData => {
-        println("checkbox:" + userData.admin.getOrElse(false))
-          val newUser = services.UserService.addUser(userData.name, userData.password, false)
+          val newUser = services.UserService.addUser(userData.name, userData.password, false, userData.distance)
           Redirect(routes.UserController.welcome(None)) withSession("id" -> newUser.id.toString)
       })
   }
@@ -67,11 +68,10 @@ object UserController extends Controller {
   def addUser : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.users(formWithErrors, UserService.registeredUsers, List("OK", "Gut")))
+        BadRequest(views.html.users(formWithErrors, UserService.registeredUsers))
       },
       userData => {
-        println("checkbox:" + userData.admin.getOrElse(false))
-        val newUser = services.UserService.addUser(userData.name, userData.password, userData.admin.getOrElse(false))
+        val newUser = services.UserService.addUser(userData.name, userData.password, userData.admin.getOrElse(false), userData.distance)
         Redirect(routes.UserController.manageUser)
       })
   }
@@ -114,18 +114,11 @@ object UserController extends Controller {
   }
 
   /**
-   * List all users currently available in the system.
-   */
-  def showUsers() : Action[AnyContent] = Action {
-    Ok(views.html.users(userForm, UserService.registeredUsers, List("showUsers success")))
-  }
-
-  /**
     * Manage all users which are currently available in the system.
     */
   def manageUser() : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
-      Ok(views.html.users(userForm, UserService.registeredUsers, List("manageUser success")))
+      Ok(views.html.users(userForm, UserService.registeredUsers))
     }.getOrElse {
       Redirect(routes.Application.index)
     }
@@ -134,7 +127,7 @@ object UserController extends Controller {
   /**
     * Edit a specific user.
     */
-  def editUser(ofUser: Option[Long]) : Action[AnyContent] = Action { request =>
+  def editUser(ofUser: Option[Long]) : Action[AnyContent] = Action { implicit request =>
     request.session.get("id").map { id =>
       val currentUser = UserService.getUserByID(id.toLong)
       currentUser match {
@@ -159,12 +152,14 @@ object UserController extends Controller {
   def updateUser() : Action[AnyContent] = Action { implicit request =>
     editUserForm.bindFromRequest.fold(
       formWithErrors => {
-        Forbidden("Fehler")//BadRequest(views.html.editUser(None))
+        Ok("Fehler")//BadRequest(views.html.editUser(None))
       },
       userData => {
-        val user = models.User(userData.id, userData.name, "password", userData.admin)//, userData.password, userData.admin)
+        val user = models.User(userData.id, userData.name, userData.password, userData.admin, userData.distance)
         UserService.updateUser(user)
-        Redirect(routes.UserController.editUser(Some(user.id)))//"Successfully updated changes."
+        var message: String = "The user has been updated! <br /> Name geändert"
+        Redirect(routes.UserController.editUser(Some(user.id))).flashing(
+          "success" -> message, "fail" -> "Fehler!")
       })
   }
 

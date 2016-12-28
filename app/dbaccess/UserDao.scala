@@ -21,8 +21,8 @@ trait UserDaoT {
   def addUser(user: User): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(name, password, admin_flag) values ({name}, {password}, {admin})").on(
-          'name -> user.name, 'password -> user.password, 'admin -> user.admin).executeInsert()
+        SQL("insert into Users(name, password, admin_flag, distance) values ({name}, {password}, {admin}, {distance})").on(
+          'name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance).executeInsert()
       user.id = id.get
     }
     user
@@ -46,9 +46,9 @@ trait UserDaoT {
    */
   def registeredUsers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectUsers = SQL("Select id, name, admin_flag from Users;")
+      val selectUsers = SQL("Select id, name, admin_flag, distance from Users;")
       // Transform the resulting Stream[Row] to a List[(String,String)]
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"))).toList
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"))).toList
       users
     }
   }
@@ -59,9 +59,9 @@ trait UserDaoT {
     */
   def registeredCustomers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectCustomers = SQL("Select id, name, admin_flag from Users where admin_flag = false;")
+      val selectCustomers = SQL("Select id, name, admin_flag, distance from Users where admin_flag = false;")
       // Transform the resulting Stream[Row] to a List[(String,String)]
-      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"))).toList
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"))).toList
       customers
     }
   }
@@ -75,7 +75,7 @@ trait UserDaoT {
         val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
           .headOption
         selectUser match {
-          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag")))
+          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance")))
           case None => None
         }
       }
@@ -88,7 +88,7 @@ trait UserDaoT {
     */
   def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
-      val rowsUpdated = SQL("update Users SET name={name}, admin_flag={admin} where id = {id}").on('name -> user.name, 'admin -> user.admin, 'id -> user.id).executeUpdate()
+      val rowsUpdated = SQL("update Users SET name={name}, password={password}, admin_flag={admin}, distance={distance} where id = {id}").on('name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'id -> user.id).executeUpdate()
       rowsUpdated == 1
     }
   }
@@ -102,7 +102,7 @@ trait UserDaoT {
       val selectUser = SQL("Select * from Users where id = {id};").on('id -> id).apply
         .headOption
       selectUser match {
-        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag")))
+        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance")))
         case None => None
       }
     }

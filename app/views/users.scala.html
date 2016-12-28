@@ -1,10 +1,8 @@
-@(userForm: Form[forms.CreateUserForm], users: List[models.User], messages: List[String])()
+@(userForm: Form[forms.CreateUserForm], users: List[models.User])()
 
 @main(models.Company.name) {
-    <h1>Willkommen bei @models.Company.name</h1>
 
-    <p><a href="@routes.UserController.logout">logout</a></p>
-
+    @adminMenu()
     <h2>Benutzerverwaltung:</h2>
     <table>
         <tr>
@@ -27,46 +25,25 @@
         <input type="button" class="button" value="Neuen User anlegen"/>
         <div class="dialog" title="User anlegen:">
         @helper.form(action = routes.UserController.addUser) {
-            <label>Name:</label>
-            <input id="name" name="Name" type="text">
-            <label>Passwort:</label>
-            <input id="password" name="Password" type="password">
+            <label>Name:</label><br/>
+            <input id="name" name="Name" type="text"><br/><br/>
+            <label>Passwort:</label><br/>
+            <input id="password" name="Password" type="password"><br/><br/>
+            <label>Distanz:</label><br/>
+            <input type="number" name="Distance" min="0" max="20" /><br/><br/>
             <label>Mitarbeiter?</label>
-            <input id="Admin" name="Admin" type="checkbox" value=true><br/><br/>
+            <input id="Admin" name="Admin" type="checkbox" value=true><br/>
+            <br/>
             <input id="submit" type="submit" value="Hinzufügen">
             }
         </div>
     </div>
 
-    @**<div class="upperDialog">
-    <div class="container">
-        <div class="main">
-            <div class="dialog" title="User anlegen:">
-
-                    <label>Name:</label>
-                    <input id="name" name="Name" type="text">
-                    <label>Passwort:</label>
-                    <input id="password" name="Password" type="password">
-                    <label>Mitarbeiter?</label>
-                    <input id="Admin" name="Admin" type="checkbox" value=true><br/><br/>
-                    <input id="submit" type="submit" value="Hinzufügen">
-                    <input id="cancel" type="button" value="Abbrechen">
-            }
-            </div>
-        </div>
-     </div>
-
-
-    <input id="button" type="button" value="Neuen User anlegen">
-    </div>     **@
 
     <div id="messageBox">
-        @userForm.errors.map { errors =>
-            <div id="error" >@errors.message</div>
-        }
-        @for(message <- messages) {
-            <div id="success">@message</div>
-        }
+    @userForm.errors.map { errors =>
+        <div id="error" >@errors.message</div>
+    }
     </div>
     @**<p>
     Neuen User hinzufügen:

@@ -7,7 +7,7 @@ GET         /                    controllers.Application.index
 
 GET         /register            controllers.Application.index
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
-GET         /showOrders          controllers.OrderController.showOrders(ofUser: Long)
+GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
 GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
