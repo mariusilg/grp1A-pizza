@@ -1,10 +1,10 @@
-@(admin: Boolean, user: models.User)(implicit flash: Flash)
+@(admin: Boolean, editUserForm: Form[forms.EditUserForm], user: models.User)(implicit flash: Flash)
 
 @main(models.Company.name) {
     @if(admin) {
         @adminMenu()
         <h2>Benutzer @user.name verwalten:</h2>
-        @helper.form(action = routes.UserController.updateUser()) {
+        @helper.form(action = routes.UserController.updateUser(user.id)) {
             <table>
                 <tr>
                     <td>ID</td>
@@ -29,7 +29,7 @@
     } else {
         @userMenu()
         <h2>Mein Konto verwalten:</h2>
-        @helper.form(action = routes.UserController.updateUser()) {
+        @helper.form(action = routes.UserController.updateUser(user.id)) {
             <table>
                 <tr>
                     <td>Kundennummer</td>
@@ -49,8 +49,15 @@
     }
 
     <div id="messageBox">
-        <div id="success">@flash.get("success").getOrElse()</div>
-        <div id="error">@flash.get("fail").getOrElse()</div>
+        @flash.get("success").map { message =>
+            <div id="success">
+                @message
+            </div>
+        }
+        @flash.get("fail").map { message =>
+            <div id="error">
+                @message
+            </div>
+        }
     </div>
-
 }

@@ -1,14 +1,13 @@
-@(userForm: Form[forms.CreateUserForm], users: List[models.User])()
+@(userForm: Form[forms.CreateUserForm], users: List[models.User])(implicit flash: Flash)
 
 @main(models.Company.name) {
-
     @adminMenu()
-
-    <section>
-        <h1>Benutzerverwaltung</h1>
         <div class="tbl-header">
             <table cellpadding="0" cellspacing="0" border="0">
                 <thead>
+                    <tr>
+                        <th>Benutzerverwaltung</th>
+                    </tr>
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
@@ -26,13 +25,26 @@
                             <td>@user.id</td>
                             <td>@user.name</td>
                             <td>@{if(user.admin) "Mitarbeiter" else "Kunde"}</td>
-                            <td><a href="@routes.UserController.editUser(Some(user.id))">edit</a></td>
+                            <td>
+                                <a href="@routes.UserController.editUser(Some(user.id))"><i class="material-icons">edit</i></a>
+                                <div class="upper">
+                                    <i class="button material-icons">delete</i>
+                                    <div class="dialog" title="User löschen:">
+                                        <label>@if(user.admin){"Mitarbeiter"}else{"Kunde"}:</label><br/>
+                                        @user.name
+                                        <br/>
+                                        wirklich löschen?
+                                        <br/>
+                                        <a href="@routes.UserController.removeUser(user.id)"><button>JA</button></a>
+                                        <a href="@routes.UserController.manageUser"><button>NEIN</button></a>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-    </section>
 
     <div class="upper">
         <input type="button" class="button" value="Neuen User anlegen"/>
@@ -53,10 +65,21 @@
     </div>
 
 
+
     <div id="messageBox">
-    @userForm.errors.map { errors =>
-        <div id="error" >@errors.message</div>
-    }
+        @userForm.errors.map { errors =>
+            <div id="error" ><i class="material-icons">info</i><b>@errors.message</b></div>
+        }
+        @flash.get("success").map { message =>
+            <div id="success">
+                @message
+            </div>
+        }
+        @flash.get("fail").map { message =>
+            <div id="error">
+                <b>@message</b>
+            </div>
+        }
     </div>
     @**<p>
     Neuen User hinzufügen:

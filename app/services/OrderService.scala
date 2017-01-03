@@ -111,7 +111,7 @@ trait OrderServiceT {
   }
 
   def costsToString(cents: Int) : String  =  {
-    "%.2f€".format(cents.toDouble/100)
+    "%.2f €".format(cents.toDouble/100)
   }
 
 }

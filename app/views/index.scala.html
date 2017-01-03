@@ -4,8 +4,12 @@
     <h1>Willkommen bei @models.Company.name</h1>
 
     @helper.form(action = routes.UserController.login) {
-        @helper.inputText(loginForm("Username"))
-        @helper.inputPassword(loginForm("Password"))
+        @helper.input(loginForm("Username"), '_label -> "Name:") { (id, name, value, args) =>
+            <input name="@name" type="text" value="@value" placeholder="Username">
+        }
+        @helper.input(loginForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
+            <input name="@name" type="password" value="@value" placeholder="Passwort">
+        }
         <input type="submit" value="Login" />
     }
     <a href="@routes.Application.register"><button>hier registrieren</button></a>
