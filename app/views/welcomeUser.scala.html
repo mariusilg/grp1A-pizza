@@ -71,10 +71,10 @@
     @userMenu()
 
     @for(category <- services.CategoryService.getCategory(cID)) {
-        <h2>@category.name</h2>
+        <h2 align="center">Du hast gewählt: @category.name</h2>
         <table>
             <tr>
-                <td></td>
+                <!-- <td></td> -->
                 <td>Anz.</td>
                 <td>Art.</td>
                 <td>Größe (in cm)</td>
@@ -86,7 +86,7 @@
             @for(item <- services.ItemService.getItemsByCategory(cID)) {
                 @helper.form(action = routes.OrderController.addOrder(user.name)) {
                     <tr>
-                        <td></td>
+                        <!-- <td></td> -->
                         <td><input id="q@item.id" type="number" name="quantity" value="1" min="1" onchange="changePrice(@item.id)"/></td>
                         <td>
                             <input type="hidden" name="itemID" value="@item.id"/>
@@ -96,9 +96,9 @@
                             }
                             @**helper.select(orderForm, helper.options(List("extra1","2")),'label -> "select extras")**@
                         </td>
-                        <td><input id="s@item.id" type="number" name="size" value="1" min="1" onchange="changePrice(@item.id)"/></td>
-                        <input id="@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
-                        <td id="tp@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <td><input id="@item.id" type="number" name="size" value="20" min="20" onchange="changePrice(@item.id)"/></td>
+                        <input id="s@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <td id="tp@item.id"><b>@services.OrderService.costsToString(item.price)</b></td>
                         <td><input type="submit" value="bestellen" /></td>
                         <td></td>
                     </tr>
