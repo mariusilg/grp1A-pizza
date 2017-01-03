@@ -20,7 +20,7 @@
                     <label>Distanz:</label>
                 </dt>
                 <dd>
-                    <input name="Distance" type="number" value=@{userForm("Distance").value.map(x=>x).getOrElse("")} placeholder="in km" min="0" required/>
+                    <input name="Distance" type="number" value='@{userForm("Distance").value.map(x=>x).getOrElse("")}' placeholder="in km" min="0" required/>
                 </dd>
             </dl>
             <input id="register" type="submit" value="registrieren" />
