@@ -1,8 +1,7 @@
 @(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int, averageBusinessVolume: Int)
 
     <h3>
-        Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume) <br/>
-        &Oslash; Bestellwert: @services.OrderService.costsToString(averageBusinessVolume)
+        Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume)
     </h3>
     @if(!orders.isEmpty) {
         @for(order <- orders) {

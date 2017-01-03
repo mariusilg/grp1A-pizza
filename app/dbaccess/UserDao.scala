@@ -114,7 +114,7 @@ trait UserDaoT {
     */
   def login(name: String, password: String): Option[Long] = {
     DB.withConnection { implicit c =>
-      val checkUser = SQL("Select id from Users where name = {name} and password = {password} limit 1;").on('name -> name, 'password -> password).apply
+      val checkUser = SQL("Select id from Users where UPPER(name)=UPPER({name}) and password = {password} limit 1;").on('name -> name, 'password -> password).apply
         .headOption
       checkUser match {
         case Some(row) => Some(row[Long]("id"))
@@ -127,7 +127,7 @@ trait UserDaoT {
     * Returns a user from the database.
     * @return user.
     */
-  def checkName(name: String): Boolean = {
+  def nameInUse(name: String): Boolean = {
     DB.withConnection { implicit c =>
       val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name});").on('name -> name).apply
         .headOption
@@ -138,6 +138,82 @@ trait UserDaoT {
     }
   }
 
+  /**
+    * Returns whether username already in use or not.
+    * @return Boolean.
+    */
+  def nameInUse(id: Long, name: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkAvailability = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name}) and id <> {id};").on('name -> name, 'id -> id).apply
+        .headOption
+      checkAvailability match {
+        case Some(row) => row[Long]("cnt") != 0
+        case None => true
+      }
+    }
+  }
+
+  /**
+    * Returns whether there is one admin left or not.
+    * @return Boolean.
+    */
+  def lastAdmin: Boolean = {
+    DB.withConnection { implicit c =>
+      val lastAdmin = SQL("Select COUNT(*) as cnt from Users where admin_flag = 1;").apply
+        .headOption
+      lastAdmin match {
+        case Some(row) => row[Long]("cnt") == 1
+        case None => true
+      }
+    }
+  }
+
+  /**
+    * Returns whether user has orders or not.
+    * @return Boolean.
+    */
+  def userIsDeletable(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val cntUserOrders = SQL("Select COUNT(*) as cnt from Orders where cust_id = {id};").on('id -> id).apply
+        .headOption
+      cntUserOrders match {
+        case Some(row) => row[Long]("cnt") == 0
+        case None => false
+      }
+    }
+  }
+
+  /**
+    * Returns whether user has orders or not.
+    * @return Boolean.
+    */
+  def userIsAdmin(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val adminCheck = SQL("Select admin_flag from Users where id = {id};").on('id -> id).apply
+        .headOption
+      adminCheck match {
+        case Some(row) => row[Boolean]("admin_flag")
+        case None => false
+      }
+    }
+  }
+
+
+
+  /**
+    * Returns amount of customers registered in the system.
+    * @return Boolean.
+    */
+  def getCustCount: Long = {
+    DB.withConnection { implicit c =>
+      val custCount = SQL("Select COUNT(*) as  cnt from Users where admin_flag = 0").apply
+        .headOption
+      custCount match {
+        case Some(row) => row[Long]("cnt")
+        case None => 0
+      }
+    }
+  }
 }
 
 object UserDao extends UserDaoT

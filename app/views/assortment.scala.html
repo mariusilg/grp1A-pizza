@@ -3,48 +3,51 @@
 @main(models.Company.name) {
 
     @adminMenu()
-
     <h2>Sortimentverwaltung:</h2>
-
     @for(category <- services.CategoryService.availableCategories) {
-
-        <div class="upper">
-            <h2>@category.name</h2>
-            <input type="button" class="button" value="editieren"/>
-            <div class="dialog" title="Kategorie (ID: @category.id) editieren:">
-            @helper.form(action = routes.AssortmentController.updateCategory) {
-                <input id="id" name="ID" type="hidden" value="@category.id">
-                <label>Name:</label><br/>
-                <input id="name" name="Name" type="text" value="@category.name"><br/>
-                <br/>
-                <label>Sichtbar:</label>
-                <input id="visibility" name="Visibility" type="checkbox" value=true @{if(category.visibility) "checked"}><br/><br/>
-                <input id="editCategory" type="submit" value="Änderungen speichern">
-                }
-            </div>
-        </div>
-
-        <div class="upper">
-            <input type="button" class="button" value="löschen"/>
-            <div class="dialog" title="Kategorie (ID: @category.id) löschen:">
-            @helper.form(action = routes.AssortmentController.rmCategory(Some(category.id))) {
-                Sind Sie sicher, dass die Kategorie: @category.name gelöscht werden soll?<br/><br/>
-                <b style="color: red">Hinweis:<br/>
-                Es werden alle Produkte die dieser Kategorie zugeordnet sind, mitgelöscht!!!</b>
-                    <br/>
-                <input id="editCategory" type="submit" value="Ja">
-                <input id="editCategory" type="button" value="Nein">
-                }
-            </div>
-        </div>
-
         <table @if(!category.visibility) {style="opacity: 0.5"}>
-            <tr>
-                <td>Art. Nr.</td>
-                <td>Art. Name</td>
-                <td>Preis</td>
-                <td></td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>@category.name</th>
+                    <th>
+                        <div class="upper">
+                            <input type="button" class="button" value="editieren"/>
+                            <div class="dialog" title="Kategorie (ID: @category.id) editieren:">
+                            @helper.form(action = routes.AssortmentController.updateCategory) {
+                                <input id="id" name="ID" type="hidden" value="@category.id">
+                                <label>Name:</label><br/>
+                                <input id="name" name="Name" type="text" value="@category.name"><br/>
+                                <br/>
+                                <label>Sichtbar:</label>
+                                <input id="visibility" name="Visibility" type="checkbox" value=true @{if(category.visibility) "checked"}><br/><br/>
+                                <input id="editCategory" type="submit" value="Änderungen speichern">
+                                }
+                            </div>
+                        </div>
+
+                        <div class="upper">
+                            <input type="button" class="button" value="löschen"/>
+                            <div class="dialog" title="Kategorie (ID: @category.id) löschen:">
+                            @helper.form(action = routes.AssortmentController.rmCategory(Some(category.id))) {
+                                Sind Sie sicher, dass die Kategorie: @category.name gelöscht werden soll?<br/><br/>
+                                <b style="color: red">Hinweis:<br/>
+                                    Es werden alle Produkte die dieser Kategorie zugeordnet sind, mitgelöscht!!!</b>
+                                <br/>
+                                <input id="editCategory" type="submit" value="Ja">
+                                <input id="editCategory" type="button" value="Nein">
+                                }
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Art. Nr.</th>
+                    <th>Art. Name</th>
+                    <th>Preis</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
             @for(item <- services.ItemService.getItemsByCategory(category.id)) {
                 <tr>
                     <td>@item.id</td>
@@ -53,23 +56,34 @@
                     <td><a href="@routes.AssortmentController.editItem(Some(item.id))">edit</a></td>
                 </tr>
             }
+                <tr>
+                    <td>
+                        <div class="upper">
+                            <input type="button" class="button" value="+"/>
+                            <div class="dialog" title="Produkt anlegen:">
+                            @helper.form(action = routes.AssortmentController.addItem) {
+                                <label>Produktname:</label>
+                                <input id="name" name="Name" type="text"><br/>
+                                <br/>
+                                <label>Preis (in Cent):</label>
+                                <input id="price" name="Price" type="number" min="0" value="50"><br/>
+                                <br/>
+                                <label>Kategorie:</label>
+                                <input id="name" name="CategoryID" type="hidden" value="@category.id">@category.name<br/>
+                                <br/>
+                                <label>Sichtbar:</label>
+                                <input id="visibility" name="Visibility" type="checkbox" value=true><br/><br/>
+                                <input id="addItem" type="submit" value="hinzufügen">
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
         </table>
-        <div class="upper">
-            <input type="button" class="button" value="Neues Produkt anlegen"/>
-            <div class="dialog" title="Produkt anlegen:">
-            @helper.form(action = routes.AssortmentController.addItem) {
-                <label>Produktname:</label>
-                <input id="name" name="Name" type="text">
-                <label>Preis (in Cent):</label>
-                <input id="price" name="Price" type="number" min="0" value="50">
-                <label>Kategorie:</label>
-                <input id="name" name="CategoryID" type="hidden" value="@category.id">@category.name
-                <label>Sichtbar:</label>
-                <input id="visibility" name="Visibility" type="checkbox" value=true><br/><br/>
-                <input id="addItem" type="submit" value="hinzufügen">
-                }
-            </div>
-        </div>
     }
 
     <h2>Extras</h2>

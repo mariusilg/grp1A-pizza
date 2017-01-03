@@ -6,11 +6,29 @@
     <a href="@routes.Application.index"><button>zurück</button></a>
     </p>
         @helper.form(action = routes.UserController.register()) {
-            @helper.inputText(userForm("Name"))
-            @helper.inputPassword(userForm("Password"))
-            <label>Distanz:</label>
-            <input type="number" name="Distance" min="0" max="20" /><br/>
-            <br/>
+            @helper.input(userForm("Name"), '_label -> "Name:", 'hasErrors -> userForm("Name").hasErrors) { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="Username">
+            }
+            @helper.input(userForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
+                <input name="@name" type="password" value="@value" placeholder="Passwort">
+            }
+            @*helper.input(userForm("Distance"), '_label -> "Distanz:") { (id, name, value, args) =>
+                <input name="@name" type="Int" value="@value" placeholder="in km" min="0" required/>
+            }*@
+            <dl id="Distance_field">
+                <dt>
+                    <label>Distanz:</label>
+                </dt>
+                <dd>
+                    <input name="Distance" type="number" value=@{userForm("Distance").value.map(x=>x).getOrElse("")} placeholder="in km" min="0" required/>
+                </dd>
+            </dl>
             <input id="register" type="submit" value="registrieren" />
         }
+
+
+
+
+
+
 }

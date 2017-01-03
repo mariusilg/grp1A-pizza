@@ -34,16 +34,19 @@ p {
 
 #messageBox {
     display: none;
-    position: absolute;
+    position: fixed;
     right: 5%;
     top: 5%;
 }
 
 #error {
     background-color: red;
+    border-radius: 1em;
+    padding: 1em;
     color: white;
     margin-bottom: 5%;
-    position: relative;
+    width: 10em;
+    text-align: center;
 }
 
 #success {
@@ -65,14 +68,15 @@ h1 {
 table {
     table-layout: fixed;
     width: 100%;
+    min-width: 400px;
 }
 
 .tbl-header {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(0,0,0,0.7);
 }
 
 .tbl-content {
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0,0,0,0.7);
     height: 300px;
     margin-top: 0px;
     overflow-x: auto;
@@ -80,7 +84,7 @@ table {
 
 th {
     color: black;
-    font-size: 12px;
+    font-size: 1.5em;
     font-weight: 500;
     padding: 20px 15px;
     text-align: left;
@@ -88,7 +92,7 @@ th {
 }
 
 td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.1);;
     color: black;
     font-size: 12px;
     font-weight: 300;

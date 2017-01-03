@@ -29,6 +29,6 @@
         <h1>Willkommen bei @models.Company.name</h1>
         @userMenu()
         <h2>Meine Bestellungen:</h2>
-        @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
+        @showOwnOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
     }
 }
