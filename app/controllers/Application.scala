@@ -17,7 +17,11 @@ object Application extends Controller {
    */
   def index : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
-      Redirect(routes.UserController.welcome(None))
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Redirect(routes.UserController.welcome(None))
+        case None => Redirect(routes.UserController.logout)
+      }
     }.getOrElse {
       Ok(views.html.index(controllers.UserController.loginForm))
     }

@@ -13,17 +13,16 @@ import forms._
  */
 object UserController extends Controller {
 
-
   //val nonEmptyAlphaText: Mapping[String] = nonEmptyText.verifying("Must contain letters and spaces only.", name => name.matches("[A-z\\s]+") )
   /**
    * Form object for user data.
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying("Please specify a name", f => f.trim!="").verifying("Username existiert bereits", name => !services.UserService.checkName(name)),
-      "Password" -> text.verifying("Please specify a password", f => f.trim!=""),
+      "Name" -> text.verifying("Please specify a name", f => f.trim!="").verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
       "Admin" -> optional(boolean),
-      "Distance" -> number
+      "Distance" -> number.verifying("Distanz fehlt!", f => f != null)
     )(CreateUserForm.apply)(CreateUserForm.unapply))
 
 
@@ -31,17 +30,20 @@ object UserController extends Controller {
   val editUserForm = Form(
     mapping(
       "ID" -> longNumber,
-      "Name" -> text.verifying("Please specify a name", f => f.trim!=""),
-      "Password" -> text,
+      "Name" -> text.verifying("Name fehlt", f => f.trim!=""),
+      "Password" -> text.verifying("Passwort fehlt", f => f.trim!=""),
       "Admin" -> boolean,
       "Distance" -> number
-    )(EditUserForm.apply)(EditUserForm.unapply))
+    )(EditUserForm.apply)(EditUserForm.unapply) /*verifying("Username existiert bereits", fields => fields match {
+      case userData => userData.id == userData.id
+    })*/
+  )
 
 
   val loginForm = Form(
     mapping(
-      "Username" -> text.verifying("Username existiert nicht", name => services.UserService.checkName(name)),
-      "Password" -> text
+      "Username" -> text.verifying("Username fehlt", f => f.trim!="").verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
+      "Password" -> text.verifying("Passwort fehlt", f => f.trim!="")
     )(CreateLoginForm.apply)(CreateLoginForm.unapply))
 
   /**
@@ -116,9 +118,13 @@ object UserController extends Controller {
   /**
     * Manage all users which are currently available in the system.
     */
-  def manageUser() : Action[AnyContent] = Action { request =>
+  def manageUser() : Action[AnyContent] = Action { implicit request =>
     request.session.get("id").map { id =>
-      Ok(views.html.users(userForm, UserService.registeredUsers))
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Ok(views.html.users(userForm, UserService.registeredUsers))
+        case None => Redirect(routes.UserController.logout)
+      }
     }.getOrElse {
       Redirect(routes.Application.index)
     }
@@ -134,10 +140,10 @@ object UserController extends Controller {
         case Some(currentUser) => ofUser match {
                                 case Some(ofUser) => val user = UserService.getUserByID(ofUser)
                                                       user match {
-                                                        case Some(user) => if(currentUser.admin) Ok(views.html.editUser(true, user)) else Redirect(routes.UserController.editUser(None))
+                                                        case Some(user) => if(currentUser.admin) Ok(views.html.editUser(true, editUserForm, user)) else Redirect(routes.UserController.editUser(None))
                                                         case None => if(currentUser.admin) Redirect(routes.UserController.manageUser) else Redirect(routes.UserController.editUser(None))
                                                       }
-                                case None => Ok(views.html.editUser(currentUser.admin, currentUser))
+                                case None => Ok(views.html.editUser(currentUser.admin, editUserForm, currentUser))
                                 }
         case None => Redirect(routes.Application.index)
       }
@@ -149,18 +155,53 @@ object UserController extends Controller {
   /**
     * Update a specific User and go back to user overview.
     */
-  def updateUser() : Action[AnyContent] = Action { implicit request =>
-    editUserForm.bindFromRequest.fold(
-      formWithErrors => {
-        Ok("Fehler")//BadRequest(views.html.editUser(None))
-      },
-      userData => {
-        val user = models.User(userData.id, userData.name, userData.password, userData.admin, userData.distance)
-        UserService.updateUser(user)
-        var message: String = "The user has been updated! <br /> Name geändert"
-        Redirect(routes.UserController.editUser(Some(user.id))).flashing(
-          "success" -> message, "fail" -> "Fehler!")
-      })
+  def updateUser(id : Long) : Action[AnyContent] = Action { implicit request =>
+      editUserForm.bindFromRequest.fold(
+        formWithErrors => {
+          Redirect(routes.UserController.editUser(Some(id))).flashing("fail" -> "Es ist ein Fehler unterlaufen!")
+        },
+        userData => {
+          val user = models.User(userData.id, userData.name, userData.password, userData.admin, userData.distance)
+
+          if(UserService.nameInUse(userData.id, userData.name)) {
+            Redirect(routes.UserController.editUser(Some(user.id))).flashing("fail" -> "Username ist schon vergeben!")
+          } else if(UserService.lastAdmin && !userData.admin) {
+            Redirect(routes.UserController.editUser(Some(user.id))).flashing("fail" -> "Es muss mindestens einen Mitarbeiter geben!")
+          } else {
+            UserService.updateUser(user)
+            Redirect(routes.UserController.editUser(Some(user.id))).flashing(
+              "success" -> "The user has been updated!")
+          }
+        })
+    }
+
+
+  /**
+    * Try to delete a specific User and go back to user overview.
+    */
+  def removeUser(id: Long) : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { userID =>
+      val currentUser = UserService.getUserByID(userID.toLong)
+      currentUser match {
+        case Some(currentUser) => if(currentUser.admin) {
+                                      if(UserService.userIsDeletable(id)) {
+                                        if(UserService.userIsAdmin(id) == UserService.lastAdmin) {
+                                          Redirect(routes.UserController.manageUser).flashing("fail" -> "Es muss mindestens einen Mitarbeiter geben!")
+                                        } else {
+                                          UserService.rmUser(id)
+                                          Redirect(routes.UserController.manageUser).flashing("success" -> "User wurde erfolgreich gelöscht!")
+                                        }
+                                      } else {
+                                        //UserService.deactivateUser(id)
+                                        Redirect(routes.UserController.manageUser).flashing(
+                                          "fail" -> "Der User wurde auf inaktiv gesetzt, da er nicht gelöscht werden konnte!")
+                                      }
+                                  } else Redirect(routes.Application.index)
+        case None => Redirect(routes.Application.index)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
   }
 
   def logout() : Action[AnyContent] = Action {

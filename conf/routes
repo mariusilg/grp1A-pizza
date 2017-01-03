@@ -13,10 +13,11 @@ GET         /editUser            controllers.UserController.editUser(ofUser: Opt
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
 GET         /manageAssortment    controllers.AssortmentController.manageAssortment
 GET         /logout              controllers.UserController.logout
+GET         /removeUser          controllers.UserController.removeUser(id: Long)
 
 POST        /register            controllers.UserController.register
 POST        /addUser             controllers.UserController.addUser
-POST        /updateUser          controllers.UserController.updateUser
+POST        /updateUser          controllers.UserController.updateUser(id: Long)
 POST        /updateItem          controllers.AssortmentController.updateItem
 POST        /addItem             controllers.AssortmentController.addItem
 POST        /addCategory         controllers.AssortmentController.addCategory

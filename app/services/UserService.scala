@@ -25,13 +25,6 @@ trait UserServiceT {
   }
 
   /**
-   * Removes a user by id from the system.
-   * @param id users id.
-   * @return a boolean success flag.
-   */
-  def rmUser(id: Long): Boolean = userDao.rmUser(id)
-
-  /**
    * Gets a list of all registered users.
    * @return list of users.
    */
@@ -75,8 +68,16 @@ trait UserServiceT {
     * Return whether username exists or not.
     * @return true or false.
     */
-  def checkName(name: String): Boolean = {
-    userDao.checkName(name)
+  def nameInUse(name: String): Boolean = {
+    userDao.nameInUse(name)
+  }
+
+  /**
+    * Return whether new username exists or not.
+    * @return true or false.
+    */
+  def nameInUse(id: Long, name: String): Boolean = {
+    userDao.nameInUse(id, name)
   }
 
   /**
@@ -87,6 +88,36 @@ trait UserServiceT {
     userDao.updateUser(user)
   }
 
+  /**
+    * Return whether there is only one admin left.
+    * @return boolean.
+    */
+  def lastAdmin : Boolean = userDao.lastAdmin
+
+  /**
+    * Return whether user is admin or not.
+    * @return boolean.
+    */
+  def userIsAdmin(id: Long) : Boolean = userDao.userIsAdmin(id)
+
+    /**
+    * Checks whether a user is deletable from the system.
+    * @param id users id.
+    * @return a boolean success flag.
+    */
+  def userIsDeletable(id: Long): Boolean = userDao.userIsDeletable(id)
+
+  /**
+    * Removes a user by id from the system.
+    * @param id users id.
+    * @return a boolean success flag.
+    */
+  def rmUser(id: Long): Boolean = userDao.rmUser(id)
+
+  /**
+    * Customer count.
+    */
+  def getCustCount : Long = userDao.getCustCount
 }
 
 object UserService extends UserServiceT
