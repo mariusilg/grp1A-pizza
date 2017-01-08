@@ -13,7 +13,6 @@ import models._
   */
 trait CategoryDaoT {
 
-
   /**
     * Returns a user from the database.
     * @return user.
@@ -92,6 +91,52 @@ trait CategoryDaoT {
     }
   }
 
+  /**
+    * Returns whether there is one other visible category left or not.
+    * @return Boolean.
+    */
+  def lastVisibleCategory(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val cntVisible = SQL("Select COUNT(*) as cnt from Categories where visibility = TRUE and id <> {id};").on('id -> id).apply
+        .headOption
+      cntVisible match {
+        case Some(row) => row[Long]("cnt") == 0
+        case None => true
+      }
+    }
+  }
+
+  /**
+    * Returns whether username already in use or not.
+    * @return Boolean.
+    */
+  def nameInUse(id: Long, name: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkAvailability = SQL("Select COUNT(*) as cnt from Categories where UPPER(name) = UPPER({name}) and id <> {id};").on('name -> name, 'id -> id).apply
+        .headOption
+      checkAvailability match {
+        case Some(row) => row[Long]("cnt") != 0
+        case None => true
+      }
+    }
+  }
+
+
+  /**
+    * Returns the first visible category from the database.
+    * @return optional id of category.
+    */
+  def getDefaultCategory: Option[Long] = {
+    DB.withConnection { implicit c =>
+      val selectCategory= SQL("Select id from Categories where visibility = true limit 1;").apply
+      .headOption
+      selectCategory match {
+        case Some(row) => Some((row[Long]("id")))
+        case None => None
+      }
+    }
+  }
+
   def getCategory(id: Long): Option[Category] = {
     DB.withConnection { implicit c =>
       val selectCategory = SQL("Select id, name, visibility from Categories where id = {id} limit 1;").on('id -> id).apply
@@ -99,6 +144,23 @@ trait CategoryDaoT {
       selectCategory match {
         case Some(row) => Some(Category(row[Long]("id"), row[String]("name"), row[Boolean]("visibility")))
         case None => None
+      }
+    }
+  }
+
+
+
+  /**
+    * Checks whether category is visible or not.
+    * @return true / false.
+    */
+  def isCategoryVisible(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkVisibility = SQL("Select COUNT(*) as cnt from Categories where visibility = TRUE and id = {id};").on('id -> id).apply
+        .headOption
+      checkVisibility match {
+        case Some(row) => row[Long]("cnt") == 1
+        case None => false
       }
     }
   }

@@ -4,6 +4,7 @@
 
 # Home page
 GET         /                    controllers.Application.index
+GET         /login               controllers.Application.index
 GET         /register            controllers.Application.register
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])

@@ -71,7 +71,7 @@
     @userMenu()
 
     @for(category <- services.CategoryService.getCategory(cID)) {
-        <h2 align="center">Du hast gewählt: @category.name</h2>
+        <h2 align="center">@category.name</h2>
         <table>
             <tr>
                 <!-- <td></td> -->
@@ -97,7 +97,7 @@
                             @**helper.select(orderForm, helper.options(List("extra1","2")),'label -> "select extras")**@
                         </td>
                         <td><input id="@item.id" type="number" name="size" value="20" min="20" onchange="changePrice(@item.id)"/></td>
-                        <input id="s@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price)</td>
+                        <input id="s@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@services.OrderService.costsToString(item.price*20)</td>
                         <td id="tp@item.id"><b>@services.OrderService.costsToString(item.price)</b></td>
                         <td><input type="submit" value="bestellen" /></td>
                         <td></td>
@@ -114,7 +114,7 @@
                             </select>**@
                             @for(extra <- services.ExtraService.getExtras) {
                                 <label  class="checkbox-inline">
-                                    <input type="checkbox" name="extraID[@{extra.id-1}]" value="@extra.id" />@extra.name
+                                    <input type="checkbox" name="extraID[@{extra.id-1}]" value="@extra.id" />@extra.name<br/>
                                 </label>
                             }
                         </td>

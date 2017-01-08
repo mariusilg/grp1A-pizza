@@ -33,11 +33,8 @@ object OrderController extends Controller {
       },
       userData => {
         val user = services.UserService.getUser(username).get
-        for(id <- userData.extraID) {
-          println(id)
-        }
         //services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, 1, userData.extraID)
-        services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, userData.extraID)
+        services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, user.distance, userData.extraID)
         Redirect(routes.OrderController.showOrders(None)).
           flashing("success" -> "User saved!")
       })

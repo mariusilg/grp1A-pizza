@@ -32,6 +32,11 @@ p {
     font-size: 20px;
 }
 
+a:visited {
+    text-decoration: none;
+    color: black;
+}
+
 #messageBox {
     display: none;
     position: fixed;
@@ -51,9 +56,12 @@ p {
 
 #success {
     background-color: green;
+    border-radius: 1em;
+    padding: 1em;
     color: white;
     margin-bottom: 5%;
-    position: relative;
+    width: 10em;
+    text-align: center;
 }
 
 h1 {

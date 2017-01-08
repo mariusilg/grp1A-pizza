@@ -19,7 +19,7 @@ object UserController extends Controller {
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying("Please specify a name", f => f.trim!="").verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+") /*f => f.trim!=""*/).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
       "Admin" -> optional(boolean),
       "Distance" -> number.verifying("Distanz fehlt!", f => f != null)
@@ -74,7 +74,7 @@ object UserController extends Controller {
       },
       userData => {
         val newUser = services.UserService.addUser(userData.name, userData.password, userData.admin.getOrElse(false), userData.distance)
-        Redirect(routes.UserController.manageUser)
+        Redirect(routes.UserController.manageUser).flashing("success" -> "User wurde erfolgreich angelegt")
       })
   }
 
@@ -100,15 +100,22 @@ object UserController extends Controller {
     request.session.get("id").map { id =>
       val user = services.UserService.getUserByID(id.toLong)
       user match {
-        case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user, UserService.registeredUsers))}
-        else {
-          val category = services.CategoryService.getCategory(categoryID.getOrElse(1))
-          category match {
-            case Some(category) => Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, category.id))
-            case None => Redirect(routes.UserController.welcome(None))
-          }
-        }
-        case None => Redirect(routes.Application.index)
+        case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user))}
+                           else {
+                              categoryID match {
+                                case Some(categoryID) => if(services.CategoryService.isCategoryVisible(categoryID)) {
+                                                          Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, categoryID))
+                                                        } else {
+                                                          Redirect(routes.UserController.welcome(None))
+                                                        }
+                                case None => val defaultCategory = services.CategoryService.getDefaultCategory
+                                              defaultCategory match {
+                                                case Some(defaultCategory) => Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, defaultCategory))
+                                                case None => Forbidden("Leider liegt ein Fehler vor!")
+                                              }
+                              }
+                           }
+        case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)

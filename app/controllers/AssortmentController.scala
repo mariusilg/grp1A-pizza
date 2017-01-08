@@ -49,6 +49,10 @@ object AssortmentController extends Controller {
       })
   }
 
+
+  /**
+    * Add a new item.
+    */
   def addItem : Action[AnyContent] = Action { implicit request =>
     itemForm.bindFromRequest.fold(
       formWithErrors => {
@@ -60,6 +64,9 @@ object AssortmentController extends Controller {
       })
   }
 
+  /**
+    * Update a specific category.
+    */
   def updateCategory : Action[AnyContent] = Action { implicit request =>
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
@@ -68,11 +75,47 @@ object AssortmentController extends Controller {
       categoryData => {
         val id = categoryData.id
         id match {
-          case Some(id) => services.CategoryService.updateCategory(id, categoryData.name, categoryData.visibility.getOrElse(false))
-          case None =>
+          case Some(id) =>
+            if(CategoryService.nameInUse(id, categoryData.name)) {
+              Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Kategoriename ist schon vergeben!")
+            } else if(CategoryService.lastVisibleCategory(id) && !categoryData.visibility.getOrElse(false)) {
+              Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Es muss mindestens eine sichtbare Kategorie geben!")
+            } else {
+              CategoryService.updateCategory(id, categoryData.name, categoryData.visibility.getOrElse(false))
+              Redirect(routes.AssortmentController.manageAssortment).flashing(
+                "success" -> "Die Kategorie wurde erfolgreich aktualisiert!")
+            }
+          case None => Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Ein Fehler ist aufgetreten!")
         }
-        Redirect(routes.AssortmentController.manageAssortment)
       })
+  }
+
+  /**
+    * Edit a specific item.
+    */
+  def rmCategory(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      val currentUser = UserService.getUserByID(id.toLong)
+      currentUser match {
+        case Some(currentUser) => if(currentUser.admin) {
+                                    categoryID match {
+                                      case Some(categoryID) =>
+                                        if (CategoryService.lastVisibleCategory(categoryID)) {
+                                          Redirect(routes.AssortmentController.manageAssortment).flashing(
+                                            "fail" -> "Es muss mindestens eine sichtbare Kategorie geben!")
+                                        } else {
+                                          services.CategoryService.rmCategory(categoryID)
+                                          Redirect(routes.AssortmentController.manageAssortment).flashing(
+                                            "success" -> "Die Kategorie wurde erfolgreich gelöscht!")
+                                        }
+                                      case None => Redirect(routes.AssortmentController.manageAssortment)
+                                    }
+                                  } else Redirect(routes.Application.index)
+        case None => Redirect(routes.Application.index)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
   }
 
   /**
@@ -90,35 +133,12 @@ object AssortmentController extends Controller {
             }
           case None => Redirect(routes.AssortmentController.manageAssortment)
         }
-        case None => Redirect(routes.Application.index)
+        case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
     }
   }
-
-
-  /**
-    * Edit a specific item.
-    */
-  def rmCategory(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => if(currentUser.admin) {
-                                      categoryID match {
-                                        case Some(categoryID) => services.CategoryService.rmCategory(categoryID)
-                                                         Redirect(routes.AssortmentController.manageAssortment)
-                                        case None => Redirect(routes.AssortmentController.manageAssortment)
-                                      }
-                                    } else Redirect(routes.Application.index)
-        case None => Redirect(routes.Application.index)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
-  }
-
 
   /**
     * Update a specific Item and go back to edit item view.
@@ -138,12 +158,12 @@ object AssortmentController extends Controller {
   /**
     * List all orders of user in the system.
     */
-  def manageAssortment : Action[AnyContent] = Action { request =>
+  def manageAssortment : Action[AnyContent] = Action { implicit request =>
     request.session.get("id").map { id =>
       val currentUser = UserService.getUserByID(id.toLong)
       currentUser match {
         case Some(currentUser) => if(currentUser.admin) Ok(views.html.assortment(categoryForm, itemForm)) else Redirect(routes.Application.index)
-        case None => Redirect(routes.Application.index)
+        case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)

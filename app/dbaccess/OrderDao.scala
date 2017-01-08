@@ -17,8 +17,8 @@ trait OrderDaoT {
   def addOrder(order: Order): Order = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Orders(cust_id, costs) values ({cust_id}, {costs})").on(
-          'cust_id -> order.custID, 'costs -> order.costs).executeInsert()
+        SQL("insert into Orders(cust_id, distance, duration, costs) values ({cust_id}, {distance}, {duration}, {costs})").on(
+          'cust_id -> order.custID, 'distance -> order.distance, 'duration -> order.duration, 'costs -> order.costs).executeInsert()
       order.id = id.get
     }
     addOrderItems(order.orderItems, order.id)
@@ -48,16 +48,16 @@ trait OrderDaoT {
 
   def getOrdersByCustID(custID: Long): List[Order] = {
     DB.withConnection { implicit c =>
-      val selectOrdersByCustID = SQL("Select id, order_date, costs from Orders where cust_id = {custID} order by order_date desc;").on('custID -> custID)
-      val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("costs"))).toList
+      val selectOrdersByCustID = SQL("Select id, order_date, distance, duration, costs from Orders where cust_id = {custID} order by order_date desc;").on('custID -> custID)
+      val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
       ordersByCustID
     }
   }
 
   def getAllOrders: List[Order] = {
     DB.withConnection { implicit c =>
-      val selectAllOrders = SQL("Select id, cust_id, order_date, costs from Orders order by order_date desc;")
-      val allOrders = selectAllOrders().map(row => Order(row[Long]("id"), row[Long]("cust_id"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("costs"))).toList
+      val selectAllOrders = SQL("Select id, cust_id, order_date, distance, duration, costs from Orders order by order_date desc;")
+      val allOrders = selectAllOrders().map(row => Order(row[Long]("id"), row[Long]("cust_id"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
       allOrders
     }
   }

@@ -6,14 +6,16 @@
     </h3>
     @if(!orders.isEmpty) {
         @for(order <- orders) {
-            <h4>
-                @order.date.toString.substring(0, 16)@**DateFormat: yyyy-mm-dd hh:mm**@ - Rechnungsnummer: @order.id @if(allOrders) {
-                                                                            <a href="@routes.UserController.editUser(Some(order.custID))">Kd.-Nr.: @order.custID</a>
-                                                                        }
-            </h4>
+            <h2>@order.date.toString.substring(0, 16)@**DateFormat: yyyy-mm-dd hh:mm**@ </h2>
+            Rechnungsnummer: @order.id <br/>
+            Dauer: @order.duration min<br/>
+            Distanz: @order.distance km<br/>
+            @if(allOrders){<a href="@routes.UserController.editUser(Some(order.custID))">Kd.-Nr.: @order.custID</a>}
+
             <table style="width: 70%;">
                 <tr>
                     <td>Anz.</td>
+                    <td></td>
                     <td>Artikel</td>
                     <td>Art.-Nr</td>
                     <td>Größe</td>
@@ -24,6 +26,7 @@
                 @for(orderItem <- order.orderItems) {
                     <tr>
                         <td>@orderItem.quantity x</td>
+                        <td></td>
                         <td>@orderItem.name</td>
                         <td>@orderItem.id</td>
                         <td>@orderItem.size cm</td>
@@ -32,8 +35,9 @@
                     </tr>
                     @for(orderExtra <- orderItem.orderExtras) {
                         <tr>
+                            <td></td>
                             <td>je @orderExtra.quantity x</td>
-                            <td>Extra @orderExtra.name</td>
+                            <td>+ @orderExtra.name</td>
                             <td>@orderExtra.id (e)</td>
                             <td></td>
                             <td><i>@services.OrderService.costsToString(orderExtra.price)</i></td>
@@ -42,6 +46,7 @@
                     }
                 }
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

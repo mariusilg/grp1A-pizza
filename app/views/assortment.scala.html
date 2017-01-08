@@ -1,4 +1,4 @@
-@(categoryForm: Form[forms.CreateCategoryForm], itemForm: Form[forms.CreateItemForm])()
+@(categoryForm: Form[forms.CreateCategoryForm], itemForm: Form[forms.CreateItemForm])(implicit flash: Flash)
 
 @main(models.Company.name) {
 
@@ -29,7 +29,8 @@
                             <input type="button" class="button" value="löschen"/>
                             <div class="dialog" title="Kategorie (ID: @category.id) löschen:">
                             @helper.form(action = routes.AssortmentController.rmCategory(Some(category.id))) {
-                                Sind Sie sicher, dass die Kategorie: @category.name gelöscht werden soll?<br/><br/>
+                                Sind Sie sicher, dass die Kategorie: @category.name gelöscht werden soll?<br/>
+                                <br/>
                                 <b style="color: red">Hinweis:<br/>
                                     Es werden alle Produkte die dieser Kategorie zugeordnet sind, mitgelöscht!!!</b>
                                 <br/>
@@ -115,13 +116,22 @@
         </div>
     </div>
 
-
-    <div id="errorBox">
-    @categoryForm.errors.map { errors =>
-        <div class="error" style="position: relative; margin-bottom: 5%; background-color: red; color: white;">@errors.message</div>
-    }
+    <div id="messageBox">
+        @categoryForm.errors.map { errors =>
+            <div class="error" style="position: relative; margin-bottom: 5%; background-color: red; color: white;">@errors.message</div>
+        }
         @itemForm.errors.map { errors =>
             <div class="error" style="position: relative; margin-bottom: 5%; background-color: red; color: white;">@errors.message</div>
+        }
+        @flash.get("success").map { message =>
+            <div id="success">
+                @message
+            </div>
+        }
+        @flash.get("fail").map { message =>
+            <div id="error">
+                @message
+            </div>
         }
     </div>
 }
