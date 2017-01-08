@@ -1,10 +1,19 @@
-@()
+@(loggedIn: Boolean, adminFlag: Boolean)
 
 @main(models.Company.name) {
-    <h1>Willkommen bei @models.Company.name</h1>
-    <p>
-        <a href="@routes.Application.index"><button>zurück</button></a>
-    </p>
+
+    @if(loggedIn){
+        @if(adminFlag){
+            @adminMenu()
+        } else {
+            @userMenu()
+        }
+    } else {
+        <h1>Willkommen bei @models.Company.name</h1>
+        <p>
+            <a href="@routes.Application.index"><button>zurück</button></a>
+        </p>
+    }
     <h2>Impressum</h2>
     <p>Der Webshop wird betrieben von: <strong>@models.Company.name</strong></p>
     <br/>

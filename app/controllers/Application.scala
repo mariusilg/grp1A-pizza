@@ -47,9 +47,13 @@ object Application extends Controller {
     */
   def privacy : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
-      Ok(views.html.privacy())
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Ok(views.html.privacy(true, user.admin))
+        case None => Redirect(routes.UserController.logout)
+      }
     }.getOrElse {
-      Ok(views.html.privacy())
+      Ok(views.html.privacy(false, false))
     }
   }
 
@@ -60,9 +64,13 @@ object Application extends Controller {
     */
   def about : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
-      Ok(views.html.about())
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Ok(views.html.about(true, user.admin))
+        case None => Redirect(routes.UserController.logout)
+      }
     }.getOrElse {
-      Ok(views.html.about())
+      Ok(views.html.about(false, false))
     }
   }
 
@@ -74,9 +82,13 @@ object Application extends Controller {
     */
   def location : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
-      Ok(views.html.location())
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Ok(views.html.location(true, user.admin))
+        case None => Redirect(routes.UserController.logout)
+      }
     }.getOrElse {
-      Ok(views.html.location())
+      Ok(views.html.location(false, false))
     }
   }
 

@@ -1,10 +1,21 @@
-@()
+@(loggedIn: Boolean, adminFlag: Boolean)
 
 @main(models.Company.name) {
-    <h1>Willkommen bei @models.Company.name</h1>
-    <p>
-        <a href="@routes.Application.index"><button>zurück</button></a>
-    </p>
+
+    @if(loggedIn){
+        @if(adminFlag){
+            @adminMenu()
+        } else {
+            @userMenu()
+        }
+    } else {
+        <h1>Willkommen bei @models.Company.name</h1>
+        <p>
+            <a href="@routes.Application.index"><button>zurück</button></a>
+        </p>
+    }
+
+
     <h2>Datenschutzbestimmungen</h2>
     <p>Diese Erklärung erläutert, wie wir mit personenbezogenen Daten umgehen. Personenbezogene Daten sind Informationen zu Ihrer Identität, wie zum Beispiel Name,
         Postanschrift, E-Mail-Adresse, Telefonnummer. Solche Daten werden durch diese WEBSITE ausschließlich in Übereinstimmung mit dem jeweils geltenden
