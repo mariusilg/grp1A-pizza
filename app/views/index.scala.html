@@ -8,7 +8,7 @@
             <input name="@name" type="text" value="@value" placeholder="Username">
         }
         @helper.input(loginForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
-            <input name="@name" type="password" value="@value" placeholder="Passwort">
+            <input name="@name" type="password" value="@value" placeholder="Passwort" required>
         }
         <input type="submit" value="Login" />
     }

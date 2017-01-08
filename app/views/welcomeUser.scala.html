@@ -65,10 +65,8 @@
             }
     </script>
 
-
-    <h1>Willkommen @user.name bei @models.Company.name</h1>
-
     @userMenu()
+    <h1>Willkommen @user.name bei @models.Company.name</h1>
 
     @for(category <- services.CategoryService.getCategory(cID)) {
         <h2 align="center">@category.name</h2>

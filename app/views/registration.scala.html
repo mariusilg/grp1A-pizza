@@ -2,9 +2,7 @@
 
 @main(models.Company.name) {
     <h1>Registrierformular</h1>
-    <p>
     <a href="@routes.Application.index"><button>zurück</button></a>
-    </p>
         @helper.form(action = routes.UserController.register()) {
             @helper.input(userForm("Name"), '_label -> "Name:", 'hasErrors -> userForm("Name").hasErrors) { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="Username">

@@ -1,6 +1,10 @@
 @()
-    <p><a href="@routes.OrderController.showOrders(Some(0))">Bestellungen einsehen</a></p>
-    <p><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></p>
-    <p><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></p>
-    <p><a href="@routes.UserController.editUser(None)">Mein Konto</a></p>
-    <p><a href="@routes.UserController.logout">logout</a></p>
+<ul id="menu">
+        <li><a href="@routes.Application.index">Home</a></li>
+        <li><a href="@routes.OrderController.showOrders(Some(0))">Bestellungen einsehen</a></li>
+        <li><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></li>
+        <li><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></li>
+        <li style="float: right"><a href="@routes.UserController.logout">logout</a></li>
+        <li style="float: right"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+</ul>
+

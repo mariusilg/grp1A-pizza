@@ -19,7 +19,7 @@ object UserController extends Controller {
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+") /*f => f.trim!=""*/).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
       "Admin" -> optional(boolean),
       "Distance" -> number.verifying("Distanz fehlt!", f => f != null)
@@ -42,7 +42,7 @@ object UserController extends Controller {
 
   val loginForm = Form(
     mapping(
-      "Username" -> text.verifying("Username fehlt", f => f.trim!="").verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
+      "Username" -> text.verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!="")
     )(CreateLoginForm.apply)(CreateLoginForm.unapply))
 

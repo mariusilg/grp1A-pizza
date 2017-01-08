@@ -40,4 +40,44 @@ object Application extends Controller {
     }
   }
 
+  /**
+    * privacy page.
+    *
+    * @return privacy page
+    */
+  def privacy : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      Ok(views.html.privacy())
+    }.getOrElse {
+      Ok(views.html.privacy())
+    }
+  }
+
+  /**
+    * About page.
+    *
+    * @return about page
+    */
+  def about : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      Ok(views.html.about())
+    }.getOrElse {
+      Ok(views.html.about())
+    }
+  }
+
+
+  /**
+    * Location page.
+    *
+    * @return location page
+    */
+  def location : Action[AnyContent] = Action { request =>
+    request.session.get("id").map { id =>
+      Ok(views.html.location())
+    }.getOrElse {
+      Ok(views.html.location())
+    }
+  }
+
 }

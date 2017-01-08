@@ -15,6 +15,17 @@
         <script src="@routes.Assets.at("javascripts/dialog.js")" type="text/javascript"></script>
     </head>
     <body>
+        <div class="blur"></div>
         @content
+        <br/>
+        <br/>
+        <ul id="footer">
+            <hr/>
+            <div id="footerlinks">
+                <li><a href="@routes.Application.location">Anfahrt</a></li>
+                <li><a href="@routes.Application.about">Impressum</a></li>
+                <li><a href="@routes.Application.privacy">Datenschutz</a></li>
+            </div>
+        </ul>
     </body>
 </html>

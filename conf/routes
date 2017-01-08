@@ -6,6 +6,9 @@
 GET         /                    controllers.Application.index
 GET         /login               controllers.Application.index
 GET         /register            controllers.Application.register
+GET         /privacy             controllers.Application.privacy
+GET         /about               controllers.Application.about
+GET         /location            controllers.Application.location
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])

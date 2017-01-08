@@ -1,7 +1,11 @@
 @()
+
+<ul id="menu">
+    <li><a href="@routes.Application.index">Home</a></li>
     @for(category <- services.CategoryService.visibleCategories) {
-        <p><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></p>
+        <li><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></li>
     }
-    <p><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></p>
-    <p><a href="@routes.UserController.editUser(None)">Mein Konto</a></p>
-    <p><a href="@routes.UserController.logout">logout</a></p>
+    <li><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
+    <li style="float: right"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+    <li style="float: right"><a href="@routes.UserController.logout">logout</a></li>
+</ul>

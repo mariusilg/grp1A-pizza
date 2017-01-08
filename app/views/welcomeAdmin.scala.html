@@ -1,9 +1,8 @@
 @(user: models.User)()
 
 @main(models.Company.name) {
-    <h1>Willkommen @user.name im Mitarbeiterbereich</h1>
     @adminMenu()
-
+    <h1>Willkommen @user.name im Mitarbeiterbereich</h1>
     registrierte Kundenanzahl: @services.UserService.getCustCount<br/>
     Gesamtumsatz: @services.OrderService.costsToString(services.OrderService.getTotalBusinessVolume)
 }
