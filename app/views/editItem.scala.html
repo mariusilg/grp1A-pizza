@@ -10,6 +10,7 @@
                     <td>Kategorie</td>
                     <td>Produktname</td>
                     <td>Preis (in Cent)</td>
+                    <td>Sichtbar?</td>
                 </tr>
                 <tr>
                     <td><input type="hidden" name="ID" value="@item.id">@item.id</td>
@@ -22,6 +23,7 @@
                     </td>
                     <td><input type="text" name="Name" value="@item.name"/></td>
                     <td><input type="number" name="Price" min=0 value="@item.price"/></td>
+                    <td><input type="checkbox" name="Visibility" value="true" @{if(item.visibility) "checked"}></td>
                 </tr>
             </table>
             <input type="submit" value="Speichern" />

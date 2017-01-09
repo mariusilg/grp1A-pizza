@@ -34,7 +34,7 @@ body {
     font-family: "Roboto",sans-serif;
     margin: auto;
     min-height: 500px;
-    min-width: 750px;
+    min-width: 940px;
     width: 80%;
     margin-top: 40pt;
     margin-bottom: 40pt;
@@ -118,6 +118,10 @@ a:visited {
     color: black;
 }
 
+.inactive {
+    opacity: 0.5;
+}
+
 #messageBox {
     display: none;
     position: fixed;
@@ -148,11 +152,15 @@ a:visited {
 table {
     table-layout: fixed;
     width: 100%;
-    min-width: 400px;
 }
 
 .tbl-header {
     background-color: rgba(0,0,0,0.7);
+    border: 1px solid rgba(0,0,0,0.7);
+    width: 70%;
+    min-width: 500px;
+    margin-left: 100px;
+    margin-top: 30px;
 }
 
 .tbl-content {
@@ -160,19 +168,31 @@ table {
     height: 300px;
     margin-top: 0;
     overflow-x: auto;
+    min-width: 500px;
+    width: 70%;
+    margin-left: 100px;
+    margin-bottom: 30px;
 }
 
 th {
-    color: black;
-    font-size: 1.5em;
+    color: white;
+    font-size: 1.25em;
     font-weight: 500;
-    padding: 20px 15px;
+    padding: 10px 10px;
     text-align: left;
-    text-transform: uppercase;
+    /*text-transform: uppercase;*/
+}
+
+th.left {
+    float: left;
+}
+
+td.left {
+    float: left;
 }
 
 td {
-    border-bottom: 1px solid rgba(0,0,0,0.1);;
+    border-top: 1px solid rgba(0,0,0,0.1);;
     color: black;
     font-size: 12px;
     font-weight: 300;
@@ -207,6 +227,8 @@ td {
 #footer a {
     text-decoration: none;
     outline: 0;
+    cursor: pointer;
+    cursor: hand;
 }
 
 #footer a:visited {
@@ -215,7 +237,5 @@ td {
 }
 
 #footerlinks {
-    cursor: pointer;
-    cursor: hand;
     margin: auto;
 }

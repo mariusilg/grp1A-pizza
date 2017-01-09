@@ -25,8 +25,10 @@
                             <td>@user.id</td>
                             <td>@user.name</td>
                             <td>@{if(user.admin) "Mitarbeiter" else "Kunde"}</td>
-                            <td>
+                            <td class="left">
                                 <a href="@routes.UserController.editUser(Some(user.id))"><i class="material-icons">edit</i></a>
+                            </td>
+                            <td class="left">
                                 <div class="upper">
                                     <i class="button material-icons">delete</i>
                                     <div class="dialog" title="User löschen:">
