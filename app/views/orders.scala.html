@@ -1,10 +1,10 @@
-@(admin: Boolean, ofUser: Long)(user: models.User)
+@(admin: Boolean, ofUser: Long)()
 
 @main(models.Company.name) {
 
     @if(admin) {
         @adminMenu()
-        @helper.form(action = routes.OrderController.refresh(user.name)) {
+        @helper.form(action = routes.OrderController.refresh()) {
             <select name="custID">
                 <option value="-1">Select..</option>
                 <option value="0" @if(ofUser == 0){selected}>Alle Bestellungen</option>
@@ -15,20 +15,19 @@
             </select>
         }
         @if(ofUser == 0) {
-            <h2>Bestellungen von allen Kunden:</h2>
-            @showOrders(true, services.OrderService.getAllOrders, services.OrderService.getTotalBusinessVolume, services.OrderService.getAverageBusinessVolume(None))
+            <h1>Bestellungen von allen Kunden</h1>
+            @showOrders(true, false, services.OrderService.getAllOrders, services.OrderService.getTotalBusinessVolume, services.OrderService.getAverageBusinessVolume(None))
         } else { @if(ofUser == -1) {
             Bitte eine Auswahl treffen!
             } else {
-            <h2>Bestellungen von Kunden-Nr:@ofUser :</h2>
-            @showOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
+            <h1>Bestellungen von Kunden-Nr:@ofUser :</h1>
+            @showOrders(false, false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
             }
         }
 
     } else {
         @userMenu()
-        <h1>Willkommen bei @models.Company.name</h1>
-        <h2>Meine Bestellungen:</h2>
-        @showOwnOrders(false, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
+        <h1>Meine Bestellungen</h1>
+        @showOrders(false, true, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
     }
 }

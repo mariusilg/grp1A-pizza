@@ -1,61 +1,80 @@
-@(allOrders: Boolean, orders: List[Order], totalBusinessVolume: Int, averageBusinessVolume: Int)
+@(allOrders: Boolean, ownOrder: Boolean, orders: List[Order], totalBusinessVolume: Int, averageBusinessVolume: Int)
 
-    <h3>
-        Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume) <br/>
-        &Oslash; Bestellwert: @services.OrderService.costsToString(averageBusinessVolume)
-    </h3>
+
     @if(!orders.isEmpty) {
+        <h2><b>Gesamtumsatz: @services.OrderService.costsToString(totalBusinessVolume) <br/>
+            @if(!ownOrder) {&Oslash; Bestellwert: @services.OrderService.costsToString(averageBusinessVolume)}</b>
+        </h2>
         @for(order <- orders) {
-            <h2>@order.date.toString.substring(0, 16)@**DateFormat: yyyy-mm-dd hh:mm**@ </h2>
-            Rechnungsnummer: @order.id <br/>
-            Dauer: @order.duration min<br/>
-            Distanz: @order.distance km<br/>
-            @if(allOrders){<a href="@routes.UserController.editUser(Some(order.custID))">Kd.-Nr.: @order.custID</a>}
+            <div class="order-tbl-header">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr>
+                            <th colspan="6">@order.date.toString.substring(0, 16)@**DateFormat: yyyy-mm-dd hh:mm**@</th>
+                            <th id="minmax"></th>
+                            @**if(allOrders){<a href="@routes.UserController.editUser(Some(order.custID))">Kd.-Nr.: @order.custID</a>}**@
+                        </tr>
+                        <tr>
+                            <th colspan="2">Rechnungsnummer: @order.id</th>
+                            <th colspan="2">Dauer: @order.duration min</th>
 
-            <table style="width: 70%;">
-                <tr>
-                    <td>Anz.</td>
-                    <td></td>
-                    <td>Artikel</td>
-                    <td>Art.-Nr</td>
-                    <td>Größe</td>
-                    <td>Einzelpreis</td>
-                    <td>Gesamtpreis</td>
-                </tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Distanz: @order.distance km</th>
+                        </tr>
+                        <tr>
+                            <th>Anz.</th>
+                            <th></th>
+                            <th>Art. Name</th>
+                            <th>Art. Nr.</th>
+                            <th>Größe</th>
+                            <th>Einzelpreis</th>
+                            <th>Gesamtpreis</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
 
-                @for(orderItem <- order.orderItems) {
-                    <tr>
-                        <td>@orderItem.quantity x</td>
-                        <td></td>
-                        <td>@orderItem.name</td>
-                        <td>@orderItem.id</td>
-                        <td>@orderItem.size cm</td>
-                        <td><i>@services.OrderService.costsToString(orderItem.price/orderItem.quantity)</i></td>
-                        <td><i>@services.OrderService.costsToString(orderItem.price)</i></td>
-                    </tr>
-                    @for(orderExtra <- orderItem.orderExtras) {
+            <div class="order-tbl-content">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <tbody>
+                        @for(orderItem <- order.orderItems) {
+                            <tr>
+                                <td>@orderItem.quantity x</td>
+                                <td></td>
+                                <td>@orderItem.name</td>
+                                <td>@orderItem.id</td>
+                                <td>@orderItem.size @orderItem.unit</td>
+                                <td><i>@services.OrderService.costsToString(orderItem.price/orderItem.quantity)</i></td>
+                                <td><i>@services.OrderService.costsToString(orderItem.price)</i></td>
+                            </tr>
+                            @for(orderExtra <- orderItem.orderExtras) {
+                                <tr>
+                                    <td></td>
+                                    <td>je @orderExtra.quantity x</td>
+                                    <td>+ @orderExtra.name</td>
+                                    <td>@orderExtra.id (e)</td>
+                                    <td></td>
+                                    <td><i>@orderExtra.priceToString</i></td>
+                                    <td><i>@services.OrderService.costsToString(orderExtra.price*orderItem.quantity)</i></td>
+                                </tr>
+                            }
+                        }
                         <tr>
                             <td></td>
-                            <td>je @orderExtra.quantity x</td>
-                            <td>+ @orderExtra.name</td>
-                            <td>@orderExtra.id (e)</td>
                             <td></td>
-                            <td><i>@services.OrderService.costsToString(orderExtra.price)</i></td>
-                            <td><i>@services.OrderService.costsToString(orderExtra.price*orderItem.quantity)</i></td>
+                            <td></td>
+                            <td></td>
+                            <td><b>Rechnungsbetrag</b></td>
+                            <td></td>
+                            <td><i><b>@order.costsToString</b></i></td>
                         </tr>
-                    }
-                }
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><b>Rechnungsbetrag</b></td>
-                    <td></td>
-                    <td><i><b>@order.costsToString</b></i></td>
-                </tr>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         }
     } else {
-        <p>Keine Bestellungen vorhanden!</p>
+        <h2>Keine Bestellungen vorhanden!</h2>
     }

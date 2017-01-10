@@ -18,6 +18,8 @@ object AssortmentController extends Controller {
       "CategoryID" -> longNumber,
       "Name" -> text,
       "Price" -> number,
+      "ExtrasFlag" -> boolean,
+      "PrepDuration" -> optional(number),
       "Visibility" -> optional(boolean)
     )(CreateItemForm.apply)(CreateItemForm.unapply))
 
@@ -27,6 +29,8 @@ object AssortmentController extends Controller {
       "CategoryID" -> longNumber,
       "Name" -> text,
       "Price" -> number,
+      "ExtrasFlag" -> boolean,
+      "PrepDuration" -> optional(number),
       "Visibility" -> optional(boolean)
     )(EditItemForm.apply)(EditItemForm.unapply))
 
@@ -34,6 +38,7 @@ object AssortmentController extends Controller {
     mapping(
       "ID" -> optional(longNumber),
       "Name" -> text,
+      "Unit" -> text,
       "Visibility" -> optional(boolean)
     )(CreateCategoryForm.apply)(CreateCategoryForm.unapply))
 
@@ -44,22 +49,7 @@ object AssortmentController extends Controller {
         BadRequest(views.html.assortment(formWithErrors, itemForm))
       },
       categoryData => {
-        services.CategoryService.addCategory(categoryData.name, categoryData.visibility.getOrElse(false))
-        Redirect(routes.AssortmentController.manageAssortment)
-      })
-  }
-
-
-  /**
-    * Add a new item.
-    */
-  def addItem : Action[AnyContent] = Action { implicit request =>
-    itemForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(views.html.assortment(categoryForm, formWithErrors))
-      },
-      itemData => {
-        services.ItemService.addItem(itemData.categoryID, itemData.name, itemData.price, itemData.visibility.getOrElse(false))
+        services.CategoryService.addCategory(categoryData.name, categoryData.unit, categoryData.visibility.getOrElse(false))
         Redirect(routes.AssortmentController.manageAssortment)
       })
   }
@@ -81,7 +71,7 @@ object AssortmentController extends Controller {
             } else if(CategoryService.lastVisibleCategory(id) && !categoryData.visibility.getOrElse(false)) {
               Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Es muss mindestens eine sichtbare Kategorie geben!")
             } else {
-              CategoryService.updateCategory(id, categoryData.name, categoryData.visibility.getOrElse(false))
+              CategoryService.updateCategory(id, categoryData.name, categoryData.unit, categoryData.visibility.getOrElse(false))
               Redirect(routes.AssortmentController.manageAssortment).flashing(
                 "success" -> "Die Kategorie wurde erfolgreich aktualisiert!")
             }
@@ -103,15 +93,55 @@ object AssortmentController extends Controller {
                                         if (CategoryService.lastVisibleCategory(categoryID)) {
                                           Redirect(routes.AssortmentController.manageAssortment).flashing(
                                             "fail" -> "Es muss mindestens eine sichtbare Kategorie geben!")
+                                        } else if(!CategoryService.isCategoryDeletable(categoryID)) {
+                                          CategoryService.deactivateCategory(categoryID)
+                                          Redirect(routes.AssortmentController.manageAssortment).flashing(
+                                            "success" -> "Die Kategorie wurde deaktiviert, da sie Produkte enthält die in vorhandenen Bestellungen auftauchen!")
                                         } else {
-                                          services.CategoryService.rmCategory(categoryID)
+                                          CategoryService.rmCategory(categoryID)
                                           Redirect(routes.AssortmentController.manageAssortment).flashing(
                                             "success" -> "Die Kategorie wurde erfolgreich gelöscht!")
                                         }
                                       case None => Redirect(routes.AssortmentController.manageAssortment)
                                     }
                                   } else Redirect(routes.Application.index)
-        case None => Redirect(routes.Application.index)
+        case None => Redirect(routes.UserController.logout)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
+  }
+
+  /**
+    * Add a new item.
+    */
+  def addItem : Action[AnyContent] = Action { implicit request =>
+    itemForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.assortment(categoryForm, formWithErrors))
+      },
+      itemData => {
+        services.ItemService.addItem(itemData.categoryID, itemData.name, itemData.price, itemData.extraFlag, itemData.prepDuration.getOrElse(0), itemData.visibility.getOrElse(false))
+        Redirect(routes.AssortmentController.manageAssortment)
+      })
+  }
+
+  /**
+    * Edit a specific item.
+    */
+  def editItem(ofItem: Option[Long]) : Action[AnyContent] = Action { implicit request =>
+    request.session.get("id").map { id =>
+      val currentUser = UserService.getUserByID(id.toLong)
+      currentUser match {
+        case Some(currentUser) => ofItem match {
+                                    case Some(ofItem) => val item = ItemService.getItem(ofItem)
+                                      item match {
+                                        case Some(item) => if (currentUser.admin) Ok(views.html.editItem(item)) else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
+                                        case None => if (currentUser.admin) Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Item konnte nicht im System gefunden werden") else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
+                                      }
+                                    case None => if (currentUser.admin) Redirect(routes.AssortmentController.manageAssortment) else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
+                                  }
+        case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -121,18 +151,25 @@ object AssortmentController extends Controller {
   /**
     * Edit a specific item.
     */
-  def editItem(ofItem: Option[Long]) : Action[AnyContent] = Action { request =>
+  def rmItem(itemID: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
       val currentUser = UserService.getUserByID(id.toLong)
       currentUser match {
-        case Some(currentUser) => ofItem match {
-          case Some(ofItem) => val item = ItemService.getItem(ofItem)
-            item match {
-              case Some(item) => if(currentUser.admin) Ok(views.html.editItem(item)) else Redirect(routes.AssortmentController.manageAssortment)
-              case None => Redirect(routes.AssortmentController.manageAssortment)
-            }
-          case None => Redirect(routes.AssortmentController.manageAssortment)
-        }
+        case Some(currentUser) => if(currentUser.admin) {
+          itemID match {
+            case Some(itemID) =>
+              if(!ItemService.isItemDeletable(itemID)) {
+                ItemService.deactivateItem(itemID)
+                Redirect(routes.AssortmentController.manageAssortment).flashing(
+                  "fail" -> "Das Produkt wurde deaktiviert, da es in vorhandenen Bestellungen auftaucht!")
+              } else {
+                ItemService.rmItem(itemID)
+                Redirect(routes.AssortmentController.manageAssortment).flashing(
+                  "success" -> "Das Item wurde erfolgreich gelöscht!")
+              }
+            case None => Redirect(routes.AssortmentController.manageAssortment)
+          }
+        } else Redirect(routes.Application.error).flashing("error" -> "Ihnen fehlen Berechtigungen")
         case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
@@ -146,12 +183,18 @@ object AssortmentController extends Controller {
   def updateItem() : Action[AnyContent] = Action { implicit request =>
     editItemForm.bindFromRequest.fold(
       formWithErrors => {
-        Forbidden("Fehler")//BadRequest(views.html.editUser(None))
+        Redirect(routes.Application.error()).flashing("error" -> "Fehler bei Update")
       },
       itemData => {
-        val item = models.Item(itemData.id, itemData.categoryID, itemData.name, itemData.price, itemData.visibility.getOrElse(false))//, userData.password, userData.admin)
-        ItemService.updateItem(item)
-        Redirect(routes.AssortmentController.editItem(Some(item.id)))//"Successfully updated changes."
+        val item = models.Item(itemData.id, itemData.categoryID, itemData.name, itemData.price, itemData.extraFlag, itemData.prepDuration.getOrElse(0), itemData.visibility.getOrElse(false))
+        if (ItemService.nameInUse(item.id, item.name)) {
+          Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("fail" -> "Produktname ist schon vergeben!")
+        //} else if (ItemService.lastVisibleItemOfCategory(item.categoryID, item.id) && !itemData.visibility.getOrElse(false)) {
+        //  Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("fail" -> "Kategorie muss mindestens ein aktives Produkt besitzten")
+        } else {
+          ItemService.updateItem(item)
+          Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("success" -> "Produkt wurde erfolgreich aktualisiert") //"Successfully updated changes."
+        }
       })
   }
 

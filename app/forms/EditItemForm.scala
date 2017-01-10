@@ -7,4 +7,4 @@ package forms
   * @param name name of the item.
   * @param price price of item.
   */
-case class EditItemForm(id: Long, categoryID: Long, name: String, price: Int, visibility: Option[Boolean])
+case class EditItemForm(id: Long, categoryID: Long, name: String, price: Int, extraFlag: Boolean, prepDuration: Option[Int], visibility: Option[Boolean])

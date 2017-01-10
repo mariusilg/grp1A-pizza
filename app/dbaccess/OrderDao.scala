@@ -29,8 +29,8 @@ trait OrderDaoT {
     for(orderItem <- orderItems) {
       DB.withConnection { implicit c =>
         val id: Option[Long] =
-            SQL("insert into order_items(order_id, item_id, item_name, size, quantity, costs) values ({order_id}, {item_id}, {item_name}, {size}, {quantity}, {costs})").on('order_id -> orderID,
-              'item_id -> orderItem.id, 'item_name -> orderItem.name, 'size -> orderItem.size, 'quantity -> orderItem.quantity, 'costs -> orderItem.price).executeInsert()
+            SQL("insert into order_items(order_id, item_id, item_name, size, unit, quantity, costs) values ({order_id}, {item_id}, {item_name}, {size}, {unit}, {quantity}, {costs})").on('order_id -> orderID,
+              'item_id -> orderItem.id, 'item_name -> orderItem.name, 'size -> orderItem.size, 'unit -> orderItem.unit, 'quantity -> orderItem.quantity, 'costs -> orderItem.price).executeInsert()
         addItemExtras(orderItem.orderExtras, id.get)
         }
     }
@@ -65,7 +65,7 @@ trait OrderDaoT {
   def getOrderItemsByOrderID(orderID: Long): List[OrderItem] = {
     DB.withConnection { implicit c =>
       val selectItemsByOrderID = SQL("Select * from order_items where order_id = {orderID}").on('orderID -> orderID)
-      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), getItemExtrasByOrderItemID(row[Long]("id")), row[Int]("costs"))).toList
+      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), row[String]("unit"), getItemExtrasByOrderItemID(row[Long]("id")), row[Int]("costs"))).toList
       itemsByOrderID
     }
   }

@@ -11,6 +11,7 @@
                     <td>Name</td>
                     <td>Passwort</td>
                     <td>Mitarbeiter</td>
+                    <td>Aktiv?</td>
                     <td>Distanz (in km)</td>
                 </tr>
                 <tr>
@@ -19,6 +20,9 @@
                     <td><input type="text" name="Password" value="@user.password"/></td>
                     <td><input type="checkbox" name="Admin" value="true" @{
                         if(user.admin) "checked"
+                    }></td>
+                    <td><input type="checkbox" name="Active" value="true" @{
+                        if(user.active) "checked"
                     }></td>
                     <td><input type="number" name="Distance" value="@user.distance" min="0" max="20" /></td>
                 </tr>
@@ -41,6 +45,7 @@
                     <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
                     <td><input type="text" name="Name" value="@user.name"/></td>
                     <td><input type="text" name="Password" value="@user.password" /></td>
+                    <input type="hidden" name="Active" value="true" checked/>
                     <td><input type="number" name="Distance" value="@user.distance" min="0" max="20" /></td>
                 </tr>
             </table>

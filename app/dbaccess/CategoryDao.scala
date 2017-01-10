@@ -37,8 +37,8 @@ trait CategoryDaoT {
   def addCategory(category: Category): Category = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Categories(name, visibility) values ({name}, {visibility})").on(
-          'name -> category.name, 'visibility -> category.visibility).executeInsert()
+        SQL("insert into Categories(name, unit, visibility) values ({name}, {unit}, {visibility})").on(
+          'name -> category.name, 'unit -> category.unit, 'visibility -> category.visibility).executeInsert()
       category.id = id.get
     }
     category
@@ -52,6 +52,21 @@ trait CategoryDaoT {
     DB.withConnection { implicit c =>
       val rowsUpdated = SQL("update Categories SET name={name}, visibility={visibility} where id = {id}").on('name -> category.name, 'visibility -> category.visibility, 'id -> category.id).executeUpdate()
       rowsUpdated == 1
+    }
+  }
+
+  /**
+    * Returns whether products of category are part of orders or not.
+    * @return Boolean.
+    */
+  def isCategoryDeletable(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val cntProducts = SQL("Select COUNT(*) as cnt from Order_items o, Items i where i.cat_id = {id} and o.item_id = i.id;").on('id -> id).apply
+        .headOption
+      cntProducts match {
+        case Some(row) => row[Long]("cnt") == 0
+        case None => false
+      }
     }
   }
 
@@ -73,8 +88,8 @@ trait CategoryDaoT {
     */
   def availableCategories: List[Category] = {
     DB.withConnection { implicit c =>
-      val selectCategory= SQL("Select id, name, visibility from Categories;")
-      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"), row[Boolean]("visibility"))).toList
+      val selectCategory= SQL("Select id, name, unit, visibility from Categories;")
+      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"), row[String]("unit"), row[Boolean]("visibility"))).toList
       categories
     }
   }
@@ -85,9 +100,67 @@ trait CategoryDaoT {
     */
   def visibleCategories: List[Category] = {
     DB.withConnection { implicit c =>
-      val selectCategory= SQL("Select id, name from Categories where visibility = true;")
-      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"), true)).toList
+      val selectCategory= SQL("Select id, name, unit from Categories where visibility = true;")
+      val categories = selectCategory().map(row => Category(row[Long]("id"), row[String]("name"), row[String]("unit"), true)).toList
       categories
+    }
+  }
+
+  /**
+    * Returns a list of available sizes from the database.
+    * @return a list of size objects.
+    */
+  def getSizes(id: Long): List[Size] = {
+    DB.withConnection { implicit c =>
+      val selectSizes = SQL("Select id, name, size from Sizes where cat_id = {id};").on('id -> id)
+      val sizes = selectSizes().map(row => Size(row[Long]("id"), row[String]("name"), row[Int]("size"))).toList
+      sizes
+    }
+  }
+
+  /**
+    * Gets the default size of a category from the system.
+    *
+    * @return optional size categories.
+    */
+  def getDefaultSize(id: Long): Int = {
+    DB.withConnection { implicit c =>
+      val selectSize = SQL("Select size from Sizes where cat_id = {id} limit 1;").on('id -> id).apply
+        .headOption
+      selectSize match {
+        case Some(row) => row[Int]("size")
+        case None => 1
+      }
+    }
+  }
+
+  /**
+    * Returns whether category has specific sizes defined or not.
+    * @return Boolean.
+    */
+  def hasSizes(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val cntSizes = SQL("Select COUNT(*) as cnt from Sizes where cat_id = {id};").on('id -> id).apply
+        .headOption
+      cntSizes match {
+        case Some(row) => row[Long]("cnt") > 0
+        case None => false
+      }
+    }
+  }
+
+  /**
+    * Returns unit name of specific category.
+    * @return unit name as a String.
+    */
+  def getUnit(id: Long): String = {
+    DB.withConnection { implicit c =>
+      val unit = SQL("Select unit from Categories where id = {id};").on('id -> id).apply
+        .headOption
+      unit match {
+        case Some(row) => row[String]("unit")
+        case None => return ""
+      }
     }
   }
 
@@ -139,16 +212,14 @@ trait CategoryDaoT {
 
   def getCategory(id: Long): Option[Category] = {
     DB.withConnection { implicit c =>
-      val selectCategory = SQL("Select id, name, visibility from Categories where id = {id} limit 1;").on('id -> id).apply
+      val selectCategory = SQL("Select id, name, unit, visibility from Categories where id = {id} limit 1;").on('id -> id).apply
         .headOption
       selectCategory match {
-        case Some(row) => Some(Category(row[Long]("id"), row[String]("name"), row[Boolean]("visibility")))
+        case Some(row) => Some(Category(row[Long]("id"), row[String]("name"), row[String]("unit"), row[Boolean]("visibility")))
         case None => None
       }
     }
   }
-
-
 
   /**
     * Checks whether category is visible or not.
@@ -162,6 +233,17 @@ trait CategoryDaoT {
         case Some(row) => row[Long]("cnt") == 1
         case None => false
       }
+    }
+  }
+
+  /**
+    * Deactivates a category from the database.
+    * @return whether update was successful or not.
+    */
+  def deactivateCategory(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Categories SET visibility = FALSE where id = {id}").on('id -> id).executeUpdate()
+      rowsUpdated == 1
     }
   }
 

@@ -6,7 +6,8 @@ CREATE TABLE Users (
     name varchar(255) NOT NULL,
     admin_flag BIT DEFAULT FALSE,
     password varchar(255) NOT NULL,
-    distance INT NOT NULL
+    distance INT NOT NULL,
+    active_flag BIT DEFAULT TRUE
 );
 
 INSERT INTO Users (

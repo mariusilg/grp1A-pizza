@@ -2,16 +2,15 @@
 
 @main(models.Company.name) {
     @adminMenu()
+    <h1>Benutzerverwaltung</h1>
         <div class="tbl-header">
             <table cellpadding="0" cellspacing="0" border="0">
                 <thead>
                     <tr>
-                        <th>Benutzerverwaltung</th>
-                    </tr>
-                    <tr>
                         <th>ID</th>
                         <th>Username</th>
                         <th>Mitarbeiter / Kunde</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -21,16 +20,17 @@
             <table cellpadding="0" cellspacing="0" border="0">
                 <tbody>
                     @for(user <- users) {
-                        <tr>
+                        <tr @if(!user.active) {class="inactive"}>
                             <td>@user.id</td>
                             <td>@user.name</td>
                             <td>@{if(user.admin) "Mitarbeiter" else "Kunde"}</td>
-                            <td class="left">
-                                <a href="@routes.UserController.editUser(Some(user.id))"><i class="material-icons">edit</i></a>
+                            <td>
+                            @{if(!user.active) "inaktiv"}
                             </td>
-                            <td class="left">
+                            <td>
+                                <a style="float: left;" href="@routes.UserController.editUser(Some(user.id))"><i class="material-icons button edit">edit</i></a>
                                 <div class="upper">
-                                    <i class="button material-icons">delete</i>
+                                    <i class="button material-icons button delete">delete</i>
                                     <div class="dialog" title="User löschen:">
                                         <label>@if(user.admin){Mitarbeiter}else{Kunde}:</label>
                                         "@user.name"

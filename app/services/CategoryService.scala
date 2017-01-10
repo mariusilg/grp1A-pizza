@@ -18,9 +18,9 @@ trait CategoryServiceT {
     * @param visibility visibility of the new category.
     * @return the new category.
     */
-  def addCategory(name: String, visibility: Boolean): Category = {
+  def addCategory(name: String, unit: String, visibility: Boolean): Category = {
     // create Category
-    val newCategory = Category(-1, name, visibility)
+    val newCategory = Category(-1, name, unit, visibility)
     // persist and return Category
     categoryDao.addCategory(newCategory)
   }
@@ -32,8 +32,8 @@ trait CategoryServiceT {
     * @param visibility visibility of the category.
     * @return nothing.
     */
-  def updateCategory(id: Long, name: String, visibility: Boolean): Unit = {
-    val category = Category(id, name, visibility)
+  def updateCategory(id: Long, name: String, unit: String, visibility: Boolean): Unit = {
+    val category = Category(id, name, unit, visibility)
     categoryDao.updateCategory(category)
   }
 
@@ -59,6 +59,30 @@ trait CategoryServiceT {
   def visibleCategories: List[Category] = {
     categoryDao.visibleCategories
   }
+
+  /**
+    * Gets a list of all visible categories from the system.
+    * @return list of categories.
+    */
+  def getSizes(id: Long): List[Size] = categoryDao.getSizes(id)
+
+  /**
+    * Gets the default size of a category from the system.
+    * @return size.
+    */
+  def getDefaultSize(id: Long): Int = categoryDao.getDefaultSize(id)
+
+  /**
+    * Return whether there category has specific sizes or not.
+    * @return boolean.
+    */
+  def hasSizes(id: Long) : Boolean = categoryDao.hasSizes(id)
+
+  /**
+    * Return unit name by id of category.
+    * @return unit name as a String.
+    */
+  def getUnit(id: Long) : String = categoryDao.getUnit(id)
 
   /**
     * Return whether there is only one visible category left or not.
@@ -92,6 +116,20 @@ trait CategoryServiceT {
     * @return a boolean flag.
     */
   def isCategoryVisible(id: Long): Boolean = categoryDao.isCategoryVisible(id)
+
+  /**
+    * Checks whether a category is deletable from the system.
+    * @param id id of category.
+    * @return a boolean.
+    */
+  def isCategoryDeletable(id: Long): Boolean = categoryDao.isCategoryDeletable(id)
+
+  /**
+    * Deactivates a category by id from the system.
+    * @param id category id.
+    * @return a boolean success flag.
+    */
+  def deactivateCategory(id: Long): Boolean = categoryDao.deactivateCategory(id)
 
 }
 

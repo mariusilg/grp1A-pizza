@@ -17,9 +17,9 @@ trait UserServiceT {
    * @param name name of the new user.
    * @return the new user.
    */
-  def addUser(name: String, password: String, admin: Boolean, distance: Int): User = {
+  def addUser(name: String, password: String, admin: Boolean, distance: Int, active: Boolean): User = {
     // create User
-    val newUser = User(-1, name, password, admin, distance)
+    val newUser = User(-1, name, password, admin, distance, active)
     // persist and return User
     userDao.addUser(newUser)
   }
@@ -57,8 +57,8 @@ trait UserServiceT {
   }
 
   /**
-    * Return id of user if he exists.
-    * @return id of the user.
+    * Return id of user if the user exists.
+    * @return optional id of the user.
     */
   def login(name: String, password: String): Option[Long] = {
     userDao.login(name, password)
@@ -76,29 +76,32 @@ trait UserServiceT {
     * Return whether new username exists or not.
     * @return true or false.
     */
-  def nameInUse(id: Long, name: String): Boolean = {
-    userDao.nameInUse(id, name)
-  }
+  def nameInUse(id: Long, name: String): Boolean = userDao.nameInUse(id, name)
 
   /**
     * Return whether username exists or not.
     * @return true or false.
     */
-  def updateUser(user: User): Unit = {
-    userDao.updateUser(user)
-  }
+  def updateUser(user: User): Unit = userDao.updateUser(user)
 
   /**
-    * Return whether there is only one admin left.
+    * Return whether the user is the last admin or not.
     * @return boolean.
     */
-  def lastAdmin : Boolean = userDao.lastAdmin
+  def lastAdmin(id: Long) : Boolean = userDao.lastAdmin(id)
 
   /**
     * Return whether user is admin or not.
     * @return boolean.
     */
   def userIsAdmin(id: Long) : Boolean = userDao.userIsAdmin(id)
+
+
+  /**
+    * Return whether user is activated / deactivated.
+    * @return true (activated) / false (deactivated).
+    */
+  def userIsActive(id: Long) : Boolean = userDao.userIsActive(id)
 
     /**
     * Checks whether a user is deletable from the system.
@@ -108,16 +111,34 @@ trait UserServiceT {
   def userIsDeletable(id: Long): Boolean = userDao.userIsDeletable(id)
 
   /**
+    * Deactivates a user by id from the system.
+    * @param id users id.
+    * @return a boolean success flag.
+    */
+  def deactivateUser(id: Long): Boolean = userDao.deactivateUser(id)
+
+
+  /**
     * Removes a user by id from the system.
     * @param id users id.
     * @return a boolean success flag.
     */
   def rmUser(id: Long): Boolean = userDao.rmUser(id)
 
+
+  /*##########################################################################
+  ##                          REPORTING                                     ##
+  ##########################################################################*/
+
   /**
     * Customer count.
     */
   def getCustCount : Long = userDao.getCustCount
+
+  /**
+    * Active Customer count.
+    */
+  def getActiveCustCount : Long = userDao.getActiveCustCount
 }
 
 object UserService extends UserServiceT

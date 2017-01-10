@@ -1,4 +1,4 @@
-@(item: models.Item)
+@(item: models.Item)(implicit flash: Flash)
 
 @main(models.Company.name) {
         @adminMenu()
@@ -9,7 +9,9 @@
                     <td>Artikel Nr.</td>
                     <td>Kategorie</td>
                     <td>Produktname</td>
-                    <td>Preis (in Cent)</td>
+                    <td>Preis (in Cent / @services.CategoryService.getCategory(item.categoryID).map{category => @category.getUnit}.getOrElse("Unit"))</td>
+                    <td>Zubereitungsdauer (in min)</td>
+                    <td>Extras?</td>
                     <td>Sichtbar?</td>
                 </tr>
                 <tr>
@@ -21,11 +23,29 @@
                             }
                         </select>
                     </td>
-                    <td><input type="text" name="Name" value="@item.name"/></td>
-                    <td><input type="number" name="Price" min=0 value="@item.price"/></td>
+                    <td><input type="text" name="Name" value="@item.name" required/></td>
+                    <td><input type="number" name="Price" min=0 value="@item.price" required/></td>
+                    <td><input type="number" name="PrepDuration" min=0 value="@item.prepDuration" required/></td>
+                    <td><input type="checkbox" name="ExtrasFlag" value="true" @{if(item.hasExtras) "checked"}></td>
                     <td><input type="checkbox" name="Visibility" value="true" @{if(item.visibility) "checked"}></td>
                 </tr>
             </table>
             <input type="submit" value="Speichern" />
         }
+    <br/>
+    <br/>
+    <a href="@routes.AssortmentController.rmItem(Some(item.id))"><button style="color: red">löschen</button></a>
+
+    <div id="messageBox">
+        @flash.get("success").map { message =>
+            <div id="success">
+                @message
+            </div>
+        }
+        @flash.get("fail").map { message =>
+            <div id="error">
+                @message
+            </div>
+        }
+    </div>
 }

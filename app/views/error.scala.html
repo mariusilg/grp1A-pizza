@@ -1,0 +1,23 @@
+@(loggedIn: Boolean, adminFlag: Boolean)(implicit flash: Flash)
+
+@main(models.Company.name) {
+
+    @if(loggedIn){
+        @if(adminFlag){
+            @adminMenu()
+        } else {
+            @userMenu()
+        }
+    } else {
+        <h1>Willkommen bei @models.Company.name</h1>
+        <p>
+            <a href="@routes.Application.index"><button>zurück</button></a>
+        </p>
+    }
+    <h2>404 Error Page</h2>
+    @flash.get("error").map { message =>
+        <div class="ErrorPage">
+            @message
+        </div>
+    }
+}

@@ -21,8 +21,8 @@ trait UserDaoT {
   def addUser(user: User): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(name, password, admin_flag, distance) values ({name}, {password}, {admin}, {distance})").on(
-          'name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance).executeInsert()
+        SQL("insert into Users(name, password, admin_flag, distance, active_flag) values ({name}, {password}, {admin}, {distance}, {active})").on(
+          'name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'active -> user.active).executeInsert()
       user.id = id.get
     }
     user
@@ -41,27 +41,25 @@ trait UserDaoT {
   }
 
   /**
-   * Returns a list of available user from the database.
+   * Returns a list of registered user from the database.
    * @return a list of user objects.
    */
   def registeredUsers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectUsers = SQL("Select id, name, admin_flag, distance from Users;")
-      // Transform the resulting Stream[Row] to a List[(String,String)]
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"))).toList
+      val selectUsers = SQL("Select id, name, admin_flag, distance, active_flag from Users;")
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       users
     }
   }
 
   /**
-    * Returns a list of available customers from the database.
+    * Returns a list of registered customers from the database.
     * @return a list of user objects.
     */
   def registeredCustomers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectCustomers = SQL("Select id, name, admin_flag, distance from Users where admin_flag = false;")
-      // Transform the resulting Stream[Row] to a List[(String,String)]
-      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"))).toList
+      val selectCustomers = SQL("Select id, name, admin_flag, distance, active_flag from Users where admin_flag = false;")
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       customers
     }
   }
@@ -75,7 +73,7 @@ trait UserDaoT {
         val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
           .headOption
         selectUser match {
-          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance")))
+          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag")))
           case None => None
         }
       }
@@ -88,7 +86,18 @@ trait UserDaoT {
     */
   def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
-      val rowsUpdated = SQL("update Users SET name={name}, password={password}, admin_flag={admin}, distance={distance} where id = {id}").on('name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'id -> user.id).executeUpdate()
+      val rowsUpdated = SQL("update Users SET name={name}, password={password}, admin_flag={admin}, distance={distance}, active_flag={active} where id = {id}").on('name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'active -> user.active, 'id -> user.id).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
+  /**
+    * Deactivates a user from the database.
+    * @return whether update was successful or not.
+    */
+  def deactivateUser(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Users SET active_flag = FALSE where id = {id}").on('id -> id).executeUpdate()
       rowsUpdated == 1
     }
   }
@@ -102,7 +111,7 @@ trait UserDaoT {
       val selectUser = SQL("Select * from Users where id = {id};").on('id -> id).apply
         .headOption
       selectUser match {
-        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance")))
+        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag")))
         case None => None
       }
     }
@@ -119,6 +128,21 @@ trait UserDaoT {
       checkUser match {
         case Some(row) => Some(row[Long]("id"))
         case None => None
+      }
+    }
+  }
+
+  /**
+    * Returns the active status of a specific user from the database.
+    * @return active status.
+    */
+  def userIsActive(id: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val activeFlag = SQL("Select active_flag from Users where id = {id};").on('id -> id).apply
+        .headOption
+      activeFlag match {
+        case Some(row) => row[Boolean]("active_flag")
+        case None => false
       }
     }
   }
@@ -157,12 +181,12 @@ trait UserDaoT {
     * Returns whether there is one admin left or not.
     * @return Boolean.
     */
-  def lastAdmin: Boolean = {
+  def lastAdmin(id: Long): Boolean = {
     DB.withConnection { implicit c =>
-      val lastAdmin = SQL("Select COUNT(*) as cnt from Users where admin_flag = 1;").apply
+      val lastAdmin = SQL("Select COUNT(*) as cnt from Users where admin_flag = 1 and id <> {id};").on('id -> id).apply
         .headOption
       lastAdmin match {
-        case Some(row) => row[Long]("cnt") == 1
+        case Some(row) => row[Long]("cnt") == 0
         case None => true
       }
     }
@@ -183,8 +207,10 @@ trait UserDaoT {
     }
   }
 
+
+
   /**
-    * Returns whether user has orders or not.
+    * Returns whether user is admin or not.
     * @return Boolean.
     */
   def userIsAdmin(id: Long): Boolean = {
@@ -197,8 +223,6 @@ trait UserDaoT {
       }
     }
   }
-
-
 
   /**
     * Returns amount of customers registered in the system.
@@ -214,6 +238,22 @@ trait UserDaoT {
       }
     }
   }
+
+  /**
+    * Returns amount of customers registered in the system.
+    * @return Boolean.
+    */
+  def getActiveCustCount: Long = {
+    DB.withConnection { implicit c =>
+      val activeCustCount = SQL("Select COUNT(*) as  cnt from Users where admin_flag = 0 and active_flag = TRUE").apply
+        .headOption
+      activeCustCount match {
+        case Some(row) => row[Long]("cnt")
+        case None => 0
+      }
+    }
+  }
+
 }
 
 object UserDao extends UserDaoT

@@ -21,7 +21,7 @@ trait ExtraDaoT {
       val selectExtra = SQL("Select * from Extras where id = {id} limit 1;").on('id -> id).apply
         .headOption
       selectExtra match {
-        case Some(row) => Some(Item(row[Long]("id"), 0, row[String]("name"), row[Int]("price"), true))
+        case Some(row) => Some(Item(row[Long]("id"), 0, row[String]("name"), row[Int]("price"), false, 0, true))
         case None => None
       }
     }
@@ -34,7 +34,7 @@ trait ExtraDaoT {
   def getExtras: List[Item] = {
     DB.withConnection { implicit c =>
       val selectExtras= SQL("Select id, name, price from Extras;")
-      val extras = selectExtras().map(row => Item(row[Long]("id"), 0, row[String]("name"), row[Int]("price"), true)).toList
+      val extras = selectExtras().map(row => Item(row[Long]("id"), 0, row[String]("name"), row[Int]("price"), false, 0, true)).toList
       extras
     }
   }

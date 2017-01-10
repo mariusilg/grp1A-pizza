@@ -92,4 +92,21 @@ object Application extends Controller {
     }
   }
 
+  /**
+    * error page.
+    *
+    * @return error page
+    */
+  def error : Action[AnyContent] = Action { implicit request =>
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) => Ok(views.html.error(true, user.admin))
+        case None => Redirect(routes.UserController.logout)
+      }
+    }.getOrElse {
+      Ok(views.html.error(false, false))
+    }
+  }
+
 }
