@@ -31,10 +31,10 @@ object UserController extends Controller {
   val editUserForm = Form(
     mapping(
       "ID" -> longNumber,
-      "Name" -> text.verifying("Name fehlt", f => f.trim!=""),
+      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!=""),
       "Admin" -> boolean,
-      "Distance" -> number,
+      "Distance" -> number.verifying("Distanz fehlt!", f => f != null),
       "Active" -> boolean
     )(EditUserForm.apply)(EditUserForm.unapply) /*verifying("Username existiert bereits", fields => fields match {
       case userData => userData.id == userData.id
@@ -43,7 +43,7 @@ object UserController extends Controller {
 
   val loginForm = Form(
     mapping(
-      "Username" -> text.verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
+      "Username" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!="")
     )(CreateLoginForm.apply)(CreateLoginForm.unapply))
 
