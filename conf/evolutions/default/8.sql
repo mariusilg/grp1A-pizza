@@ -15,11 +15,11 @@ INSERT INTO Sizes (
 )   VALUES  (1,'Small', 10),
     (1,'Medium', 20),
     (1, 'Large', 30),
-    (2, 'klein', 500),
-    (2, 'normal', 1000),
-    (2, 'groß', 1500),
-    (3, 'normal', 100),
-    (3, 'groß', 200);
+    (2, 'klein', 250),
+    (2, 'normal', 500),
+    (2, 'groß', 750),
+    (3, 'klein', 50),
+    (3, 'normal', 100);
 
 # --- !Downs
 DROP TABLE Items;

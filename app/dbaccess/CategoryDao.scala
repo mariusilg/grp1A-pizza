@@ -14,8 +14,8 @@ import models._
 trait CategoryDaoT {
 
   /**
-    * Returns a user from the database.
-    * @return user.
+    * Returns whether name is in use or not.
+    * @return boolean
     */
   def checkName(name: String): Boolean = {
     DB.withConnection { implicit c =>
@@ -46,7 +46,7 @@ trait CategoryDaoT {
 
   /**
     * Updates a category from the database.
-    * @return whether update was successful or not.
+    * @return whether update was successful or not
     */
   def updateCategory(category: Category): Boolean = {
     DB.withConnection { implicit c =>
@@ -56,8 +56,8 @@ trait CategoryDaoT {
   }
 
   /**
-    * Returns whether products of category are part of orders or not.
-    * @return Boolean.
+    * Returns whether products of category had been ordered yet.
+    * @return Boolean
     */
   def isCategoryDeletable(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -83,7 +83,7 @@ trait CategoryDaoT {
   }
 
   /**
-    * Returns a list of available categories from the database.
+    * Returns a list of all categories from the database.
     * @return a list of category objects.
     */
   def availableCategories: List[Category] = {
@@ -95,8 +95,8 @@ trait CategoryDaoT {
   }
 
   /**
-    * Returns a list of available categories from the database.
-    * @return a list of category objects.
+    * Returns a list of visible categories from the database.
+    * @return a list of category objects
     */
   def visibleCategories: List[Category] = {
     DB.withConnection { implicit c =>
@@ -108,7 +108,7 @@ trait CategoryDaoT {
 
   /**
     * Returns a list of available sizes from the database.
-    * @return a list of size objects.
+    * @return a list of size objects
     */
   def getSizes(id: Long): List[Size] = {
     DB.withConnection { implicit c =>
@@ -119,9 +119,9 @@ trait CategoryDaoT {
   }
 
   /**
-    * Gets the default size of a category from the system.
-    *
-    * @return optional size categories.
+    * Gets the default size of item of category from the system.
+    * @param id id of category.
+    * @return size
     */
   def getDefaultSize(id: Long): Int = {
     DB.withConnection { implicit c =>
@@ -136,7 +136,8 @@ trait CategoryDaoT {
 
   /**
     * Returns whether category has specific sizes defined or not.
-    * @return Boolean.
+    * @param id id of category.
+    * @return Boolean
     */
   def hasSizes(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -151,7 +152,8 @@ trait CategoryDaoT {
 
   /**
     * Returns unit name of specific category.
-    * @return unit name as a String.
+    * @param id id of category.
+    * @return unit name as a String
     */
   def getUnit(id: Long): String = {
     DB.withConnection { implicit c =>
@@ -166,7 +168,8 @@ trait CategoryDaoT {
 
   /**
     * Returns whether there is one other visible category left or not.
-    * @return Boolean.
+    * @param id id of category.
+    * @return Boolean
     */
   def lastVisibleCategory(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -181,6 +184,8 @@ trait CategoryDaoT {
 
   /**
     * Returns whether username already in use or not.
+    * @param id id of category.
+    * @param name new name of category.
     * @return Boolean.
     */
   def nameInUse(id: Long, name: String): Boolean = {
@@ -210,6 +215,10 @@ trait CategoryDaoT {
     }
   }
 
+  /**
+    * Returns category from the database by id.
+    * @return optional object category
+    */
   def getCategory(id: Long): Option[Category] = {
     DB.withConnection { implicit c =>
       val selectCategory = SQL("Select id, name, unit, visibility from Categories where id = {id} limit 1;").on('id -> id).apply
@@ -223,7 +232,8 @@ trait CategoryDaoT {
 
   /**
     * Checks whether category is visible or not.
-    * @return true / false.
+    * @param id id of category.
+    * @return boolean
     */
   def isCategoryVisible(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -237,8 +247,9 @@ trait CategoryDaoT {
   }
 
   /**
-    * Deactivates a category from the database.
-    * @return whether update was successful or not.
+    * Deactivates a category from the database by id.
+    * @param id id of category.
+    * @return whether update was successful or not
     */
   def deactivateCategory(id: Long): Boolean = {
     DB.withConnection { implicit c =>

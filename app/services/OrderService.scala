@@ -28,27 +28,15 @@ trait OrderServiceT {
       }
     }
     var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
-    val cost = calcOrderCost(newOrderItems)
-    var newOrder = Order(-1, custID, null, newOrderItems, distance, -1, cost)
+    var newOrder = Order(-1, custID, null, newOrderItems, distance, -1, -1)
     newOrder.calcDuration(item.prepDuration)
+    newOrder.calcOrderCost
     orderDao.addOrder(newOrder)
   }
-
 
   def calcProductCost(quantity: Int, size: Int, price: Int): Int = {
     val costs = quantity * size * price
     costs
-  }
-
-  def calcOrderCost(orderItems: List[OrderItem]) : Int = {
-      var sum: Int = 0
-      for(orderItem <- orderItems) {
-        for(orderExtra <- orderItem.orderExtras){
-          sum += orderExtra.price * orderItem.quantity
-        }
-        sum += orderItem.price
-      }
-      sum
   }
 
   /**

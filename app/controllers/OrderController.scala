@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc.{Action, AnyContent, Controller}
-import play.api.data.Forms._ //{mapping,text,number}
+import play.api.data.Forms._
 import play.api.data.Form
 import services._
 import forms._
@@ -34,7 +34,6 @@ object OrderController extends Controller {
       userData => {
         val user = services.UserService.getUser(username).get
         if(user.distance <= 20) {
-          //services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, 1, userData.extraID)
           services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, user.distance, userData.extraID)
           Redirect(routes.OrderController.showOrders(None))
         }
@@ -59,7 +58,7 @@ object OrderController extends Controller {
 
 
   /**
-    * List all orders of user in the system.
+    * List orders of a specific user or of all users in the system.
     */
   def showOrders(ofUser: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
@@ -74,6 +73,5 @@ object OrderController extends Controller {
       Redirect(routes.Application.index)
     }
   }
-
 
 }

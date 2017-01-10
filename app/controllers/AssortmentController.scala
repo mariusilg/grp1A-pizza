@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc.{Action, AnyContent, Controller}
-import play.api.data.Forms._ //{mapping,text,number}
+import play.api.data.Forms._
 import play.api.data.Form
 import services._
 import forms._
@@ -42,7 +42,9 @@ object AssortmentController extends Controller {
       "Visibility" -> optional(boolean)
     )(CreateCategoryForm.apply)(CreateCategoryForm.unapply))
 
-
+  /**
+    * Add a new category.
+    */
   def addCategory : Action[AnyContent] = Action { implicit request =>
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
@@ -81,7 +83,7 @@ object AssortmentController extends Controller {
   }
 
   /**
-    * Edit a specific item.
+    * Remove a specific category.
     */
   def rmCategory(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
@@ -149,7 +151,7 @@ object AssortmentController extends Controller {
   }
 
   /**
-    * Edit a specific item.
+    * Remove a specific item.
     */
   def rmItem(itemID: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
@@ -178,7 +180,7 @@ object AssortmentController extends Controller {
   }
 
   /**
-    * Update a specific Item and go back to edit item view.
+    * Update a specific Item.
     */
   def updateItem() : Action[AnyContent] = Action { implicit request =>
     editItemForm.bindFromRequest.fold(
@@ -193,13 +195,13 @@ object AssortmentController extends Controller {
         //  Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("fail" -> "Kategorie muss mindestens ein aktives Produkt besitzten")
         } else {
           ItemService.updateItem(item)
-          Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("success" -> "Produkt wurde erfolgreich aktualisiert") //"Successfully updated changes."
+          Redirect(routes.AssortmentController.editItem(Some(item.id))).flashing("success" -> "Produkt wurde erfolgreich aktualisiert")
         }
       })
   }
 
   /**
-    * List all orders of user in the system.
+    * Manage all categories, products and extras.
     */
   def manageAssortment : Action[AnyContent] = Action { implicit request =>
     request.session.get("id").map { id =>

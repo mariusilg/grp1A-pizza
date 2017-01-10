@@ -15,7 +15,6 @@ trait ItemDaoT {
 
   /**
     * Creates the given item in the database.
-    *
     * @param item the item object to be stored.
     * @return the persisted item object
     */
@@ -31,8 +30,8 @@ trait ItemDaoT {
 
   /**
     * Returns optional item from the database.
-    *
-    * @return optional item object.
+    * @param id id of the item.
+    * @return optional item object
     */
   def getItem(id: Long): Option[Item] = {
     DB.withConnection { implicit c =>
@@ -47,8 +46,8 @@ trait ItemDaoT {
 
   /**
     * Returns a list of available items by category ID from the database.
-    *
-    * @return a list of item objects.
+    * @param id id of the item.
+    * @return a list of item objects
     */
   def getItemsByCategory(id: Long): List[Item] = {
     DB.withConnection { implicit c =>
@@ -60,8 +59,8 @@ trait ItemDaoT {
 
   /**
     * Returns a list of available items by category ID from the database.
-    *
-    * @return a list of item objects.
+    * @param id id of category.
+    * @return a list of item objects
     */
   def getAvailableItemsByCategory(id: Long): List[Item] = {
     DB.withConnection { implicit c =>
@@ -72,9 +71,9 @@ trait ItemDaoT {
   }
 
   /**
-    * Updates an item from the database.
-    *
-    * @return whether update was successful or not.
+    * Updates an item in the database.
+    * @param item item object.
+    * @return Boolean success-flag
     */
   def updateItem(item: Item): Boolean = {
     DB.withConnection { implicit c =>
@@ -86,9 +85,10 @@ trait ItemDaoT {
 
 
   /**
-    * Returns whether there is one visible Item in Category left or not.
-    *
-    * @return true or false.
+    * Returns whether there is one visible Item (without this one) in Category left or not.
+    * @param categoryID id of category.
+    * @param id id of the item.
+    * @return Boolean
     */
   def lastVisibleItemOfCategory(categoryID: Long, id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -102,9 +102,10 @@ trait ItemDaoT {
   }
 
   /**
-    * Returns whether username already in use or not.
-    *
-    * @return Boolean.
+    * Returns whether username already in use by another item or not.
+    * @param id id of the item.
+    * @param name name.
+    * @return Boolean
     */
   def nameInUse(id: Long, name: String): Boolean = {
     DB.withConnection { implicit c =>
@@ -119,8 +120,8 @@ trait ItemDaoT {
 
   /**
     * Gets the default price of an item from the system.
-    *
-    * @return price of item.
+    * @param id id of the item.
+    * @return price of item
     */
   def getDefaultPrice(id: Long): Int = {
     DB.withConnection { implicit c =>
@@ -150,7 +151,8 @@ trait ItemDaoT {
 
   /**
     * Deactivates a item from the database.
-    * @return whether update was successful or not.
+    * @param id id of item.
+    * @return a boolean success flag
     */
   def deactivateItem(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -161,7 +163,7 @@ trait ItemDaoT {
 
   /**
     * Removes a item by id from the database.
-    * @param id the id of the item
+    * @param id the id of the item.
     * @return a boolean success flag
     */
   def rmItem(id: Long): Boolean = {
@@ -176,7 +178,8 @@ trait ItemDaoT {
 
   /**
     * Returns amount of visible items by category registered in the system.
-    * @return amount of visible items as an integer.
+    * @param categoryID id of category.
+    * @return amount
     */
   def cntVisibleItems(categoryID: Long): Long = {
     DB.withConnection { implicit c =>

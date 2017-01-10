@@ -12,9 +12,11 @@ import models._
  * @author ne
  */
 trait ExtraDaoT {
+
   /**
-    * Returns extra item from the database.
-    * @return item.
+    * Returns extra item from the database by id.
+    * @param id id of extra.
+    * @return optional item object.
     */
   def getExtra(id: Long): Option[Item] = {
     DB.withConnection { implicit c =>
@@ -28,7 +30,7 @@ trait ExtraDaoT {
   }
 
   /**
-    * Returns a list of available extra items from the database.
+    * Returns a list of all extra items from the database.
     * @return a list of item objects.
     */
   def getExtras: List[Item] = {

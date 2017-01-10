@@ -30,7 +30,7 @@ trait UserDaoT {
 
   /**
    * Removes a user by id from the database.
-   * @param id the users id
+   * @param id the users id.
    * @return a boolean success flag
    */
   def rmUser(id: Long): Boolean = {
@@ -41,7 +41,7 @@ trait UserDaoT {
   }
 
   /**
-   * Returns a list of registered user from the database.
+   * Returns a list of registered users from the database.
    * @return a list of user objects.
    */
   def registeredUsers: List[User] = {
@@ -66,7 +66,8 @@ trait UserDaoT {
 
   /**
     * Returns a user from the database.
-    * @return user.
+    * @param name the users name.
+    * @return optional user
     */
   def getUser(name: String): Option[User] = {
     DB.withConnection { implicit c =>
@@ -82,7 +83,8 @@ trait UserDaoT {
 
   /**
     * Updates a user from the database.
-    * @return whether update was successful or not.
+    * @param user user object.
+    * @return whether update was successful or not
     */
   def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
@@ -92,8 +94,9 @@ trait UserDaoT {
   }
 
   /**
-    * Deactivates a user from the database.
-    * @return whether update was successful or not.
+    * Deactivates a user by id from the database.
+    * @param id the users id.
+    * @return whether update was successful or not
     */
   def deactivateUser(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -103,8 +106,9 @@ trait UserDaoT {
   }
 
   /**
-    * Returns a user from the database.
-    * @return user.
+    * Returns a user by id from the database.
+    * @param id the users id.
+    * @return optional user object
     */
   def getUserByID(id: Long): Option[User] = {
     DB.withConnection { implicit c =>
@@ -118,8 +122,10 @@ trait UserDaoT {
   }
 
   /**
-    * Returns a user from the database.
-    * @return user.
+    * Returns the users id by name and password from the database.
+    * @param name the users name.
+    * @param password the users password.
+    * @return optional user id
     */
   def login(name: String, password: String): Option[Long] = {
     DB.withConnection { implicit c =>
@@ -133,8 +139,9 @@ trait UserDaoT {
   }
 
   /**
-    * Returns the active status of a specific user from the database.
-    * @return active status.
+    * Returns the active-flag of a specific user by id from the database.
+    * @param id the users id.
+    * @return boolean active-flag
     */
   def userIsActive(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -148,23 +155,26 @@ trait UserDaoT {
   }
 
   /**
-    * Returns a user from the database.
-    * @return user.
+    * Checks whether name is in use or not in the database.
+    * @param name a name.
+    * @return true (inUse) / false
     */
   def nameInUse(name: String): Boolean = {
     DB.withConnection { implicit c =>
       val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name});").on('name -> name).apply
         .headOption
       checkName match {
-        case Some(row) => row[Long]("cnt") == 1
-        case None => false
+        case Some(row) => row[Long]("cnt") > 0
+        case None => true
       }
     }
   }
 
   /**
     * Returns whether username already in use or not.
-    * @return Boolean.
+    * @param id the users id.
+    * @param  name name.
+    * @return Boolean
     */
   def nameInUse(id: Long, name: String): Boolean = {
     DB.withConnection { implicit c =>
@@ -178,8 +188,9 @@ trait UserDaoT {
   }
 
   /**
-    * Returns whether there is one admin left or not.
-    * @return Boolean.
+    * Returns whether user is the last admin or not.
+    * @param id the users id.
+    * @return Boolean
     */
   def lastAdmin(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -193,8 +204,8 @@ trait UserDaoT {
   }
 
   /**
-    * Returns whether user has orders or not.
-    * @return Boolean.
+    * Returns if user has not ordered yet.
+    * @return Boolean
     */
   def userIsDeletable(id: Long): Boolean = {
     DB.withConnection { implicit c =>
@@ -211,6 +222,7 @@ trait UserDaoT {
 
   /**
     * Returns whether user is admin or not.
+    * @param id the users id.
     * @return Boolean.
     */
   def userIsAdmin(id: Long): Boolean = {
@@ -226,7 +238,7 @@ trait UserDaoT {
 
   /**
     * Returns amount of customers registered in the system.
-    * @return Boolean.
+    * @return amount
     */
   def getCustCount: Long = {
     DB.withConnection { implicit c =>
@@ -241,7 +253,7 @@ trait UserDaoT {
 
   /**
     * Returns amount of customers registered in the system.
-    * @return Boolean.
+    * @return amount
     */
   def getActiveCustCount: Long = {
     DB.withConnection { implicit c =>

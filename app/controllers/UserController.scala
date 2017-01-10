@@ -2,24 +2,23 @@ package controllers
 
 import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.data.Form
-import play.api.data.Forms._ //{mapping,text,number}
+import play.api.data.Forms._
 import services._
 import forms._
 
 /**
  * Controller for user specific operations.
  *
- * @author ob, scs
+ * @author ob, scs, ne
  */
 object UserController extends Controller {
 
-  //val nonEmptyAlphaText: Mapping[String] = nonEmptyText.verifying("Must contain letters and spaces only.", name => name.matches("[A-z\\s]+") )
   /**
    * Form object for user data.
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "Name" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte geben Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
       "Admin" -> optional(boolean),
       "Distance" -> number.verifying("Distanz fehlt!", f => f != null),
@@ -27,31 +26,37 @@ object UserController extends Controller {
     )(CreateUserForm.apply)(CreateUserForm.unapply))
 
 
-
+  /**
+    * Form object for editing user data.
+    */
   val editUserForm = Form(
     mapping(
       "ID" -> longNumber,
-      "Name" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
+      "Name" -> text.verifying("Bitte geben Sie einen Username an!", f => f.trim!="").verifying("Bitte gebe Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!=""),
       "Admin" -> boolean,
       "Distance" -> number.verifying("Distanz fehlt!", f => f != null),
       "Active" -> boolean
-    )(EditUserForm.apply)(EditUserForm.unapply) /*verifying("Username existiert bereits", fields => fields match {
+    )(EditUserForm.apply)(EditUserForm.unapply)
+    /*verifying("Username existiert bereits", fields => fields match {
       case userData => userData.id == userData.id
     })*/
   )
 
+  /**
+    * Form object for login data.
+    */
   val loginForm = Form(
     mapping(
-      "Username" -> text.verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
+      "Username" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!="")
     )(CreateLoginForm.apply)(CreateLoginForm.unapply))
 
 
   /**
-   * Adds a new user with the given data to the system.
+   * Registers a new user with the given data and adds him to the system.
    *
-   * @return welcome page for new user
+   * @return first available category page
    */
   def register : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
@@ -67,7 +72,7 @@ object UserController extends Controller {
   /**
     * Adds a new user with the given data to the system.
     *
-    * @return welcome page for new user
+    * @return first available category page
     */
   def addUser : Action[AnyContent] = Action { implicit request =>
     userForm.bindFromRequest.fold(
@@ -134,7 +139,7 @@ object UserController extends Controller {
     request.session.get("id").map { id =>
       val user = services.UserService.getUserByID(id.toLong)
       user match {
-        case Some(user) => Ok(views.html.users(userForm, UserService.registeredUsers))
+        case Some(user) => if(user.admin) Ok(views.html.users(userForm, UserService.registeredUsers)) else Redirect(routes.Application.error).flashing("error" -> "kein Zutritt")
         case None => Redirect(routes.UserController.logout)
       }
     }.getOrElse {
@@ -165,7 +170,7 @@ object UserController extends Controller {
   }
 
   /**
-    * Update a specific User and go back to user overview.
+    * Update a specific user and go back to user overview.
     */
   def updateUser(id : Long) : Action[AnyContent] = Action { implicit request =>
       editUserForm.bindFromRequest.fold(
@@ -188,7 +193,7 @@ object UserController extends Controller {
 
 
   /**
-    * Try to delete a specific User and go back to user overview.
+    * Try to delete a specific user and go back to user overview.
     */
   def removeUser(id: Long) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { userID =>
@@ -215,6 +220,9 @@ object UserController extends Controller {
     }
   }
 
+  /**
+    * Loos user out and goes back to the index page.
+    */
   def logout() : Action[AnyContent] = Action {
     Redirect(routes.Application.index).withNewSession
   }
