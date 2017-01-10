@@ -29,6 +29,7 @@ trait ItemDaoT {
   }
 
   /**
+    *
     * Returns optional item from the database.
     * @param id id of the item.
     * @return optional item object
