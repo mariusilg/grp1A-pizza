@@ -18,7 +18,7 @@ case class Order(var id: Long, var custID: Long, var date: Date, var orderItems:
   def costsToString : String = {
     "%.2f €".format(this.costs.toDouble/100)
   }
-  
+
 
   /*def calcDuration(items: List[models.Item]) : Unit = {
     var prepDuration = 0
