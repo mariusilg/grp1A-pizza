@@ -21,8 +21,8 @@ trait ItemDaoT {
   def addItem(item: Item): Item = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Items(cat_id, name, price, extra_flag, visibility) values ({cat_id}, {name}, {price}, {extra_flag}, {visibility})").on(
-          'cat_id -> item.categoryID, 'name -> item.name, 'price -> item.price, 'extra_flag -> item.extrasFlag, 'visibility -> item.visibility).executeInsert()
+        SQL("insert into Items(cat_id, name, price, extra_flag, prep_duration, visibility) values ({cat_id}, {name}, {price}, {extra_flag}, {prep_duration}, {visibility})").on(
+          'cat_id -> item.categoryID, 'name -> item.name, 'price -> item.price, 'extra_flag -> item.extrasFlag, 'prep_duration -> item.prepDuration, 'visibility -> item.visibility).executeInsert()
       item.id = id.get
     }
     item

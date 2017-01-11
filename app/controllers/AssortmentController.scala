@@ -123,8 +123,12 @@ object AssortmentController extends Controller {
         BadRequest(views.html.assortment(categoryForm, formWithErrors))
       },
       itemData => {
-        services.ItemService.addItem(itemData.categoryID, itemData.name, itemData.price, itemData.extraFlag, itemData.prepDuration.getOrElse(0), itemData.visibility.getOrElse(false))
-        Redirect(routes.AssortmentController.manageAssortment)
+        if (ItemService.nameInUse(0, itemData.name)) {
+          Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Produktname schon vergeben")
+        } else {
+          services.ItemService.addItem(itemData.categoryID, itemData.name, itemData.price, itemData.extraFlag, itemData.prepDuration.getOrElse(0), itemData.visibility.getOrElse(false))
+          Redirect(routes.AssortmentController.manageAssortment)
+        }
       })
   }
 
@@ -160,7 +164,7 @@ object AssortmentController extends Controller {
         case Some(currentUser) => if(currentUser.admin) {
           itemID match {
             case Some(itemID) =>
-              if(!ItemService.isItemDeletable(itemID)) {
+              if(!services.ItemService.isItemDeletable(itemID)) {
                 ItemService.deactivateItem(itemID)
                 Redirect(routes.AssortmentController.manageAssortment).flashing(
                   "fail" -> "Das Produkt wurde deaktiviert, da es in vorhandenen Bestellungen auftaucht!")
