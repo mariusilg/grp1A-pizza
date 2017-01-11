@@ -141,7 +141,7 @@ trait ItemDaoT {
     */
   def isItemDeletable(id: Long): Boolean = {
     DB.withConnection { implicit c =>
-      val cntOrderItems = SQL("Select COUNT(*) as cnt from Order_items where id = {id};").on('id -> id).apply
+      val cntOrderItems = SQL("Select COUNT(*) as cnt from Order_items where item_id = {id};").on('id -> id).apply
         .headOption
       cntOrderItems match {
         case Some(row) => row[Long]("cnt") == 0
