@@ -22,7 +22,7 @@
                     @for(user <- users) {
                         <tr @if(!user.active) {class="inactive"}>
                             <td>@user.id</td>
-                            <td>@user.name</td>
+                            <td>@user.userName</td>
                             <td>@{if(user.admin) "Mitarbeiter" else "Kunde"}</td>
                             <td>
                             @{if(!user.active) "inaktiv"}
@@ -33,7 +33,7 @@
                                     <i class="button material-icons button delete">delete</i>
                                     <div class="dialog" title="User löschen:">
                                         <label>@if(user.admin){Mitarbeiter}else{Kunde}:</label>
-                                        "@user.name"
+                                        "@user.userName"
                                         <br/>
                                         wirklich löschen?
                                         <br/>

@@ -2,7 +2,7 @@
 
 @main(models.Company.name) {
     @adminMenu()
-    <h1>Willkommen @user.name im Mitarbeiterbereich</h1>
+    <h1>Willkommen @user.userName im Mitarbeiterbereich</h1>
     registrierte Kunden: @services.UserService.getCustCount<br/>
     davon aktive Kunden: @services.UserService.getActiveCustCount<br/>
     Gesamtumsatz: @services.OrderService.costsToString(services.OrderService.getTotalBusinessVolume)<br/>

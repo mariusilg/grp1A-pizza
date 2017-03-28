@@ -9,7 +9,7 @@
                 <option value="-1">Select..</option>
                 <option value="0" @if(ofUser == 0){selected}>Alle Bestellungen</option>
                 @for(customer <- services.UserService.registeredCustomers) {
-                    <option value="@customer.id" @if(customer.id == ofUser){selected}>@customer.name</option>
+                    <option value="@customer.id" @if(customer.id == ofUser){selected}>@customer.userName</option>
                 }
                 <input type="submit" value="Anzeigen" />
             </select>

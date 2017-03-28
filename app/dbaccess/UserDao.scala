@@ -21,11 +21,27 @@ trait UserDaoT {
   def addUser(user: User): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(name, password, admin_flag, distance, active_flag) values ({name}, {password}, {admin}, {distance}, {active})").on(
-          'name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'active -> user.active).executeInsert()
+        SQL("insert into Users(username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag)" +
+          " values ({username}, {first_name}, {last_name}, {password}, {admin}, {street}, {zip}, {city}, {phone}, {email}, {distance}, {active})").on(
+          'username -> user.userName, 'first_name -> user.firstName, 'last_name -> user.lastName, 'password -> user.password,
+          'admin -> user.admin, 'street -> user.street, 'zip -> user.zip, 'city -> user.city, 'phone -> user.phone, 'email -> user.email,
+          'distance -> user.distance, 'active -> user.active).executeInsert()
       user.id = id.get
     }
     user
+  }
+
+  /**
+    * Updates the user's distance in the database.
+    * @param id id of user.
+    * @param distance distance of user to the shop.
+    * @return whether update was successful or not
+    */
+  def updateDistance(id: Long, distance: Int): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Users SET distance = {distance} where id = {id}").on('distance -> distance, 'id -> id).executeUpdate()
+      rowsUpdated == 1
+    }
   }
 
   /**
@@ -35,7 +51,7 @@ trait UserDaoT {
    */
   def rmUser(id: Long): Boolean = {
     DB.withConnection { implicit c =>
-      val rowsCount = SQL("delete from Users where id = ({id})").on('id -> id).executeUpdate()
+      val rowsCount = SQL("delete from Users where id = {id}").on('id -> id).executeUpdate()
       rowsCount > 0
     }
   }
@@ -46,8 +62,8 @@ trait UserDaoT {
    */
   def registeredUsers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectUsers = SQL("Select id, name, admin_flag, distance, active_flag from Users;")
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
+      val selectUsers = SQL("Select id, username, first_name, last_name, admin_flag, street, zip, city, phone, email, distance, active_flag from Users;")
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), null, row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       users
     }
   }
@@ -58,23 +74,23 @@ trait UserDaoT {
     */
   def registeredCustomers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectCustomers = SQL("Select id, name, admin_flag, distance, active_flag from Users where admin_flag = false;")
-      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("name"), null, row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
+      val selectCustomers = SQL("Select id, username, first_name, last_name, street, zip, city, phone, email, distance, active_flag from Users where admin_flag = false;")
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"),  null, false, row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       customers
     }
   }
 
   /**
     * Returns a user from the database.
-    * @param name the users name.
+    * @param userName username of the user.
     * @return optional user
     */
-  def getUser(name: String): Option[User] = {
+  def getUser(userName: String): Option[User] = {
     DB.withConnection { implicit c =>
-        val selectUser = SQL("Select * from Users where name = {name} limit 1;").on('name -> name).apply
+        val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where username = {username} limit 1;").on('username -> userName).apply
           .headOption
         selectUser match {
-          case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag")))
+          case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
           case None => None
         }
       }
@@ -88,7 +104,10 @@ trait UserDaoT {
     */
   def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
-      val rowsUpdated = SQL("update Users SET name={name}, password={password}, admin_flag={admin}, distance={distance}, active_flag={active} where id = {id}").on('name -> user.name, 'password -> user.password, 'admin -> user.admin, 'distance -> user.distance, 'active -> user.active, 'id -> user.id).executeUpdate()
+      val rowsUpdated = SQL("update Users SET username={username}, first_name={firstName}, last_name={lastName}, password={password}" +
+        " ,admin_flag={admin}, street={street}, zip={zip}, city={city}, phone={phone}, email={email}, active_flag={active} where id = {id}").on('username -> user.userName
+        , 'firstName ->user.firstName, 'lastName -> user.lastName, 'password -> user.password, 'admin -> user.admin, 'street -> user.street
+        , 'zip -> user.zip, 'city -> user.city, 'phone -> user.phone, 'email -> user.email, 'active -> user.active, 'id -> user.id).executeUpdate()
       rowsUpdated == 1
     }
   }
@@ -112,10 +131,10 @@ trait UserDaoT {
     */
   def getUserByID(id: Long): Option[User] = {
     DB.withConnection { implicit c =>
-      val selectUser = SQL("Select * from Users where id = {id};").on('id -> id).apply
+      val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where id = {id};").on('id -> id).apply
         .headOption
       selectUser match {
-        case Some(row) => Some(User(row[Long]("id"), row[String]("name"), row[String]("password"), row[Boolean]("admin_flag"), row[Int]("distance"), row[Boolean]("active_flag")))
+        case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
         case None => None
       }
     }
@@ -123,13 +142,13 @@ trait UserDaoT {
 
   /**
     * Returns the users id by name and password from the database.
-    * @param name the users name.
+    * @param userName userName of the user.
     * @param password the users password.
     * @return optional user id
     */
-  def login(name: String, password: String): Option[Long] = {
+  def login(userName: String, password: String): Option[Long] = {
     DB.withConnection { implicit c =>
-      val checkUser = SQL("Select id from Users where UPPER(name)=UPPER({name}) and password = {password} limit 1;").on('name -> name, 'password -> password).apply
+      val checkUser = SQL("Select id from Users where UPPER(username)=UPPER({username}) and password = {password} limit 1;").on('username -> userName, 'password -> password).apply
         .headOption
       checkUser match {
         case Some(row) => Some(row[Long]("id"))
@@ -156,12 +175,12 @@ trait UserDaoT {
 
   /**
     * Checks whether name is in use or not in the database.
-    * @param name a name.
+    * @param userName a username.
     * @return true (inUse) / false
     */
-  def nameInUse(name: String): Boolean = {
+  def nameInUse(userName: String): Boolean = {
     DB.withConnection { implicit c =>
-      val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name});").on('name -> name).apply
+      val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(username) = UPPER({username});").on('username -> userName).apply
         .headOption
       checkName match {
         case Some(row) => row[Long]("cnt") > 0
@@ -173,12 +192,12 @@ trait UserDaoT {
   /**
     * Returns whether username already in use or not.
     * @param id the users id.
-    * @param  name name.
+    * @param  userName username.
     * @return Boolean
     */
-  def nameInUse(id: Long, name: String): Boolean = {
+  def nameInUse(id: Long, userName: String): Boolean = {
     DB.withConnection { implicit c =>
-      val checkAvailability = SQL("Select COUNT(*) as cnt from Users where UPPER(name) = UPPER({name}) and id <> {id};").on('name -> name, 'id -> id).apply
+      val checkAvailability = SQL("Select COUNT(*) as cnt from Users where UPPER(username) = UPPER({username}) and id <> {id};").on('username -> userName, 'id -> id).apply
         .headOption
       checkAvailability match {
         case Some(row) => row[Long]("cnt") != 0

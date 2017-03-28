@@ -3,7 +3,7 @@
 @main(models.Company.name) {
     @if(admin) {
         @adminMenu()
-        <h2>Benutzer @user.name verwalten:</h2>
+        <h2>Benutzer @user.userName verwalten:</h2>
     } else {
         @userMenu()
         <h2>Mein Konto verwalten:</h2>
@@ -11,21 +11,21 @@
             <div class="tbl-header">
                 <table cellpadding="0" cellspacing="0" border="0">
                     <thead>
+                        <th>Kundennummer</th>
+                        <th>Username</th>
+                        <th>Vorname</th>
+                        <th>Nachname</th>
+                        <th>Straße</th>
+                        <th>Postleitzahl</th>
+                        <th>Stadt</th>
+                        <th>Telefon</th>
+                        <th>eMail</th>
+                        <th>Passwort</th>
                         @if(admin) {
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Passwort</th>
                                 <th>Mitarbeiter</th>
                                 <th>Aktiv?</th>
-                                <th>Distanz (in km)</th>
-                            </tr>
-                        } else {
-                            <tr>
-                                <th>Kundennummer</th>
-                                <th>Name</th>
-                                <th>Passwort</th>
-                                <th>Distanz (in km)</th>
+                                <th>Distanz (in m)</th>
                             </tr>
                         }
                     </thead>
@@ -35,28 +35,29 @@
             <div class="tbl-content">
                 <table cellpadding="0" cellspacing="0" border="0">
                     <tbody>
+                        <tr>
+                            <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
+                            <td><input type="text" name="UserName" value="@user.userName"/></td>
+                            <td><input type="text" name="FirstName" value="@user.firstName"/></td>
+                            <td><input type="text" name="LastName" value="@user.lastName"/></td>
+                            <td><input type="text" name="Street" value="@user.street"/></td>
+                            <td><input type="text" name="Zip" value="@user.zip"/></td>
+                            <td><input type="text" name="City" value="@user.city"/></td>
+                            <td><input type="text" name="Phone" value="@user.phone"/></td>
+                            <td><input type="text" name="Email" value="@user.email"/></td>
+                            <td><input type="text" name="Password" value="@user.password" /></td>
                         @if(admin) {
-                            <tr>
-                                <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
-                                <td><input type="text" name="Name" value="@user.name"/></td>
-                                <td><input type="text" name="Password" value="@user.password"/></td>
                                 <td><input type="checkbox" name="Admin" value="true" @{
                                     if(user.admin) "checked"
                                 }></td>
                                 <td><input type="checkbox" name="Active" value="true" @{
                                     if(user.active) "checked"
                                 }></td>
-                                <td><input type="number" name="Distance" value="@user.distance" min="0" /></td>
-                            </tr>
+                                <td><input type="number" name="Distance" value="@user.distance" /></td>
                         } else {
-                            <tr>
-                                <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
-                                <td><input type="text" name="Name" value="@user.name"/></td>
-                                <td><input type="text" name="Password" value="@user.password" /></td>
                                 <input type="hidden" name="Active" value="true" checked/>
-                                <td><input type="number" name="Distance" value="@user.distance" min="0" /></td>
-                            </tr>
                         }
+                        </tr>
                     </tbody>
                 </table>
             </div>

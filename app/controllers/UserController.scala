@@ -18,13 +18,18 @@ object UserController extends Controller {
    */
   val userForm = Form(
     mapping(
-      "Name" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte geben Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "UserName" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte geben Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "FirstName" -> text,
+      "LastName" -> text,
       "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
       "Admin" -> optional(boolean),
-      "Distance" -> number.verifying("Distanz fehlt!", f => f != null),
+      "Street" -> text,
+      "Zip" -> text,
+      "City" -> text,
+      "Phone" -> text,
+      "Email" -> text,
       "Active" -> optional(boolean)
     )(CreateUserForm.apply)(CreateUserForm.unapply))
-
 
   /**
     * Form object for editing user data.
@@ -32,10 +37,16 @@ object UserController extends Controller {
   val editUserForm = Form(
     mapping(
       "ID" -> longNumber,
-      "Name" -> text.verifying("Bitte geben Sie einen Username an!", f => f.trim!="").verifying("Bitte gebe Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
+      "UserName" -> text.verifying("Bitte geben Sie einen Username an!", f => f.trim!="").verifying("Bitte gebe Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
+      "FirstName" -> text,
+      "LastName" -> text,
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!=""),
       "Admin" -> boolean,
-      "Distance" -> number.verifying("Distanz fehlt!", f => f != null),
+      "Street" -> text,
+      "Zip" -> text,
+      "City" -> text,
+      "Phone" -> text,
+      "Email" -> text,
       "Active" -> boolean
     )(EditUserForm.apply)(EditUserForm.unapply)
     /*verifying("Username existiert bereits", fields => fields match {
@@ -48,7 +59,7 @@ object UserController extends Controller {
     */
   val loginForm = Form(
     mapping(
-      "Username" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
+      "UserName" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte gebe einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert nicht", name => services.UserService.nameInUse(name)),
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!="")
     )(CreateLoginForm.apply)(CreateLoginForm.unapply))
 
@@ -64,7 +75,7 @@ object UserController extends Controller {
         BadRequest(views.html.registration(formWithErrors))
       },
       userData => {
-          val newUser = services.UserService.addUser(userData.name, userData.password, false, userData.distance, true)
+        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, true)
           Redirect(routes.UserController.welcome(None)) withSession("id" -> newUser.id.toString)
       })
   }
@@ -80,7 +91,8 @@ object UserController extends Controller {
         BadRequest(views.html.users(formWithErrors, UserService.registeredUsers))
       },
       userData => {
-        val newUser = services.UserService.addUser(userData.name, userData.password, userData.admin.getOrElse(false), userData.distance, userData.active.getOrElse(false))
+        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, userData.admin.getOrElse(false),
+          userData.street, userData.zip, userData.city, userData.phone, userData.email, userData.active.getOrElse(false))
         Redirect(routes.UserController.manageUser).flashing("success" -> "User wurde erfolgreich angelegt")
       })
   }
@@ -178,8 +190,8 @@ object UserController extends Controller {
           Redirect(routes.UserController.editUser(Some(id))).flashing("fail" -> "Es ist ein Fehler unterlaufen!")
         },
         userData => {
-          val user = models.User(userData.id, userData.name, userData.password, userData.admin, userData.distance, userData.active)
-          if(UserService.nameInUse(userData.id, userData.name)) {
+          val user = models.User(userData.id, userData.userName, userData.firstName, userData.lastName, userData.password, userData.admin, userData.street, userData.zip, userData.city, userData.phone, userData.email, -1, userData.active)
+          if(UserService.nameInUse(userData.id, userData.userName)) {
             Redirect(routes.UserController.editUser(Some(user.id))).flashing("fail" -> "Username ist schon vergeben!")
           } else if((UserService.lastAdmin(user.id) && !user.admin) || (UserService.lastAdmin(user.id) && !user.active)) {
             Redirect(routes.UserController.editUser(Some(user.id))).flashing("fail" -> "Es muss mindestens einen (aktiven) Mitarbeiter geben!")

@@ -14,14 +14,20 @@ trait UserServiceT {
 
   /**
    * Adds a new user to the system.
-   * @param name name of the new user.
+   * @param userName userName of the new user.
    * @return the new user.
    */
-  def addUser(name: String, password: String, admin: Boolean, distance: Int, active: Boolean): User = {
+  def addUser(userName: String, firstName: String, lastName: String, password: String, admin: Boolean, street: String, zip: String, city: String, phone: String, email: String, active: Boolean): User = {
     // create User
-    val newUser = User(-1, name, password, admin, distance, active)
+    val newUser = User(-1, userName, firstName, lastName, password, admin, street, zip, city, phone, email, -1, active)
     // persist and return User
-    userDao.addUser(newUser)
+    val user = userDao.addUser(newUser)
+    controllers.WSController.updateDistance(user)
+    user
+  }
+
+  def updateDistance(id: Long, distance: Int): Boolean= {
+    userDao.updateDistance(id, distance)
   }
 
   /**
@@ -58,10 +64,12 @@ trait UserServiceT {
 
   /**
     * Return id of user if the user exists.
+    * @param userName username of the user.
+    * @param password password of the user.
     * @return optional id of the user.
     */
-  def login(name: String, password: String): Option[Long] = {
-    userDao.login(name, password)
+  def login(userName: String, password: String): Option[Long] = {
+    userDao.login(userName, password)
   }
 
   /**
@@ -82,7 +90,10 @@ trait UserServiceT {
     * Return whether username exists or not.
     * @return true or false.
     */
-  def updateUser(user: User): Unit = userDao.updateUser(user)
+  def updateUser(user: User): Unit = {
+    userDao.updateUser(user)
+    controllers.WSController.updateDistance(user)
+  }
 
   /**
     * Return whether the user is the last admin or not.

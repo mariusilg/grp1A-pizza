@@ -14,7 +14,7 @@ trait OrderServiceT {
 
   /**
     * Adds a new order to the system.
-    * @param id id of the new order.
+    * @param custID id of the customer.
     * @return the new order.
     */
   def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Order = {

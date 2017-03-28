@@ -21,8 +21,15 @@ object Users extends Controller {
     def writes(huser: HateoasUser): JsValue = Json.obj(
       "user" -> Json.obj(
         "id" -> huser.user.id,
-        "name" -> huser.user.name
-        //"password" -> huser.user.password
+        "username" -> huser.user.userName,
+        "firstName" -> huser.user.firstName,
+        "lastName" -> huser.user.lastName,
+        "password" -> huser.user.password,
+        "street" -> huser.user.street,
+        "zip" -> huser.user.zip,
+        "city" -> huser.user.city,
+        "phone" -> huser.user.phone,
+        "email" -> huser.user.email
       ),
       "links" -> Json.arr(
         Json.obj(
@@ -83,7 +90,9 @@ object Users extends Controller {
     }.getOrElse(NotFound)
   }
 
-  private case class Username(name: String)
+  private case class Username(userName: String, firstName: String, lastName: String, password: String,
+                              admin: Boolean, street: String, zip: String, city: String, phone: String,
+                              email: String, distance: Int, active: Boolean)
   private implicit val usernameReads = Json.reads[Username]
 
   /**
@@ -103,7 +112,8 @@ object Users extends Controller {
       },
       username => {
         Ok(Json.obj("status" -> "OK",
-          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.name, "password", false, 0, true)))))
+          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.userName, username.firstName, username.lastName, username.password,
+            username.admin, username.street, username.zip, username.city, username.phone, username.email, username.active)))))
       }
     )
   }

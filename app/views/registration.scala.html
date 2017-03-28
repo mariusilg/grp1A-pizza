@@ -5,15 +5,36 @@
     <a href="@routes.Application.index"><button>zurück</button></a>
     <div class="centered">
         @helper.form(action = routes.UserController.register()) {
-            @helper.input(userForm("Name"), '_label -> "Name:", 'hasErrors -> userForm("Name").hasErrors) { (id, name, value, args) =>
+            @helper.input(userForm("UserName"), '_label -> "UserName:", 'hasErrors -> userForm("UserName").hasErrors) { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="Username">
             }
             @helper.input(userForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
                 <input name="@name" type="password" value="@value" placeholder="Passwort">
             }
+            @helper.input(userForm("FirstName"), '_label -> "First Name:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="First Name">
+            }
+            @helper.input(userForm("LastName"), '_label -> "Last Name:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="Last Name">
+            }
+            @helper.input(userForm("Street"), '_label -> "Street:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="Street & street number">
+            }
+            @helper.input(userForm("Zip"), '_label -> "Zip code:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="Zip Code">
+            }
+            @helper.input(userForm("City"), '_label -> "City:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="City">
+            }
+            @helper.input(userForm("Phone"), '_label -> "Phone:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="Phone number">
+            }
+            @helper.input(userForm("Email"), '_label -> "Email:") { (id, name, value, args) =>
+                <input name="@name" type="text" value="@value" placeholder="eMail">
+            }
             @*helper.input(userForm("Distance"), '_label -> "Distanz:") { (id, name, value, args) =>
                 <input name="@name" type="Int" value="@value" placeholder="in km" min="0" required/>
-            }*@
+            }
             <dl id="Distance_field">
                 <dt>
                     <label>Distanz:</label>
@@ -21,7 +42,7 @@
                 <dd>
                     <input name="Distance" type="number" value='@{userForm("Distance").value.map(x=>x).getOrElse("")}' placeholder="in km" min="0" required/>
                 </dd>
-            </dl>
+            </dl>*@
             <input id="register" type="submit" value="registrieren" />
         }
     </div>
