@@ -17,12 +17,43 @@ trait OrderDaoT {
   def addOrder(order: Order): Order = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Orders(cust_id, distance, duration, costs) values ({cust_id}, {distance}, {duration}, {costs})").on(
-          'cust_id -> order.custID, 'distance -> order.distance, 'duration -> order.duration, 'costs -> order.costs).executeInsert()
+        SQL("insert into Orders(cust_id, state, distance, duration, costs) values ({cust_id}, {state}, {distance}, {duration}, {costs})").on(
+          'cust_id -> order.custID, 'state -> order.state, 'distance -> order.distance, 'duration -> order.duration, 'costs -> order.costs).executeInsert()
       order.id = id.get
     }
     addOrderItems(order.orderItems, order.id)
     order
+  }
+
+  def getCartIDByUserID(userID: Long): Option[Long] = {
+    DB.withConnection { implicit c =>
+      val checkUser = SQL("Select id from Orders where cust_id = {id} and state = 'inCart' limit 1;").on('id -> userID).apply
+        .headOption
+      checkUser match {
+        case Some(row) => Some(row[Long]("id"))
+        case None => None
+      }
+    }
+  }
+
+  /**
+    * Confirms cart to be an order.
+    * @param cart cart.
+    * @return whether update was successful or not
+    */
+  def confirmCart(cart: Order): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Orders SET state = 'inOrder' , costs = {costs} where id = {id}").on('costs -> cart.costs,'id -> cart.id).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
+  def getCartByCustID(custID: Long): List[Order] = {
+    DB.withConnection { implicit c =>
+      val selectOrdersByCustID = SQL("Select id, state, order_date, distance, duration, costs from Orders where cust_id = {custID} and state = 'inCart' limit 1;").on('custID -> custID)
+      val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[String]("state"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
+      ordersByCustID
+    }
   }
 
   def addOrderItems(orderItems: List[OrderItem], orderID: Long): Unit = {
@@ -48,16 +79,16 @@ trait OrderDaoT {
 
   def getOrdersByCustID(custID: Long): List[Order] = {
     DB.withConnection { implicit c =>
-      val selectOrdersByCustID = SQL("Select id, order_date, distance, duration, costs from Orders where cust_id = {custID} order by order_date desc;").on('custID -> custID)
-      val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
+      val selectOrdersByCustID = SQL("Select id, state, order_date, distance, duration, costs from Orders where cust_id = {custID} and state <> 'inCart' order by order_date desc;").on('custID -> custID)
+      val ordersByCustID = selectOrdersByCustID().map(row => Order(row[Long]("id"), custID, row[String]("state"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
       ordersByCustID
     }
   }
 
   def getAllOrders: List[Order] = {
     DB.withConnection { implicit c =>
-      val selectAllOrders = SQL("Select id, cust_id, order_date, distance, duration, costs from Orders order by order_date desc;")
-      val allOrders = selectAllOrders().map(row => Order(row[Long]("id"), row[Long]("cust_id"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
+      val selectAllOrders = SQL("Select id, cust_id, state, order_date, distance, duration, costs from Orders where state <> 'inCart' order by order_date desc;")
+      val allOrders = selectAllOrders().map(row => Order(row[Long]("id"), row[Long]("cust_id"), row[String]("state"), row[Date]("order_date"), getOrderItemsByOrderID(row[Long]("id")), row[Int]("distance"), row[Int]("duration"), row[Int]("costs"))).toList
       allOrders
     }
   }
@@ -80,7 +111,7 @@ trait OrderDaoT {
 
   def getTotalBusinessVolumeByCustID(custID: Long) : Option[Int] = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders where cust_id = {custID}").on('custID -> custID).apply
+      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
         case Some(row) => Some(row[Long]("turnover").toInt)
@@ -91,7 +122,7 @@ trait OrderDaoT {
 
   def getTotalBusinessVolume : Option[Int] = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders").apply
+      val businessVolume = SQL("Select NVL(SUM(costs),0) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
         case Some(row) => Some(row[Long]("turnover").toInt)
@@ -102,7 +133,7 @@ trait OrderDaoT {
 
   def getAverageBusinessVolume : Int = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders").apply
+      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
         case Some(row) => row[Long]("turnover").toInt
@@ -113,7 +144,7 @@ trait OrderDaoT {
 
   def getAverageBusinessVolume(custID: Long) : Int = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders where cust_id = {custID}").on('custID -> custID).apply
+      val businessVolume = SQL("Select NVL(AVG(costs), 0) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
         case Some(row) => row[Long]("turnover").toInt

@@ -28,11 +28,54 @@ trait OrderServiceT {
       }
     }
     var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
-    var newOrder = Order(-1, custID, null, newOrderItems, distance, -1, -1)
+    var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
     newOrder.calcDuration(item.prepDuration)
     newOrder.calcOrderCost
     orderDao.addOrder(newOrder)
   }
+
+  def addToCart(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Unit = {
+    val item = ItemService.getItem(itemID).get
+    var newOrderExtras = List[OrderExtra]()
+    for(id <- extraIDs) {
+      val extra = ExtraService.getExtra(id)
+      extra match {
+        case Some(extra) => newOrderExtras = OrderExtra(extra.id, extra.name, 1, extra.price) :: newOrderExtras
+        case None =>
+      }
+    }
+    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
+    var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
+    newOrder.calcDuration(item.prepDuration)
+    newOrder.calcOrderCost
+
+    val cartID = getCartIDByUserID(custID)
+    cartID match {
+      case Some(cartID) => orderDao.addOrderItems(newOrder.orderItems, cartID)
+      case None => orderDao.addOrder(newOrder)
+    }
+  }
+
+  def confirmCart(custID: Long): Boolean = {
+    val cart = getCartByUserID(custID).head
+    orderDao.confirmCart(cart)
+  }
+
+  def getCartIDByUserID(userID: Long): Option[Long] = {
+    orderDao.getCartIDByUserID(userID)
+  }
+
+  def getCartByUserID(userID: Long): List[Order] = {
+    var orders = orderDao.getCartByCustID(userID)
+    for(order <- orders) {
+      order.calcOrderCost
+    }
+    orders
+  }
+
+  /*def changeState(custID: Long, newState: String) = {
+    orderDao.changeState(custID, newState)
+  }*/
 
   def calcProductCost(quantity: Int, size: Int, price: Int): Int = {
     val costs = quantity * size * price
