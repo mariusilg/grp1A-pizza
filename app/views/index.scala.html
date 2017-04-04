@@ -3,6 +3,7 @@
 @main(models.Company.name) {
     <h1 style="text-align: center; margin: auto; padding: 30px">Willkommen bei @models.Company.name</h1>
     <div class="centered">
+        <div id="loginBody">
         @helper.form(action = routes.UserController.login) {
             @helper.input(loginForm("UserName"), '_label -> "Name:") { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="Username">
@@ -13,5 +14,7 @@
             <input type="submit" value="Login" />
         }
         <a href="@routes.Application.register"><button>hier registrieren</button></a>
+        </div>
     </div>
+
 }

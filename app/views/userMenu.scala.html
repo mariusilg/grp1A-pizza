@@ -1,10 +1,11 @@
-@()
-
-<ul id="menu">
-    @for(category <- services.CategoryService.visibleCategories) {
-        <li><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></li>
-    }
-    <li style="float: right"><a href="@routes.UserController.logout">logout</a></li>
-    <li style="float: right"><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
-    <li style="float: right"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
-</ul>
+@(selected: String)
+<div id="contentHeader">
+    <ul id="menu">
+        @for(category <- services.CategoryService.visibleCategories) {
+            <li @{if(selected == (category.id).toString()){"class=selectedTab"}}><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></li>
+        }
+        <li style="float: right" @{if(selected == "logout"){"class=selectedTab"}}><a href="@routes.UserController.logout">logout</a></li>
+        <li style="float: right" @{if(selected == "myOrders"){"class=selectedTab"}}><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
+        <li style="float: right" @{if(selected == "myAccount"){"class=selectedTab"}}><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+    </ul>
+</div>
