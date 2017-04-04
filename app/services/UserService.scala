@@ -136,6 +136,10 @@ trait UserServiceT {
     */
   def rmUser(id: Long): Boolean = userDao.rmUser(id)
 
+  def checkIfUserExists(username: String, password: String): Boolean = {
+    userDao.checkIfUserExists(username, password)
+  }
+
 
   /*##########################################################################
   ##                          REPORTING                                     ##

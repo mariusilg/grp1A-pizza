@@ -285,6 +285,22 @@ trait UserDaoT {
     }
   }
 
+  def checkIfUserExists(username: String, password: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val extraRange = SQL("select count(*) as count from Users where username = {username} and password = {password};").on(
+        'username -> username,
+        'password -> password
+      ).apply().head
+      // Transform the resulting Stream[Row] to a List[(String,String)]
+      //val product = productRange().map(row => Item(row[Long]("id"), row[String]("name"), row[String]("unit"), row[String]("type")))
+      var count = extraRange[Long]("count")
+      if(count > 0) {
+        return true
+      }
+    }
+    false
+  }
+
 }
 
 object UserDao extends UserDaoT
