@@ -13,6 +13,8 @@ GET         /error               controllers.Application.error
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
+GET         /cart                controllers.OrderController.showCart
+GET         /confirmCart         controllers.OrderController.confirmCart
 GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
@@ -33,6 +35,7 @@ POST        /updateCategory      controllers.AssortmentController.updateCategory
 POST        /removeCategory      controllers.AssortmentController.rmCategory(id: Option[Long])
 POST        /login               controllers.UserController.login
 POST        /addOrder            controllers.OrderController.addOrder(username)
+POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh
 
 # REST API

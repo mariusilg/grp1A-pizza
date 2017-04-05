@@ -5,12 +5,13 @@ import java.util.Date
   * Order entity.
   * @param id database id of the order.
   * @param custID database id of the customer.
+  * @param state state of order.
   * @param orderItems list of items belonging to this order
   * @param distance current distance of customer.
   * @param duration duration until delivery.
   * @param costs costs of order.
   */
-case class Order(var id: Long, var custID: Long, var date: Date, var orderItems: List[OrderItem], var distance: Int, var duration: Int, var costs: Int) {
+case class Order(var id: Long, var custID: Long, var state: String, var date: Date, var orderItems: List[OrderItem], var distance: Int, var duration: Int, var costs: Int) {
 
   /*
    * Method to convert this order price into a String.
