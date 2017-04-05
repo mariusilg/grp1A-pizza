@@ -103,9 +103,11 @@ object UserController extends Controller {
         BadRequest(views.html.index(formWithErrors))
       },
       userData => {
+        println("hey");
         val id = services.UserService.login(userData.userName, userData.userPassword)
         id match {
           case Some(id) => if (UserService.userIsActive(id)) {
+            println("hey");
             Redirect(routes.UserController.welcome(None)) withSession("id" -> id.toString)
           } else {
             Redirect(routes.Application.error()).flashing("error" -> "Ihr Account ist deaktiviert worden - Bitte kontaktieren Sie uns")

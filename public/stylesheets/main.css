@@ -1,5 +1,68 @@
 @import url("http://fonts.googleapis.com/css?family=Roboto:400,500,300,700");
 
+
+/*zurücksetzen der style vorgaben*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+body {
+    line-height: 1;
+    color: black;
+    background: white;
+    font-family: "Roboto",sans-serif;
+    background-image: url(../images/backgroundLogo.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+ol, ul {
+    list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+caption, th, td {
+    text-align: left;
+    font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+}
+blockquote, q {
+    quotes: "" "";
+}
+
+
+
+
+
+
+
+
 html {
     /*background: rgba(0, 0, 0, 0) linear-gradient(to right, #25c481, #25b7c4) repeat scroll 0% 0%;*/
     background-color: white;
@@ -27,19 +90,6 @@ html {
     -o-filter: blur(3px);*/
 }
 
-body {
-    background: #ffffff none repeat scroll 0% 0%;
-    border-radius: 15px;
-    bottom: 0;
-    font-family: "Roboto",sans-serif;
-    margin: auto;
-    min-height: 500px;
-    min-width: 1300px;
-    width: 80%;
-    margin-top: 40pt;
-    margin-bottom: 40pt;
-    position: relative;
-}
 
 .centered {
       margin: auto;
@@ -56,15 +106,21 @@ ul#menu {
     list-style-type: none;
     overflow: hidden;
     background-color: #333;
-    position: relative;
     padding: 0 20px 0 20px;
     margin: 0;
-    border-top-left-radius: 11px;
+    /*border-top-left-radius: 11px;*/
     /*border-top: 1px solid #333;*/
-    border-top-right-radius: 11px;
+    /*border-top-right-radius: 11px;*/
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+    width: 100%;
+
+
+}
+
+a {
+    text-decoration: none;
 }
 
 #menu li {
@@ -87,7 +143,8 @@ ul#menu {
 }
 
 #menu li a:hover:not(.active) {
-    background-color: #111;
+    /*background-color: #111;*/
+    color: #65B1F3;
 }
 
 h1 {
@@ -146,7 +203,7 @@ a:visited {
 
 #error {
     background-color: red;
-    border-radius: 1em;
+    /*border-radius: 1em;*/
     padding: 1em;
     color: white;
     margin-bottom: 5%;
@@ -156,7 +213,7 @@ a:visited {
 
 #success {
     background-color: green;
-    border-radius: 1em;
+    /*border-radius: 1em;*/
     padding: 1em;
     color: white;
     margin-bottom: 5%;
@@ -295,7 +352,7 @@ td .value-input {
     vertical-align: middle;
 }
 
-#footer {
+#contentFooter {
     list-style: none;
     height: 30px;
     text-align: center;
@@ -305,9 +362,10 @@ td .value-input {
     left: 0;
     bottom: 0;
     right: 0;
+    color: black;
 }
 
-#footer li {
+#footerlinks li {
     float: none;
     display: inline-block;
     text-align: center;
@@ -318,14 +376,14 @@ td .value-input {
     margin-right: 30px;
 }
 
-#footer a {
+#contentFooter a {
     text-decoration: none;
     outline: 0;
     cursor: pointer;
     cursor: hand;
 }
 
-#footer a:visited {
+#contentFooter a:visited {
     text-decoration: none;
     color: black
 }
@@ -333,3 +391,92 @@ td .value-input {
 #footerlinks {
     margin: auto;
 }
+
+#contentContainer {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255,255,255);
+    position: absolute;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+#body {
+    position: absolute;
+    width: 90%;
+    height: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+#contentContainer::-webkit-scrollbar {
+    width: 5px;
+}
+
+#contentContainer::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+#contentContainer::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+}
+
+a:-webkit-any-link {
+    color: black;
+}
+
+#contentHeader {
+    height: 50px;
+}
+
+#contentBody {
+    position: absolute;
+    overflow-x: auto;
+    height: calc(100vh - 90px);
+}
+
+.selectedTab a {
+    color: #65B1F3 !important;
+}
+
+
+
+
+
+
+
+
+table.productTable {
+    display: table;
+    width: 100%;
+}
+
+table.productTable thead,
+table.productTable tbody {
+    width: 100%;
+}
+
+table.productTable thead {
+    overflow-y: scroll;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+table.productTable tbody {
+    overflow: auto;
+    height: calc(100vh - 265px);
+    display: block;
+}
+
+table.productTable tr {
+    width: 100%;
+    text-align: left;
+    display: table;
+    table-layout: fixed;
+}
+

@@ -14,7 +14,7 @@
                 var p = document.getElementById(id).value * document.getElementById("s"+id).value;
                 document.getElementById("p"+id).innerText = Number(p/100).toFixed(2) + " €";
                 var tp = p * document.getElementById("q"+id).value;
-                document.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + " €";
+                documeant.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + " €";
 
                 var boxes = document.getElementById("e"+id).getElementsByTagName('input');
                 var q = 0;
@@ -60,16 +60,19 @@
             }
     </script>
 
-    @userMenu()
+    @userMenu(categoryID.toString())
+    <div id="contentBody">
+        <!--<div id="contentBodyInner">-->
+
 
     @for(category <- services.CategoryService.getCategory(categoryID)) {
-        <h1>@category.name</h1>
+        <!--<h1>@category.name</h1>-->
         @if(services.ItemService.cntVisibleItems(categoryID) == 0) {
         <b>zur Zeit sind keine Produkte hinterlegt!</b>
         } else {
-            <div class="product-tbl-header">
-                <table cellpadding="0" cellspacing="0" border="0">
-                    <thead>
+
+                <table cellpadding="0" cellspacing="0" border="0" class="productTable">
+                    <thead class="product-tbl-header">
                         <tr>
                             <th>Anz.</th>
                             <th>Art. Name</th>
@@ -80,12 +83,12 @@
                             <th></th>
                         </tr>
                     </thead>
-                </table>
-            </div>
 
-            <div class="product-tbl-content">
-                <table cellpadding="0" cellspacing="0" border="0">
-                    <tbody>
+
+
+
+
+                    <tbody class="product-tbl-content">
                     @for(item <- services.ItemService.getAvailableItemsByCategory(categoryID)) {
                         @helper.form(action = routes.OrderController.addToCart()) {
                             <tr>
@@ -147,7 +150,9 @@
                     }
                     </tbody>
                 </table>
-            </div>
+
         }
     }
+        </div>
+    <!--</div>-->
 }
