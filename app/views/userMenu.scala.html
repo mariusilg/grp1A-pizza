@@ -5,7 +5,8 @@
             <li @{if(selected == (category.id).toString()){"class=selectedTab"}}><a href="@routes.UserController.welcome(Some(category.id))">@category.name</a></li>
         }
         <li style="float: right" @{if(selected == "logout"){"class=selectedTab"}}><a href="@routes.UserController.logout">logout</a></li>
-        <li style="float: right" @{if(selected == "myOrders"){"class=selectedTab"}}><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
         <li style="float: right" @{if(selected == "myAccount"){"class=selectedTab"}}><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+        <li style="float: right" @{if(selected == "myOrders"){"class=selectedTab"}}><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
+    <li style="float: right" @{if(selected == "cart"){"class=selectedTab"}}><a href="@routes.OrderController.showCart">Warenkorb</a></li>
     </ul>
 </div>

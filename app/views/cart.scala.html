@@ -5,7 +5,7 @@
     @if(user.admin) {
         @adminMenu()
     } else {
-        @userMenu()
+        @userMenu("cart")
         <h1>Mein Warenkorb</h1>
 
         @for(order <- services.OrderService.getCartByUserID(user.id)) {
