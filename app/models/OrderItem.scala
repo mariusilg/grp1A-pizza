@@ -4,7 +4,7 @@ package models
   *
   *
   */
-case class OrderItem(var id: Long, var name: String, var quantity: Int, size: Int, unit: String, var orderExtras: List[OrderExtra], var price: Int) {
+case class OrderItem(var id: Long, var itemID: Long, var name: String, var quantity: Int, size: Int, unit: String, var orderExtras: List[OrderExtra], var price: Int) {
 
   /*
    * Method to convert this price into a String.

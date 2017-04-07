@@ -27,7 +27,7 @@ trait OrderServiceT {
         case None =>
       }
     }
-    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
+    var newOrderItems = List[OrderItem](OrderItem(-1, itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
     var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
     newOrder.calcDuration(item.prepDuration)
     newOrder.calcOrderCost
@@ -44,7 +44,7 @@ trait OrderServiceT {
         case None =>
       }
     }
-    var newOrderItems = List[OrderItem](OrderItem(itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
+    var newOrderItems = List[OrderItem](OrderItem(-1, itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
     var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
     newOrder.calcDuration(item.prepDuration)
     newOrder.calcOrderCost
@@ -59,6 +59,16 @@ trait OrderServiceT {
   def confirmCart(custID: Long): Boolean = {
     val cart = getCartByUserID(custID).head
     orderDao.confirmCart(cart)
+  }
+
+  def deleteCart(custID: Long): Boolean = {
+    val cart = getCartByUserID(custID).head
+    orderDao.deleteCart(cart.id)
+  }
+
+  def deleteCartItem(custID: Long, orderItemID: Long): Boolean = {
+    val cart = getCartByUserID(custID).head
+    orderDao.deleteOrderItem(cart.id, orderItemID)
   }
 
   def getCartIDByUserID(userID: Long): Option[Long] = {

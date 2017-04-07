@@ -8,6 +8,9 @@
         @userMenu("cart")
         <h1>Mein Warenkorb</h1>
 
+        @if(cart.isEmpty) {
+            Warenkorb ist leer
+        }
         @for(order <- services.OrderService.getCartByUserID(user.id)) {
             <div class="order-tbl-header">
                 <table cellpadding="0" cellspacing="0" border="0">
@@ -18,9 +21,7 @@
                             <th></th>
                         </tr>
                         <tr>
-                            <th colspan="2">Distanz: @order.distance km</th>
-                        </tr>
-                        <tr>
+                            <th></th>
                             <th>Anz.</th>
                             <th></th>
                             <th>Art. Name</th>
@@ -38,10 +39,11 @@
                     <tbody>
                         @for(orderItem <- order.orderItems) {
                             <tr>
+                                <td><a href="@routes.OrderController.deleteCartItem(orderItem.id)">löschen</a></td>
                                 <td>@orderItem.quantity x</td>
                                 <td></td>
                                 <td>@orderItem.name</td>
-                                <td>@orderItem.id</td>
+                                <td>@orderItem.itemID</td>
                                 <td>@orderItem.size @orderItem.unit</td>
                                 <td><i>@services.OrderService.costsToString(orderItem.price / orderItem.quantity)</i></td>
                                 <td><i>@services.OrderService.costsToString(orderItem.price)</i></td>
@@ -49,6 +51,7 @@
                             @for(orderExtra <- orderItem.orderExtras) {
                                 <tr>
                                     <td></td>
+                                    <td><a href="@routes.OrderController.deleteCartItem(orderItem.id)">löschen</a></td>
                                     <td>je @orderExtra.quantity x</td>
                                     <td>+ @orderExtra.name</td>
                                     <td>@orderExtra.id (e)</td>
@@ -71,6 +74,8 @@
                 </table>
             </div>
             <a href="@routes.OrderController.confirmCart">Bestellungen abschicken</a>
+            <br/>
+            <a href="@routes.OrderController.deleteCart">Warenkorb löschen</a>
         }
     }
 }

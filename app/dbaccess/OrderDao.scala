@@ -48,6 +48,33 @@ trait OrderDaoT {
     }
   }
 
+  /**
+    * Deletes cart.
+    * @param cartID order id of cart.
+    * @return whether deletion was successful or not
+    */
+  def deleteCart(cartID: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsDeleted = SQL("delete Orders where id = {id}").on('id -> cartID).executeUpdate()
+      rowsDeleted == 1
+    }
+  }
+
+  /**
+    * Deletes cart.
+    * @param cartID order id of cart.
+    * @param cartItemID id of orderItem of cart.
+    * @return whether deletion was successful or not
+    */
+  def deleteOrderItem(cartID: Long, cartItemID: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsDeleted = SQL("delete Order_Items where id = {cartItemID} and order_id = {cartID}").on('cartItemID -> cartItemID, 'cartID -> cartID).executeUpdate()
+      rowsDeleted == 1
+    }
+  }
+
+
+
   def getCartByCustID(custID: Long): List[Order] = {
     DB.withConnection { implicit c =>
       val selectOrdersByCustID = SQL("Select id, state, order_date, distance, duration, costs from Orders where cust_id = {custID} and state = 'inCart' limit 1;").on('custID -> custID)
@@ -61,7 +88,7 @@ trait OrderDaoT {
       DB.withConnection { implicit c =>
         val id: Option[Long] =
             SQL("insert into order_items(order_id, item_id, item_name, size, unit, quantity, costs) values ({order_id}, {item_id}, {item_name}, {size}, {unit}, {quantity}, {costs})").on('order_id -> orderID,
-              'item_id -> orderItem.id, 'item_name -> orderItem.name, 'size -> orderItem.size, 'unit -> orderItem.unit, 'quantity -> orderItem.quantity, 'costs -> orderItem.price).executeInsert()
+              'item_id -> orderItem.itemID, 'item_name -> orderItem.name, 'size -> orderItem.size, 'unit -> orderItem.unit, 'quantity -> orderItem.quantity, 'costs -> orderItem.price).executeInsert()
         addItemExtras(orderItem.orderExtras, id.get)
         }
     }
@@ -96,7 +123,7 @@ trait OrderDaoT {
   def getOrderItemsByOrderID(orderID: Long): List[OrderItem] = {
     DB.withConnection { implicit c =>
       val selectItemsByOrderID = SQL("Select * from order_items where order_id = {orderID}").on('orderID -> orderID)
-      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), row[String]("unit"), getItemExtrasByOrderItemID(row[Long]("id")), row[Int]("costs"))).toList
+      val itemsByOrderID = selectItemsByOrderID().map(row => OrderItem(row[Long]("id"), row[Long]("item_id"), row[String]("item_name"), row[Int]("quantity"), row[Int]("size"), row[String]("unit"), getItemExtrasByOrderItemID(row[Long]("id")), row[Int]("costs"))).toList
       itemsByOrderID
     }
   }

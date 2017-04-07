@@ -84,7 +84,39 @@ object OrderController extends Controller {
     }
   }
 
+  def deleteCart: Action[AnyContent] = Action { implicit request =>
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) =>
+            if (services.OrderService.deleteCart(user.id)) {
+              Redirect(routes.OrderController.showCart)
+            } else {
+              Redirect(routes.OrderController.showCart).flashing("fail" -> "Warenkorb konnte nicht gelöscht werden")
+            }
+        case None => Redirect(routes.UserController.logout)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
+  }
 
+  def deleteCartItem(orderItemID: Long): Action[AnyContent] = Action { implicit request =>
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) =>
+          if (services.OrderService.deleteCartItem(user.id, orderItemID)) {
+            Redirect(routes.OrderController.showCart)
+          } else {
+            Redirect(routes.OrderController.showCart).flashing("fail" -> "Produkt konnte nicht aus dem Warenkorb gelöscht werden")
+          }
+        case None => Redirect(routes.UserController.logout)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
+  }
 
 
   def refresh() : Action[AnyContent] = Action { implicit request =>
