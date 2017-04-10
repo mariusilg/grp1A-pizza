@@ -1,6 +1,6 @@
-name := """PizzaFlitza""" // please change me
+name := """Don Corleone""" // please change me
 
-version := "Milestone2" // please change me later
+version := "MS1" // please change me later
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -16,7 +16,11 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-scalacheck" % "3.5" % "test",
   "org.specs2" %% "specs2-junit" % "3.5" % "test",
   "org.specs2" %% "specs2-mock" % "3.5" % "test",
-  "postgresql" % "postgresql" % "9.1-901-1.jdbc4"
+  "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
+  "com.typesafe.play" %% "play-mailer" % "5.0.0"
 )
+
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature",
+  "-Xfatal-warnings")
 
 

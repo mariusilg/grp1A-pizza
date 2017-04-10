@@ -23,6 +23,10 @@
                         </tr>
                         <tr>
                             <th colspan="2">Distanz: @order.distance km</th>
+                            <th colspan="2">@if(order.state == "inOrder"){
+                                    <a href="@routes.OrderController.cancelOrder(order.id)">stornieren</a>
+                            }
+                            </th>
                         </tr>
                         <tr>
                             <th>Anz.</th>

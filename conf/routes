@@ -16,6 +16,7 @@ GET         /showOrders          controllers.OrderController.showOrders(ofUser: 
 GET         /cart                controllers.OrderController.showCart
 GET         /confirmCart         controllers.OrderController.confirmCart
 GET         /deleteCart          controllers.OrderController.deleteCart
+GET         /cancelOrder         controllers.OrderController.cancelOrder(orderID: Long)
 GET         /deleteCartItem      controllers.OrderController.deleteCartItem(itemID: Long)
 GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])

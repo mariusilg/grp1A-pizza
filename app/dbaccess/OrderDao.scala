@@ -49,6 +49,18 @@ trait OrderDaoT {
   }
 
   /**
+    * Confirms cart to be an order.
+    * @param cart cart.
+    * @return whether update was successful or not
+    */
+  def cancelOrder(custID: Long, orderID: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Orders SET state = 'canceled' where id = {id} and cust_id = {custID}").on('id -> orderID,'custID -> custID).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
+  /**
     * Deletes cart.
     * @param cartID order id of cart.
     * @return whether deletion was successful or not

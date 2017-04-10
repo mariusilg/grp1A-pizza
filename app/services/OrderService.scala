@@ -61,6 +61,10 @@ trait OrderServiceT {
     orderDao.confirmCart(cart)
   }
 
+  def getRecentOrderByCustID(custID: Long): Order = {
+    orderDao.getOrdersByCustID(custID).head
+  }
+
   def deleteCart(custID: Long): Boolean = {
     val cart = getCartByUserID(custID).head
     orderDao.deleteCart(cart.id)
@@ -70,6 +74,12 @@ trait OrderServiceT {
     val cart = getCartByUserID(custID).head
     orderDao.deleteOrderItem(cart.id, orderItemID)
   }
+
+
+  def cancelOrder(custID: Long, orderID: Long): Boolean = {
+    orderDao.cancelOrder(custID, orderID)
+  }
+
 
   def getCartIDByUserID(userID: Long): Option[Long] = {
     orderDao.getCartIDByUserID(userID)

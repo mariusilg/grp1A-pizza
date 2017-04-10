@@ -7,12 +7,20 @@ import play.api.mvc.{Action, AnyContent, Controller}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import org.apache.http._
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.impl.client.DefaultHttpClient
+import java.util.ArrayList
+import org.apache.http.message.BasicNameValuePair
+import org.apache.http.client.entity.UrlEncodedFormEntity
+
 
 /**
  * Main controller of the Location Service application.
  *
  * @author ne
  */
+
 object WSController extends Controller {
 
   private def parseGoogleJsonDistance(json: JsValue): Int = {
@@ -72,6 +80,18 @@ object WSController extends Controller {
       //updateDistance
       durationNumber
     }
+  }
+
+  def sendNotification(user: models.User): Unit = {
+    val url = "https://api.pushover.net/1/messages.json"
+    val client = new DefaultHttpClient
+    val post = new HttpPost(url)
+    val nameValuePairs = new ArrayList[NameValuePair](1)
+    nameValuePairs.add(new BasicNameValuePair("token", "ahodi8gfzuiis8ntesyjhwm1prgwj8"))
+    nameValuePairs.add(new BasicNameValuePair("user", "u11syxingmq1k7jjqqx8dq6axu8dm8"))
+    nameValuePairs.add(new BasicNameValuePair("message", "Neue Bestellung ist gerade eingegangen \n id: " + user.id + "\n name: " + user.userName + "\n"))
+    post.setEntity(new UrlEncodedFormEntity(nameValuePairs))
+    val response = client.execute(post)
   }
 
 }

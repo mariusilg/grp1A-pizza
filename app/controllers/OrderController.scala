@@ -1,10 +1,13 @@
 package controllers
-
+import play.api.Play.current
 import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.data.Forms._
 import play.api.data.Form
 import services._
 import forms._
+import play.api.libs.mailer._
+import java.io.File
+import org.apache.commons.mail.EmailAttachment
 
 /**
   * Controller for order specific operations.
@@ -70,6 +73,9 @@ object OrderController extends Controller {
         case Some(user) =>
             if(user.distance <= 20) {
               if (services.OrderService.confirmCart(user.id)) {
+                val order = services.OrderService.getRecentOrderByCustID(user.id)
+                controllers.WSController.sendNotification(user)
+                controllers.MailController.sendMail(user, order)
                 Redirect(routes.OrderController.showOrders(None))
               } else {
                 Redirect(routes.OrderController.showCart)
@@ -110,6 +116,23 @@ object OrderController extends Controller {
             Redirect(routes.OrderController.showCart)
           } else {
             Redirect(routes.OrderController.showCart).flashing("fail" -> "Produkt konnte nicht aus dem Warenkorb gelöscht werden")
+          }
+        case None => Redirect(routes.UserController.logout)
+      }
+    }.getOrElse {
+      Redirect(routes.Application.index)
+    }
+  }
+
+  def cancelOrder(orderID: Long): Action[AnyContent] = Action { implicit request =>
+    request.session.get("id").map { id =>
+      val user = services.UserService.getUserByID(id.toLong)
+      user match {
+        case Some(user) =>
+          if (services.OrderService.cancelOrder(user.id, orderID)) {
+            Redirect(routes.OrderController.showOrders(None))
+          } else {
+            Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
           }
         case None => Redirect(routes.UserController.logout)
       }
