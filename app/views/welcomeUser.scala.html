@@ -8,13 +8,23 @@
                 document.getElementById("p"+id).innerText = Number(p/100).toFixed(2) + " €";
                 var tp = p * document.getElementById("q"+id).value;
                 document.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + " €";
+
+                var boxes = document.getElementById("e"+id).getElementsByTagName('input');
+                var q = 0;
+                for (var i = 0, box; box = boxes[i++];) {
+                    if(box.checked) {
+                        q += 1;
+                    }
+                }
+                var etp = document.getElementById("q"+id).value * q * 50;
+                document.getElementById("etp"+id).innerText = "+" + Number(etp/100).toFixed(2) + " €";
             }
 
             function changePriceWithE(id) {
                 var p = document.getElementById(id).value * document.getElementById("s"+id).value;
                 document.getElementById("p"+id).innerText = Number(p/100).toFixed(2) + " €";
                 var tp = p * document.getElementById("q"+id).value;
-                documeant.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + " €";
+                document.getElementById("tp"+id).innerText = Number(tp/100).toFixed(2) + " €";
 
                 var boxes = document.getElementById("e"+id).getElementsByTagName('input');
                 var q = 0;
@@ -66,7 +76,7 @@
 
 
     @for(category <- services.CategoryService.getCategory(categoryID)) {
-        <!--<h1>@category.name</h1>-->
+        @**category.name</h1>-->**@
         @if(services.ItemService.cntVisibleItems(categoryID) == 0) {
         <b>zur Zeit sind keine Produkte hinterlegt!</b>
         } else {
@@ -114,8 +124,8 @@
                                 }
                                 </td>
                                 <input id="s@item.id" type="hidden" value="@item.price"/><td id="p@item.id">@item.priceToString(services.CategoryService.getDefaultSize(categoryID))</td>
-                                <td id="tp@item.id"><b>@item.priceToString(services.CategoryService.getDefaultSize(categoryID))</b></td>
-                                <td><input type="submit" value="bestellen" /></td>
+                                <td id="tp@item.id">@item.priceToString(services.CategoryService.getDefaultSize(categoryID))</td>
+                                <td><input type="submit" value="hinzufügen" /></td>
                             </tr>
                             @if(item.hasExtras) {
                                 <tr id="tr@item.id" style="display: none;">
