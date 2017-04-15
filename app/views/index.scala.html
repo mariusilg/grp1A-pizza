@@ -4,7 +4,7 @@
     <h1 style="text-align: center; margin: auto; padding: 30px">Willkommen bei @models.Company.name</h1>
     <div class="centered">
         <div id="loginBody">
-        @helper.form(action = routes.UserController.login) {
+        @helper.form(action = routes.Auth.post_authenticate()) {
             @helper.input(loginForm("UserName"), '_label -> "Name:") { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="Username">
             }

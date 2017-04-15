@@ -6,31 +6,31 @@
     <div class="centered">
         @helper.form(action = routes.UserController.register()) {
             @helper.input(userForm("UserName"), '_label -> "UserName:", 'hasErrors -> userForm("UserName").hasErrors) { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="Username">
+                <input name="@name" type="text" value="@value" placeholder="Username" class="userInfoForm">
             }
             @helper.input(userForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
-                <input name="@name" type="password" value="@value" placeholder="Passwort">
+                <input name="@name" type="password" value="@value" placeholder="Passwort" class="userInfoForm">
             }
             @helper.input(userForm("FirstName"), '_label -> "First Name:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="First Name">
+                <input name="@name" type="text" value="@value" placeholder="First Name" class="userInfoForm">
             }
             @helper.input(userForm("LastName"), '_label -> "Last Name:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="Last Name">
+                <input name="@name" type="text" value="@value" placeholder="Last Name" class="userInfoForm">
             }
             @helper.input(userForm("Street"), '_label -> "Street:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="Street & street number">
+                <input name="@name" type="text" value="@value" placeholder="Street & street number" class="userInfoForm">
             }
             @helper.input(userForm("Zip"), '_label -> "Zip code:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="Zip Code">
+                <input name="@name" type="text" value="@value" placeholder="Zip Code" class="userInfoForm">
             }
             @helper.input(userForm("City"), '_label -> "City:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="City">
+                <input name="@name" type="text" value="@value" placeholder="City" class="userInfoForm">
             }
             @helper.input(userForm("Phone"), '_label -> "Phone:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="Phone number">
+                <input name="@name" type="text" value="@value" placeholder="Phone number" class="userInfoForm">
             }
             @helper.input(userForm("Email"), '_label -> "Email:") { (id, name, value, args) =>
-                <input name="@name" type="text" value="@value" placeholder="eMail">
+                <input name="@name" type="text" value="@value" placeholder="eMail" class="userInfoForm">
             }
             @*helper.input(userForm("Distance"), '_label -> "Distanz:") { (id, name, value, args) =>
                 <input name="@name" type="Int" value="@value" placeholder="in km" min="0" required/>
@@ -46,4 +46,6 @@
             <input id="register" type="submit" value="registrieren" />
         }
     </div>
+    <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
+    <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
 }

@@ -1,17 +1,18 @@
 package controllers
 
-import play.api.mvc.{Action, AnyContent, Controller}
+import controllers.Auth.Secured
+import forms._
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.mvc.{Action, AnyContent, Controller}
 import services._
-import forms._
 
 /**
  * Controller for user specific operations.
  *
  * @author ob, scs, ne
  */
-object UserController extends Controller {
+object UserController extends Controller with Secured {
 
   /**
    * Form object for user data.
@@ -103,11 +104,9 @@ object UserController extends Controller {
         BadRequest(views.html.index(formWithErrors))
       },
       userData => {
-        println("hey");
         val id = services.UserService.login(userData.userName, userData.userPassword)
         id match {
           case Some(id) => if (UserService.userIsActive(id)) {
-            println("hey");
             Redirect(routes.UserController.welcome(None)) withSession("id" -> id.toString)
           } else {
             Redirect(routes.Application.error()).flashing("error" -> "Ihr Account ist deaktiviert worden - Bitte kontaktieren Sie uns")
@@ -120,6 +119,19 @@ object UserController extends Controller {
   /**
     * Shows the welcome view for a (newly) registered user.
     */
+
+  /*def index = withUser { user => implicit request =>
+    user.admin match {
+      case true =>
+        Redirect(routes.UserController.showUsers())
+      //Ok(views.html.index(controllers.UserController.userForm))
+      case _ =>
+        //Ok(views.html.index(controllers.UserController.userForm))
+        Redirect(routes.UserController.showOwnUser())
+
+    }
+  }*/
+
   def welcome(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
       val user = services.UserService.getUserByID(id.toLong)

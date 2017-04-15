@@ -1,6 +1,6 @@
 package controllers
-
-import play.api.mvc.{Action, Controller, AnyContent}
+import controllers.Auth.Secured
+import play.api.mvc.{Action, AnyContent, Controller}
 import services.UserService
 
 /**
@@ -8,14 +8,24 @@ import services.UserService
  *
  * @author ob, scs, ne
  */
-object Application extends Controller {
+object Application extends Controller with Secured {
 
   /**
    * Shows the start page of the application.
    *
    * @return main web page
    */
-  def index : Action[AnyContent] = Action { request =>
+  def index = withUser { user => implicit request =>
+    println("funktioniert")
+    user.admin match {
+      case true =>
+        Ok(views.html.welcomeAdmin(user))
+      //Ok(views.html.index(controllers.UserController.userForm))
+      case _ =>
+        //Ok(views.html.index(controllers.UserController.userForm))
+        Redirect(routes.ItemController.showItems(Some(1)))
+
+    }
     request.session.get("id").map { id =>
       val user = UserService.getUserByID(id.toLong)
       user match {

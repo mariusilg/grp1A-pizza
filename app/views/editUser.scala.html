@@ -36,26 +36,26 @@
                 <table cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                         <tr>
-                            <td><input type="hidden" name="ID" value="@user.id">@user.id</td>
-                            <td><input type="text" name="UserName" value="@user.userName"/></td>
-                            <td><input type="text" name="FirstName" value="@user.firstName"/></td>
-                            <td><input type="text" name="LastName" value="@user.lastName"/></td>
-                            <td><input type="text" name="Street" value="@user.street"/></td>
-                            <td><input type="text" name="Zip" value="@user.zip"/></td>
-                            <td><input type="text" name="City" value="@user.city"/></td>
-                            <td><input type="text" name="Phone" value="@user.phone"/></td>
-                            <td><input type="text" name="Email" value="@user.email"/></td>
-                            <td><input type="text" name="Password" value="@user.password" /></td>
+                            <td><input type="hidden" name="ID" value="@user.id" class="userInfoForm">@user.id</td>
+                            <td><input type="text" name="UserName" value="@user.userName" class="userInfoForm"/></td>
+                            <td><input type="text" name="FirstName" value="@user.firstName" class="userInfoForm"/></td>
+                            <td><input type="text" name="LastName" value="@user.lastName" class="userInfoForm"/></td>
+                            <td><input type="text" name="Street" value="@user.street" class="userInfoForm"/></td>
+                            <td><input type="text" name="Zip" value="@user.zip" class="userInfoForm"/></td>
+                            <td><input type="text" name="City" value="@user.city" class="userInfoForm"/></td>
+                            <td><input type="text" name="Phone" value="@user.phone" class="userInfoForm"/></td>
+                            <td><input type="text" name="Email" value="@user.email" class="userInfoForm"/></td>
+                            <td><input type="text" name="Password" value="@user.password" class="userInfoForm"/></td>
                         @if(admin) {
-                                <td><input type="checkbox" name="Admin" value="true" @{
+                                <td><input type="checkbox" name="Admin" value="true" class="userInfoForm" @{
                                     if(user.admin) "checked"
                                 }></td>
-                                <td><input type="checkbox" name="Active" value="true" @{
+                                <td><input type="checkbox" name="Active" value="true" class="userInfoForm" @{
                                     if(user.active) "checked"
                                 }></td>
-                                <td><input type="number" name="Distance" value="@user.distance" /></td>
+                                <td><input type="number" name="Distance" value="@user.distance" class="userInfoForm"/></td>
                         } else {
-                                <input type="hidden" name="Active" value="true" checked/>
+                                <input type="hidden" name="Active" value="true" class="userInfoForm" checked/>
                         }
                         </tr>
                     </tbody>
@@ -77,4 +77,6 @@
             </div>
         }
     </div>
+    <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
+    <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
 }

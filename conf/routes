@@ -25,6 +25,13 @@ GET         /removeItem          controllers.AssortmentController.rmItem(id: Opt
 GET         /addCategory         controllers.AssortmentController.manageAssortment
 GET         /updateCategory      controllers.AssortmentController.manageAssortment
 
+GET         /javascriptRoutes    controllers.JavascriptRoutes.javascriptRoutes
+GET         /checkUser           controllers.JavascriptRoutes.checkUser(username: String)
+GET         /checkIfUserExists   controllers.JavascriptRoutes.checkIfUserExists(username: String)
+GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
+
+GET         /showItems           controllers.ItemController.showItems(categoryId: Option[Long])
+
 POST        /register            controllers.UserController.register
 POST        /addUser             controllers.UserController.addUser
 POST        /updateUser          controllers.UserController.updateUser(id: Long)
@@ -37,6 +44,7 @@ POST        /login               controllers.UserController.login
 POST        /addOrder            controllers.OrderController.addOrder(username)
 POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh
+POST        /post_authenticate    controllers.Auth.post_authenticate
 
 # REST API
 GET         /api                 rest.Api.api

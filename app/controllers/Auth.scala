@@ -21,7 +21,10 @@ object Auth extends Controller {
   )
 
   def check(username: String, password: String) = {
+    println("test3")
+    println("username " + username + " password: " + password)
     if(UserService.checkIfUserExists(username, password)) {
+      println("test2")
       var user = UserService.getUser(username)
       UserService.userIsActive(user.get.id)
     } else {
