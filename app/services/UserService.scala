@@ -54,6 +54,8 @@ trait UserServiceT {
     userDao.getUser(name)
   }
 
+
+
   /**
     * Return user if he exists.
     * @return optional user object.

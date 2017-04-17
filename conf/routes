@@ -19,7 +19,7 @@ GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
 GET         /manageAssortment    controllers.AssortmentController.manageAssortment
-GET         /logout              controllers.UserController.logout
+GET         /logout              controllers.Auth.logout
 GET         /removeUser          controllers.UserController.removeUser(id: Long)
 GET         /removeItem          controllers.AssortmentController.rmItem(id: Option[Long])
 GET         /addCategory         controllers.AssortmentController.manageAssortment
@@ -30,7 +30,8 @@ GET         /checkUser           controllers.JavascriptRoutes.checkUser(username
 GET         /checkIfUserExists   controllers.JavascriptRoutes.checkIfUserExists(username: String)
 GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
 
-GET         /showItems           controllers.ItemController.showItems(categoryId: Option[Long])
+GET         /showItems           controllers.ItemController.showItems(categoryId: Long)
+GET         /home                controllers.UserController.home
 
 POST        /register            controllers.UserController.register
 POST        /addUser             controllers.UserController.addUser

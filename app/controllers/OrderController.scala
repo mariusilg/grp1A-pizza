@@ -1,10 +1,10 @@
 package controllers
 
-import play.api.mvc.{Action, AnyContent, Controller}
-import play.api.data.Forms._
-import play.api.data.Form
-import services._
+import controllers.ItemController._
 import forms._
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.mvc.Controller
 
 /**
   * Controller for order specific operations.
@@ -25,7 +25,7 @@ object OrderController extends Controller {
     mapping(
       "custID" -> longNumber)(CreateIDForm.apply)(CreateIDForm.unapply))
 
-  def addOrder(username: String) : Action[AnyContent] = Action { implicit request =>
+  def addOrder(username: String) = withUser { user => implicit request =>
     orderForm.bindFromRequest.fold(
       formWithErrors => {
         val user = services.UserService.getUser(username).get
@@ -44,11 +44,8 @@ object OrderController extends Controller {
       })
   }
 
-  def addToCart: Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) => orderForm.bindFromRequest.fold(
+  def addToCart = withUser { user => implicit request =>
+          orderForm.bindFromRequest.fold(
           formWithErrors => {
             BadRequest(views.html.welcomeUser(formWithErrors, user, 1))
           },
@@ -56,18 +53,9 @@ object OrderController extends Controller {
               services.OrderService.addToCart(user.id, userData.itemID, userData.quantity, userData.size, user.distance, userData.extraID)
               Redirect(routes.OrderController.showCart())
           })
-        case None => Redirect(routes.UserController.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
   }
 
-  def confirmCart: Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) =>
+  def confirmCart = withUser { user => implicit request =>
             if(user.distance <= 20) {
               if (services.OrderService.confirmCart(user.id)) {
                 Redirect(routes.OrderController.showOrders(None))
@@ -77,17 +65,12 @@ object OrderController extends Controller {
             } else {
               Redirect(routes.UserController.editUser(None)).flashing("fail" -> "Bestellung konnte nicht aufgenommen werden, da wir nicht weiter als 20 Kilometer ausliefern")
             }
-        case None => Redirect(routes.UserController.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
   }
 
 
 
 
-  def refresh() : Action[AnyContent] = Action { implicit request =>
+  def refresh() = withUser { user => implicit request =>
     idForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.OrderController.showOrders(None)).
@@ -102,33 +85,25 @@ object OrderController extends Controller {
   /**
     * List orders of a specific user or of all users in the system.
     */
-  def showOrders(ofUser: Option[Long]) : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) => if (user.admin) Ok(views.html.orders(true, ofUser.getOrElse(user.id)))
-                          else if(user.id == ofUser.getOrElse(user.id)) Ok(views.html.orders(false, ofUser.getOrElse(user.id)))
-                          else Redirect(routes.Application.index).flashing("error" -> "Ihnen fehlen Berechtigungen")
-        case None => Redirect(routes.UserController.logout)
+  def showOrders(ofUser: Option[Long]) = withUser { user => implicit request =>
+      user.admin match {
+        case true =>
+          Ok(views.html.orders(true, ofUser.getOrElse(user.id)))
+
+        case false =>
+          if (user.id == ofUser.getOrElse(user.id)) {
+            Ok(views.html.orders(false, ofUser.getOrElse(user.id)))
+          } else {
+            Redirect(routes.Application.index).flashing("error" -> "Ihnen fehlen Berechtigungen")
+          }
       }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
   }
 
   /**
     * List cart of a specific user.
     */
-  def showCart : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) => Ok(views.html.cart(user, services.OrderService.getCartByUserID(user.id)))
-        case None => Redirect(routes.UserController.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+  def showCart = withUser_Customer { user => implicit request =>
+     Ok(views.html.cart(user, services.OrderService.getCartByUserID(user.id)))
   }
 
 }

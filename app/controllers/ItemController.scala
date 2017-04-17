@@ -18,7 +18,8 @@ object ItemController extends Controller with Secured {
       "extraID" -> list(longNumber)
     )(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
-  def showItems(categoryID: Option[Long]) = withUser_Employee { user => implicit request =>
-    Ok(views.html.welcomeUser(controllers.ItemController.orderForm, user, categoryID.get))
+  def showItems(categoryID: Long) = withUser_Customer { user => implicit request =>
+    println("kommt hier was an")
+    Ok(views.html.welcomeUser(controllers.ItemController.orderForm, user, categoryID))
   }
 }

@@ -107,7 +107,7 @@ object AssortmentController extends Controller {
                                       case None => Redirect(routes.AssortmentController.manageAssortment)
                                     }
                                   } else Redirect(routes.Application.index)
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -147,7 +147,7 @@ object AssortmentController extends Controller {
                                       }
                                     case None => if (currentUser.admin) Redirect(routes.AssortmentController.manageAssortment) else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
                                   }
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -176,7 +176,7 @@ object AssortmentController extends Controller {
             case None => Redirect(routes.AssortmentController.manageAssortment)
           }
         } else Redirect(routes.Application.error).flashing("error" -> "Ihnen fehlen Berechtigungen")
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -212,7 +212,7 @@ object AssortmentController extends Controller {
       val currentUser = UserService.getUserByID(id.toLong)
       currentUser match {
         case Some(currentUser) => if(currentUser.admin) Ok(views.html.assortment(categoryForm, itemForm)) else Redirect(routes.Application.index)
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)

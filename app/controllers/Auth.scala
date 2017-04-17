@@ -24,7 +24,6 @@ object Auth extends Controller {
     println("test3")
     println("username " + username + " password: " + password)
     if(UserService.checkIfUserExists(username, password)) {
-      println("test2")
       var user = UserService.getUser(username)
       UserService.userIsActive(user.get.id)
     } else {
@@ -69,17 +68,25 @@ object Auth extends Controller {
 
   trait Secured {
 
-    def username(request: RequestHeader) = request.session.get(Security.username)
+    def username(request: RequestHeader) = {
+      println("username method")
+      println(request.session.get(Security.username))
+      request.session.get(Security.username)
+    }
 
 
 
-    def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Auth.login)
+    def onUnauthorized(request: RequestHeader) = {
+      println("onUnauthorized")
+      Results.Redirect(routes.Auth.login)
+    }
 
     def notAuthorized(request: RequestHeader) = Results.Redirect(routes.Application.index)
 
 
 
     def withAuth(f: => String => Request[AnyContent] => Result) = {
+      println("withAuth")
       Security.Authenticated(username, onUnauthorized) { user =>
         Action(request => f(user)(request))
       }
@@ -130,6 +137,7 @@ object Auth extends Controller {
 
     def withUser_Customer(f: User => Request[AnyContent] => Result) = withAuth {
       username => implicit request =>
+        println("withUser_customer" + username)
         var user = UserService.getUser(username)
         if(!UserService.userIsAdmin(user.get.id)) {
           f(user.get)(request)
