@@ -18,14 +18,14 @@ trait UserDaoT {
    * @param user the user object to be stored.
    * @return the persisted user object
    */
-  def addUser(user: User): User = {
+  def addUser(user: User, token: String): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag)" +
-          " values ({username}, {first_name}, {last_name}, {password}, {admin}, {street}, {zip}, {city}, {phone}, {email}, {distance}, {active})").on(
+        SQL("insert into Users(username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag, token)" +
+          " values ({username}, {first_name}, {last_name}, {password}, {admin}, {street}, {zip}, {city}, {phone}, {email}, {distance}, {active}, {token})").on(
           'username -> user.userName, 'first_name -> user.firstName, 'last_name -> user.lastName, 'password -> user.password,
           'admin -> user.admin, 'street -> user.street, 'zip -> user.zip, 'city -> user.city, 'phone -> user.phone, 'email -> user.email,
-          'distance -> user.distance, 'active -> user.active).executeInsert()
+          'distance -> user.distance, 'active -> user.active, 'token -> token).executeInsert()
       user.id = id.get
     }
     user
@@ -40,6 +40,13 @@ trait UserDaoT {
   def updateDistance(id: Long, distance: Int): Boolean = {
     DB.withConnection { implicit c =>
       val rowsUpdated = SQL("update Users SET distance = {distance} where id = {id}").on('distance -> distance, 'id -> id).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
+  def confirmAccount(id: Long, token: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Users SET active_flag = TRUE where id = {id} and token = {token}").on('id -> id, 'token -> token).executeUpdate()
       rowsUpdated == 1
     }
   }

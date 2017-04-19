@@ -75,7 +75,8 @@ object UserController extends Controller {
         BadRequest(views.html.registration(formWithErrors))
       },
       userData => {
-        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, true)
+        val token = controllers.Auth.generateMD5Token(userData.userName)
+        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, false, token)
           Redirect(routes.UserController.welcome(None)) withSession("id" -> newUser.id.toString)
       })
   }
@@ -91,8 +92,9 @@ object UserController extends Controller {
         BadRequest(views.html.users(formWithErrors, UserService.registeredUsers))
       },
       userData => {
+        val token = controllers.Auth.generateMD5Token(userData.userName)
         val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, userData.admin.getOrElse(false),
-          userData.street, userData.zip, userData.city, userData.phone, userData.email, userData.active.getOrElse(false))
+          userData.street, userData.zip, userData.city, userData.phone, userData.email, userData.active.getOrElse(false), token)
         Redirect(routes.UserController.manageUser).flashing("success" -> "User wurde erfolgreich angelegt")
       })
   }
@@ -142,6 +144,17 @@ object UserController extends Controller {
     }.getOrElse {
       Redirect(routes.Application.index)
     }
+  }
+
+  /**
+    * Shows the welcome view for a (newly) registered user.
+    */
+  def confirm(id: Long, token: String) : Action[AnyContent] = Action { request =>
+          if(services.UserService.confirmAccount(id, token)) {
+            Ok(views.html.confirmAccount())
+            } else {
+              Redirect(routes.UserController.welcome(None))
+            }
   }
 
   /**

@@ -17,17 +17,24 @@ trait UserServiceT {
    * @param userName userName of the new user.
    * @return the new user.
    */
-  def addUser(userName: String, firstName: String, lastName: String, password: String, admin: Boolean, street: String, zip: String, city: String, phone: String, email: String, active: Boolean): User = {
+  def addUser(userName: String, firstName: String, lastName: String, password: String, admin: Boolean, street: String, zip: String, city: String, phone: String, email: String, active: Boolean, token: String): User = {
     // create User
     val newUser = User(-1, userName, firstName, lastName, password, admin, street, zip, city, phone, email, -1, active)
     // persist and return User
-    val user = userDao.addUser(newUser)
+    val user = userDao.addUser(newUser, token)
     controllers.WSController.updateDistance(user)
+    if(!active) {
+      controllers.MailController.confirmMail(user, token)
+    }
     user
   }
 
   def updateDistance(id: Long, distance: Int): Boolean= {
     userDao.updateDistance(id, distance)
+  }
+
+  def confirmAccount(id: Long, token: String): Boolean= {
+    userDao.confirmAccount(id, token)
   }
 
   /**

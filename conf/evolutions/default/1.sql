@@ -14,7 +14,8 @@ CREATE TABLE Users (
     admin_flag BIT DEFAULT FALSE,
     password varchar(255) NOT NULL,
     distance INT NOT NULL,
-    active_flag BIT DEFAULT TRUE
+    active_flag BIT DEFAULT TRUE,
+    token varchar(255)
 );
 
 INSERT INTO Users (

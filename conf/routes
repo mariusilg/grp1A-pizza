@@ -12,6 +12,7 @@ GET         /location            controllers.Application.location
 GET         /error               controllers.Application.error
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
+GET         /confirm             controllers.UserController.confirm(id: Long, token: String)
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
 GET         /cart                controllers.OrderController.showCart
 GET         /confirmCart         controllers.OrderController.confirmCart

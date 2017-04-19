@@ -113,7 +113,7 @@ object Users extends Controller {
       username => {
         Ok(Json.obj("status" -> "OK",
           "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.userName, username.firstName, username.lastName, username.password,
-            username.admin, username.street, username.zip, username.city, username.phone, username.email, username.active)))))
+            username.admin, username.street, username.zip, username.city, username.phone, username.email, username.active, controllers.Auth.generateMD5Token(username.userName))))))
       }
     )
   }
