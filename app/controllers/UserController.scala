@@ -1,17 +1,18 @@
 package controllers
 
-import play.api.mvc.{Action, AnyContent, Controller}
+import controllers.Auth.Secured
+import forms._
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.mvc.{Action, AnyContent, Controller}
 import services._
-import forms._
 
 /**
  * Controller for user specific operations.
  *
  * @author ob, scs, ne
  */
-object UserController extends Controller {
+object UserController extends Controller with Secured {
 
   /**
    * Form object for user data.
@@ -120,6 +121,22 @@ object UserController extends Controller {
   /**
     * Shows the welcome view for a (newly) registered user.
     */
+
+  /*def index = withUser { user => implicit request =>
+    user.admin match {
+      case true =>
+        Redirect(routes.UserController.showUsers())
+      //Ok(views.html.index(controllers.UserController.userForm))
+      case _ =>
+        //Ok(views.html.index(controllers.UserController.userForm))
+        Redirect(routes.UserController.showOwnUser())
+
+    }
+  }*/
+  def home = withUser { user => implicit request =>
+    Ok(views.html.home())
+  }
+
   def welcome(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
     request.session.get("id").map { id =>
       val user = services.UserService.getUserByID(id.toLong)
@@ -139,7 +156,7 @@ object UserController extends Controller {
                                               }
                               }
                            }
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Redirect(routes.Application.index)
@@ -160,38 +177,40 @@ object UserController extends Controller {
   /**
     * Manage all users which are currently available in the system.
     */
-  def manageUser() : Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) => if(user.admin) Ok(views.html.users(userForm, UserService.registeredUsers)) else Redirect(routes.Application.error).flashing("error" -> "kein Zutritt")
-        case None => Redirect(routes.UserController.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+  def manageUser() = withUser_Employee { user => implicit request =>
+       Ok(views.html.users(userForm, UserService.registeredUsers))
   }
+
 
   /**
     * Edit a specific user.
     */
-  def editUser(ofUser: Option[Long]) : Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => ofUser match {
-                                case Some(ofUser) => val user = UserService.getUserByID(ofUser)
-                                                      user match {
-                                                        case Some(user) => if(currentUser.admin) Ok(views.html.editUser(true, editUserForm, user)) else Ok(views.html.editUser(currentUser.admin, editUserForm, currentUser))
-                                                        case None => if(currentUser.admin) Redirect(routes.UserController.manageUser) else Ok(views.html.editUser(currentUser.admin, editUserForm, currentUser))
-                                                      }
-                                case None => Ok(views.html.editUser(currentUser.admin, editUserForm, currentUser))
-                                }
-        case None => Redirect(routes.UserController.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+  def editUser(userToEdit: Option[Long]) = withUser { user =>implicit request =>
+        userToEdit match {
+             case Some(userToEdit) =>
+               val editedUser = UserService.getUserByID(userToEdit)
+
+               editedUser match {
+                 case Some(userToEdit) =>
+                   if(user.admin) {
+                     Ok(views.html.editUser(true, editUserForm, userToEdit))
+                   } else {
+                     Ok(views.html.editUser(user.admin, editUserForm, user))
+                   }
+
+                 case None =>
+                   if(user.admin) {
+                     Redirect(routes.UserController.manageUser)
+                   } else {
+                     Ok(views.html.editUser(user.admin, editUserForm, user))
+                   }
+               }
+
+             case None =>
+               Ok(views.html.editUser(user.admin, editUserForm, user))
+        }
+
+
   }
 
   /**
@@ -247,9 +266,9 @@ object UserController extends Controller {
 
   /**
     * Loos user out and goes back to the index page.
-    */
+    *
   def logout() : Action[AnyContent] = Action {
     Redirect(routes.Application.index).withNewSession
-  }
+  }*/
 
 }

@@ -94,7 +94,7 @@ trait UserDaoT {
     */
   def getUser(userName: String): Option[User] = {
     DB.withConnection { implicit c =>
-        val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where username = {username} limit 1;").on('username -> userName).apply
+        val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where LOWER(username) = {username} limit 1;").on('username -> userName.toLowerCase).apply
           .headOption
         selectUser match {
           case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
@@ -294,13 +294,14 @@ trait UserDaoT {
 
   def checkIfUserExists(username: String, password: String): Boolean = {
     DB.withConnection { implicit c =>
-      val extraRange = SQL("select count(*) as count from Users where username = {username} and password = {password};").on(
-        'username -> username,
+      val extraRange = SQL("select count(*) as count from Users where LOWER(username) = {username} and password = {password};").on(
+        'username -> username.toLowerCase,
         'password -> password
       ).apply().head
       // Transform the resulting Stream[Row] to a List[(String,String)]
       //val product = productRange().map(row => Item(row[Long]("id"), row[String]("name"), row[String]("unit"), row[String]("type")))
       var count = extraRange[Long]("count")
+      println("count " + count + " username " + username + " password " + password)
       if(count > 0) {
         return true
       }

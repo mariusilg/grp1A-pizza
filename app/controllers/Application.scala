@@ -1,6 +1,6 @@
 package controllers
-
-import play.api.mvc.{Action, Controller, AnyContent}
+import controllers.Auth.Secured
+import play.api.mvc.{Action, AnyContent, Controller}
 import services.UserService
 
 /**
@@ -8,15 +8,27 @@ import services.UserService
  *
  * @author ob, scs, ne
  */
-object Application extends Controller {
+object Application extends Controller with Secured {
 
   /**
    * Shows the start page of the application.
    *
    * @return main web page
    */
-  def index : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
+  def index = withUser { user => implicit request =>
+    println("funktioniert")
+    user.admin match {
+      case true =>
+        println("customer")
+        Ok(views.html.welcomeAdmin(user))
+      //Ok(views.html.index(controllers.UserController.userForm))
+      case _ =>
+        //Ok(views.html.index(controllers.UserController.userForm))
+        println("kein customer")
+        Redirect(routes.UserController.home())
+
+    }
+    /*request.session.get("id").map { id =>
       val user = UserService.getUserByID(id.toLong)
       user match {
         case Some(user) => Redirect(routes.UserController.welcome(None))
@@ -24,7 +36,7 @@ object Application extends Controller {
       }
     }.getOrElse {
       Ok(views.html.index(controllers.UserController.loginForm))
-    }
+    }*/
   }
 
   /**
@@ -50,7 +62,7 @@ object Application extends Controller {
       val user = UserService.getUserByID(id.toLong)
       user match {
         case Some(user) => Ok(views.html.privacy(true, user.admin))
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Ok(views.html.privacy(false, false))
@@ -67,7 +79,7 @@ object Application extends Controller {
       val user = UserService.getUserByID(id.toLong)
       user match {
         case Some(user) => Ok(views.html.about(true, user.admin))
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Ok(views.html.about(false, false))
@@ -85,7 +97,7 @@ object Application extends Controller {
       val user = UserService.getUserByID(id.toLong)
       user match {
         case Some(user) => Ok(views.html.location(true, user.admin))
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Ok(views.html.location(false, false))
@@ -102,7 +114,7 @@ object Application extends Controller {
       val user = UserService.getUserByID(id.toLong)
       user match {
         case Some(user) => Ok(views.html.error(true, user.admin))
-        case None => Redirect(routes.UserController.logout)
+        case None => Redirect(routes.Auth.logout)
       }
     }.getOrElse {
       Ok(views.html.error(false, false))

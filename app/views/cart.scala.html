@@ -5,7 +5,7 @@
     @if(user.admin) {
         @adminMenu()
     } else {
-        @userMenu("cart")
+        @userMenu("cart", None, false)
         <h1>Mein Warenkorb</h1>
 
         @if(cart.isEmpty) {

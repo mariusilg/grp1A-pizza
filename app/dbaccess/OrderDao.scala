@@ -60,6 +60,7 @@ trait OrderDaoT {
     }
   }
 
+
   /**
     * Deletes cart.
     * @param cartID order id of cart.
@@ -84,7 +85,6 @@ trait OrderDaoT {
       rowsDeleted == 1
     }
   }
-
 
 
   def getCartByCustID(custID: Long): List[Order] = {

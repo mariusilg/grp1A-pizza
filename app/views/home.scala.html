@@ -1,0 +1,25 @@
+@main(models.Company.name) {
+
+
+        @userMenu("home", None, false)
+        <img id="foodbild1" width="500px" height="auto" src="@routes.Assets.at("images/foodpic1.jpg")" class="foodbild" hidden>
+        <img id="foodbild2" width="500px" height="auto" src="@routes.Assets.at("images/foodpic2.jpg")" class="foodbild" hidden>
+        <img id="foodbild3" width="500px" height="auto" src="@routes.Assets.at("images/foodpic3.jpg")" class="foodbild" hidden>
+        <img id="foodbild4" width="500px" height="auto" src="@routes.Assets.at("images/foodpic4.jpg")" class="foodbild" hidden>
+
+        <div id="slider">
+                <!--<a href="#" class="control_next">>></a>
+                <a href="#" class="control_prev"><</a>-->
+                <ul>
+                        <li class="slide" name="1"><div class="parentcontainer"><div class="div1"><canvas id="canvas1" class="canvas" name="foodbild1"></canvas></div><div class="div2"><img src="@routes.Assets.at("images/foodpic1.jpg")"></div></div></li>
+                        <li class="slide" name="2" style="background: #aaa;"><div class="parentcontainer"><div class="div1"><canvas id="canvas2" class="canvas" name="foodbild2"></canvas></div><div class="div2"><img src="@routes.Assets.at("images/foodpic2.jpg")"></div></div></li>
+                        <li class="slide" name="3"><div class="parentcontainer"><div class="div1"><canvas id="canvas3" class="canvas" name="foodbild3"></canvas></div><div class="div1"><img src="@routes.Assets.at("images/foodpic3.jpg")"></div></div></li>
+                        <li class="slide" name="4" style="background: #aaa;"><div class="parentcontainer"><div class="div1"><canvas id="canvas4" class="canvas" name="foodbild4"></canvas></div><div class="div2"><img src="@routes.Assets.at("images/foodpic4.jpg")"></div></div></li>
+                </ul>
+        </div>
+
+
+
+}
+<script src="@routes.Assets.at("javascripts/slider.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/blur.js")" type="text/javascript"></script>

@@ -26,7 +26,7 @@
         }
 
     } else {
-        @userMenu("myOrders")
+        @userMenu("myOrders", None, false)
         <h1>Meine Bestellungen</h1>
         @showOrders(false, true, services.OrderService.getOrdersByCustID(ofUser), services.OrderService.getTotalBusinessVolumeByCustID(ofUser), services.OrderService.getAverageBusinessVolume(Some(ofUser)))
     }
