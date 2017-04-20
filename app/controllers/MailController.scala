@@ -25,7 +25,7 @@ object MailController extends Controller {
       val sendMail = send a new Mail(
         from = (models.Company.email, models.Company.name),
         to = user.email,
-        subject = "Bestätigen Sie ihren Account bei " + models.Company.name,
+        subject = "Bestaetigen Sie ihren Account bei " + models.Company.name,
         message = " ",
         richMessage = Option("Vielen Dank " + user.firstName + " für deine <b>Registrierung</b> bei " + models.Company.name + "!<br/>"
           + "Bitte bestätige die Registierung indem du auf nachfolgenden Link klickst: <br/><br/>"

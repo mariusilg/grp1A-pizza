@@ -77,7 +77,7 @@ object UserController extends Controller {
       userData => {
         val token = controllers.Auth.generateMD5Token(userData.userName)
         val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, false, token)
-          Redirect(routes.UserController.welcome(None)) withSession("id" -> newUser.id.toString)
+          Redirect(routes.UserController.welcome(None))
       })
   }
 
@@ -151,7 +151,7 @@ object UserController extends Controller {
     */
   def confirm(id: Long, token: String) : Action[AnyContent] = Action { request =>
           if(services.UserService.confirmAccount(id, token)) {
-            Ok(views.html.confirmAccount())
+            Ok(views.html.confirmAccount()) withSession("id" -> id.toString)
             } else {
               Redirect(routes.UserController.welcome(None))
             }
