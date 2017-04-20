@@ -6,9 +6,9 @@ CREATE TABLE Items (
     cat_id INT NOT NULL,
     name varchar(255) NOT NULL,
     price Int NOT NULL,
-    extra_flag BIT DEFAULT FALSE,
+    extra_flag BOOLEAN DEFAULT FALSE,
     prep_duration INT DEFAULT 0,
-    visibility BIT DEFAULT TRUE
+    visibility BOOLEAN DEFAULT TRUE
 );
 
 INSERT INTO Items (

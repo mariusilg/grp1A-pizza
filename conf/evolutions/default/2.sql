@@ -12,9 +12,9 @@ INSERT INTO Categories (
     name,
     unit,
     visibility
-)   VALUES  ('Pizza', 'cm', 1),
-    ('Drinks', 'ml', 1),
-    ('Desserts', 'g', 1);
+)   VALUES  ('Pizza', 'cm', TRUE),
+    ('Drinks', 'ml', TRUE),
+    ('Desserts', 'g', TRUE);
 
 # --- !Downs
 DROP TABLE Categories;
