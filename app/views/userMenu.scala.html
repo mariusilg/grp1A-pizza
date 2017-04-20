@@ -1,19 +1,34 @@
-@(selected: String)
+@(selected: String, parent: Option[String], subMenu: Boolean)
 <div id="contentHeader">
-    <div id="topHeader">
 
-    </div>
-    <div id="subHeader">
-        <ul id="menu" class="menu submenu">
-            <li @{if(selected == "home"){"class=selectedTab"}}><a href="@routes.Application.index()">Home</a></li>
-            @for(category <- services.CategoryService.visibleCategories) {
-                <li @{if(selected == (category.id).toString()){"class=selectedTab"}}><a href="@routes.ItemController.showItems(category.id)">@category.name</a></li>
-            }
-            <li style="float: right" @{if(selected == "logout"){"class=selectedTab"}}><a href="@routes.Auth.logout">logout</a></li>
-            <li style="float: right" @{if(selected == "myAccount"){"class=selectedTab"}}><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
-            <li style="float: right" @{if(selected == "myOrders"){"class=selectedTab"}}><a href="@routes.OrderController.showOrders(None)">Meine Bestellungen</a></li>
-        <li style="float: right" @{if(selected == "cart"){"class=selectedTab"}}><a href="@routes.OrderController.showCart">Warenkorb</a></li>
+    <div id="topHeader">
+        <ul class="menu topmenu">
+            <li class="tab homeTab @{if(selected == "home"){"selectedTab"}}"><a href="@routes.Application.index()"><img src="@routes.Assets.at("images/pizzaLogo2.png")"></a></li>
+            <!--@for(category <- services.CategoryService.visibleCategories) {
+                <li class="tab @{if(selected == (category.id ).toString()){"selectedTab"}}"><a href="@routes.ItemController.showItems(category.id)">@category.name</a></li>
+            }-->
+            <li class="tab rangeTab @{if(selected == "range" || parent.getOrElse("error") == "range"){"selectedTab"}}"><a href="@routes.ItemController.showItems(1)">Sortiment</a></li>
+            <li class="tab cartTab @{if(selected == "cart"){"selectedTab"}}"><a href="@routes.OrderController.showCart">Warenkorb</a></li>
+            <li class="tab myOrdersTab @{if(selected == "myOrders"){"selectedTab"}}"><a href="@routes.OrderController.showOrders(None)">Bestellungen</a></li>
+            <li class="tab myAccountTab @{if(selected == "myAccount"){"selectedTab"}}"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+            <li class="tab logoutTab @{if(selected == "logout"){"selectedTab"}} "><a href="@routes.Auth.logout">logout</a></li>
+
+
+
         </ul>
     </div>
+    @if(subMenu) {
+        <div id="subHeader">
+            <ul class="menu submenu">
+            @for(category <- services.CategoryService.visibleCategories) {
+                <li class="tab @{
+                    if(selected == (category.id).toString()) {
+                        "selectedTab"
+                    }
+                }"><a href="@routes.ItemController.showItems(category.id)">@category.name</a></li>
+            }
+            </ul>
+        </div>
+    }
 
 </div>

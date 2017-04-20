@@ -6,7 +6,7 @@
         @if(adminFlag){
             @adminMenu()
         } else {
-            @userMenu("error")
+            @userMenu("error", None, false)
         }
     } else {
         <h1>Willkommen bei @models.Company.name</h1>

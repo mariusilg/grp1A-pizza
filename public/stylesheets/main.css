@@ -105,7 +105,7 @@ html {
 ul.menu {
     list-style-type: none;
     overflow: hidden;
-    background-color: #333;
+    text-align: center;
     padding: 0 20px 0 20px;
     margin: 0;
     /*border-top-left-radius: 11px;*/
@@ -115,34 +115,51 @@ ul.menu {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     width: 100%;
-
+    height: 50px;
 
 }
+
+.topmenu {
+    background-color: #333;
+}
+
+.submenu {
+    background-color: rgba(242,242,242,0.7);
+}
+
+
 
 a {
     text-decoration: none;
 }
 
-#menu li {
-    float: left;
+.menu li {
+    height: 50px;
+    vertical-align: middle;
+    display: inline-table;
 }
 
 
-#menu li a {
-    display: block;
+.menu li a {
     text-align: center;
-    color: white;
-    padding: 14px 16px;
     cursor: pointer;
     cursor: hand;
     text-decoration: none;
 }
 
-#menu a:visited {
+.topmenu li a {
+    color: white;
+}
+
+.submenu li a {
+    color: #333;
+}
+
+.menu a:visited {
     text-decoration: none;
 }
 
-#menu li a:hover:not(.active) {
+.topmenu li a:hover:not(.active) {
     /*background-color: #111;*/
     color: #65B1F3;
 }
@@ -409,7 +426,7 @@ td .value-input {
     right: 0;
     margin: 0 auto;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
-    overflow-x: auto;
+    /*overflow-x: auto;*/
 }
 
 #contentContainer::-webkit-scrollbar {
@@ -430,7 +447,7 @@ a:-webkit-any-link {
 }
 
 #contentHeader {
-    height: 50px;
+    height: 100px;
 }
 
 #contentBody {
@@ -461,14 +478,14 @@ table.productTable tbody {
 }
 
 table.productTable thead {
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     display: table;
     table-layout: fixed;
     width: 100%;
 }
 
 table.productTable tbody {
-    overflow: auto;
+    /*overflow: auto;*/
     height: calc(100vh - 265px);
     display: block;
 }
@@ -503,3 +520,22 @@ table.productTable tr {
 .closebtn:hover {
     color: black;
 }
+
+.homeTab a img {
+    width: 30px;
+    height: 30px;
+}
+
+.tab {
+    padding-left: 30px;
+    padding-right:30px;
+    display: table;
+}
+
+.tab > a {
+    vertical-align: middle;
+    display: table-cell;
+}
+
+
+
