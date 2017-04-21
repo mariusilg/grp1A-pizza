@@ -25,25 +25,6 @@ object OrderController extends Controller {
     mapping(
       "custID" -> longNumber)(CreateIDForm.apply)(CreateIDForm.unapply))
 
-  def addOrder(username: String) = withUser { user => implicit request =>
-    orderForm.bindFromRequest.fold(
-      formWithErrors => {
-        val user = services.UserService.getUser(username).get
-        BadRequest(views.html.welcomeUser(formWithErrors, user, 1))
-      },
-      userData => {
-        val user = services.UserService.getUser(username).get
-        if(user.distance <= 20) {
-          services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, user.distance, userData.extraID)
-          Redirect(routes.OrderController.showOrders(None))
-        }
-        else {
-          Redirect(routes.UserController.editUser(None)).flashing("fail" -> "Bestellung konnte nicht aufgenommen werden, da wir nicht weiter als 20 Kilometer ausliefern")
-        }
-
-      })
-  }
-
   def addToCart = withUser { user => implicit request =>
           orderForm.bindFromRequest.fold(
           formWithErrors => {
@@ -67,9 +48,6 @@ object OrderController extends Controller {
               Redirect(routes.UserController.editUser(None)).flashing("fail" -> "Bestellung konnte nicht aufgenommen werden, da wir nicht weiter als 20 Kilometer ausliefern")
             }
   }
-
-
-
 
 
   def refresh() = withUser { user => implicit request =>

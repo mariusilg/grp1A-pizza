@@ -47,10 +47,9 @@ POST        /addItem             controllers.AssortmentController.addItem
 POST        /addCategory         controllers.AssortmentController.addCategory
 POST        /updateCategory      controllers.AssortmentController.updateCategory
 POST        /removeCategory      controllers.AssortmentController.rmCategory(id: Option[Long])
-POST        /addOrder            controllers.OrderController.addOrder(username)
 POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh
-POST        /post_authenticate    controllers.Auth.post_authenticate
+POST        /post_authenticate   controllers.Auth.post_authenticate
 
 # REST API
 GET         /api                 rest.Api.api

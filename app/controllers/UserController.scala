@@ -120,12 +120,10 @@ object UserController extends Controller with Secured {
     Ok(views.html.home())
   }
 
-  def welcome(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val user = services.UserService.getUserByID(id.toLong)
-      user match {
-        case Some(user) => if (user.admin) {Ok(views.html.welcomeAdmin(user))}
-                           else {
+  def welcome(categoryID: Option[Long]) = withUser { user => request =>
+        if (user.admin) {
+          Ok(views.html.welcomeAdmin(user))
+        } else {
                               categoryID match {
                                 case Some(categoryID) => if(services.CategoryService.isCategoryVisible(categoryID)) {
                                                           Ok(views.html.welcomeUser(controllers.OrderController.orderForm, user, categoryID))
@@ -139,11 +137,6 @@ object UserController extends Controller with Secured {
                                               }
                               }
                            }
-        case None => Redirect(routes.Auth.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
   }
 
   /**
@@ -203,7 +196,7 @@ object UserController extends Controller with Secured {
   /**
     * Update a specific user and go back to user overview.
     */
-  def updateUser(id : Long) : Action[AnyContent] = Action { implicit request =>
+  def updateUser(id : Long) = withUser { user => implicit request =>
       editUserForm.bindFromRequest.fold(
         formWithErrors => {
           Redirect(routes.UserController.editUser(Some(id))).flashing("fail" -> "Es ist ein Fehler unterlaufen!")
@@ -240,12 +233,5 @@ object UserController extends Controller with Secured {
                                           "fail" -> "Der User wurde auf inaktiv gesetzt, da er nicht gelöscht werden konnte!")
                                       }
   }
-
-  /**
-    * Loos user out and goes back to the index page.
-    *
-  def logout() : Action[AnyContent] = Action {
-    Redirect(routes.Application.index).withNewSession
-  }*/
 
 }
