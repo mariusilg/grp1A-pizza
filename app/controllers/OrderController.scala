@@ -58,6 +58,7 @@ object OrderController extends Controller {
   def confirmCart = withUser { user => implicit request =>
             if(user.distance <= 20) {
               if (services.OrderService.confirmCart(user.id)) {
+                controllers.WSController.sendNotification(user)
                 Redirect(routes.OrderController.showOrders(None))
               } else {
                 Redirect(routes.OrderController.showCart)
@@ -118,10 +119,18 @@ object OrderController extends Controller {
 
   def deleteCartItem(orderItemID: Long) = withUser_Customer { user => implicit request =>
           if (services.OrderService.deleteCartItem(user.id, orderItemID)) {
-            Redirect(routes.OrderController.showCart)
+            Redirect(routes.OrderController.showCart).flashing("success" -> "Produkt wurde aus dem Warenkorb gelöscht")
           } else {
             Redirect(routes.OrderController.showCart).flashing("fail" -> "Produkt konnte nicht aus dem Warenkorb gelöscht werden")
           }
+  }
+
+  def deleteCartExtra(orderExtraID: Long) = withUser_Customer { user => implicit request =>
+    if (services.OrderService.deleteCartExtra(user.id, orderExtraID)) {
+      Redirect(routes.OrderController.showCart).flashing("success" -> "Extra wurde aus dem Warenkorb gelöscht")
+    } else {
+      Redirect(routes.OrderController.showCart).flashing("fail" -> "Extra konnte nicht aus dem Warenkorb gelöscht werden")
+    }
   }
 
   def cancelOrder(orderID: Long)= withUser_Customer { user => implicit request =>

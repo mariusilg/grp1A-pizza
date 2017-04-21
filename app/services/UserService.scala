@@ -37,6 +37,10 @@ trait UserServiceT {
     userDao.confirmAccount(id, token)
   }
 
+  def getTokenByUserID(id: Long): Option[String] = {
+    userDao.getTokenByUserID(id)
+  }
+
   /**
    * Gets a list of all registered users.
    * @return list of users.
@@ -75,9 +79,9 @@ trait UserServiceT {
     * Return id of user if the user exists.
     * @param userName username of the user.
     * @param password password of the user.
-    * @return optional id of the user.
+    * @return optional user.
     */
-  def login(userName: String, password: String): Option[Long] = {
+  def login(userName: String, password: String): Option[User] = {
     userDao.login(userName, password)
   }
 
@@ -144,10 +148,6 @@ trait UserServiceT {
     * @return a boolean success flag.
     */
   def rmUser(id: Long): Boolean = userDao.rmUser(id)
-
-  def checkIfUserExists(username: String, password: String): Boolean = {
-    userDao.checkIfUserExists(username, password)
-  }
 
 
   /*##########################################################################

@@ -24,24 +24,20 @@ object Auth extends Controller {
     })
   )
 
+
+
+
   def check(username: String, password: String) = {
-    if(UserService.checkIfUserExists(username, password)) {
-      var user = UserService.getUser(username)
-      UserService.userIsActive(user.get.id)
-    } else {
-      false
+    val user = UserService.login(username, password)
+    user match {
+      case Some(user) => user.active
+      case _ => false
     }
-
-
-    //(username == "admin" && password == "1234")
   }
-
 
   def login : Action[AnyContent] = Action {
-    Ok(views.html.index(controllers.UserController.loginForm))
+    Ok(views.html.index(loginForm))
   }
-
-
 
   def post_authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
@@ -50,11 +46,9 @@ object Auth extends Controller {
       },
       user => {
         Redirect(routes.Application.index).withSession(Security.username -> user._1)
-
       }
     )
   }
-
 
   def logout = Action {
     Redirect(routes.Auth.login).withNewSession.flashing(
@@ -111,31 +105,20 @@ object Auth extends Controller {
   }
 
 
-
-
-
-
   trait Secured {
 
     def username(request: RequestHeader) = {
-      println("username method")
-      println(request.session.get(Security.username))
       request.session.get(Security.username)
     }
 
-
-
     def onUnauthorized(request: RequestHeader) = {
-      println("onUnauthorized")
       Results.Redirect(routes.Auth.login)
     }
 
     def notAuthorized(request: RequestHeader) = Results.Redirect(routes.Application.index)
 
 
-
     def withAuth(f: => String => Request[AnyContent] => Result) = {
-      println("withAuth")
       Security.Authenticated(username, onUnauthorized) { user =>
         Action(request => f(user)(request))
       }
@@ -144,12 +127,6 @@ object Auth extends Controller {
     def getUsername(f: => String => Request[AnyContent] => Result) = {
       Security.username
     }
-
-
-
-
-
-
 
     /**
       * This method shows how you could wrap the withAuth method to also fetch your user
@@ -172,8 +149,6 @@ object Auth extends Controller {
         }
     }
 
-
-
     def withUser_Employee(f: User => Request[AnyContent] => Result) = withAuth {
       username => implicit request =>
         var user = UserService.getUser(username)
@@ -186,7 +161,6 @@ object Auth extends Controller {
 
     def withUser_Customer(f: User => Request[AnyContent] => Result) = withAuth {
       username => implicit request =>
-        println("withUser_customer" + username)
         var user = UserService.getUser(username)
         if(!UserService.userIsAdmin(user.get.id)) {
           f(user.get)(request)

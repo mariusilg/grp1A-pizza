@@ -64,6 +64,10 @@
             <input type="submit" value="Speichern" />
         }
 
+    @if(admin) {
+        <a href="@routes.MailController.resendConfirm(user.id)">eMail erneut versenden</a>
+    }
+
 
     <div id="messageBox">
         @flash.get("success").map { message =>

@@ -2,6 +2,7 @@
  
 # --- !Ups
 CREATE TABLE order_extras(
+    id serial,
     order_item_id Int,
     extra_id Int NOT NULL,
     extra_name varchar(255),

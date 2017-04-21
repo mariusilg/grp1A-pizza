@@ -151,14 +151,31 @@ trait UserDaoT {
     * Returns the users id by name and password from the database.
     * @param userName userName of the user.
     * @param password the users password.
-    * @return optional user id
+    * @return optional user
     */
-  def login(userName: String, password: String): Option[Long] = {
+  def login(userName: String, password: String): Option[User] = {
     DB.withConnection { implicit c =>
-      val checkUser = SQL("Select id from Users where UPPER(username)=UPPER({username}) and password = {password} limit 1;").on('username -> userName, 'password -> password).apply
+      val checkUser = SQL("Select id from Users where LOWER(username) = {username} and password = {password} limit 1;").on('username -> userName.toLowerCase, 'password -> password).apply
         .headOption
       checkUser match {
-        case Some(row) => Some(row[Long]("id"))
+        case Some(row) => getUserByID(row[Long]("id"))
+        case None => None
+      }
+    }
+  }
+
+
+  /**
+    * Returns the users id by name and password from the database.
+    * @param userID id of the user.
+    * @return optional token
+    */
+  def getTokenByUserID(userID: Long): Option[String] = {
+    DB.withConnection { implicit c =>
+      val getToken = SQL("Select token from Users where id = {id}").on('id -> userID).apply
+        .headOption
+      getToken match {
+        case Some(row) => Some(row[String]("token"))
         case None => None
       }
     }
@@ -235,7 +252,7 @@ trait UserDaoT {
     */
   def userIsDeletable(id: Long): Boolean = {
     DB.withConnection { implicit c =>
-      val cntUserOrders = SQL("Select COUNT(*) as cnt from Orders where cust_id = {id};").on('id -> id).apply
+      val cntUserOrders = SQL("Select COUNT(*) as cnt from Orders where cust_id = {id} and state <> 'inCart';").on('id -> id).apply
         .headOption
       cntUserOrders match {
         case Some(row) => row[Long]("cnt") == 0
@@ -283,30 +300,13 @@ trait UserDaoT {
     */
   def getActiveCustCount: Long = {
     DB.withConnection { implicit c =>
-      val activeCustCount = SQL("Select COUNT(*) as  cnt from Users where admin_flag = 0 and active_flag = TRUE").apply
+      val activeCustCount = SQL("Select COUNT(*) as cnt from Users where admin_flag = 0 and active_flag = TRUE").apply
         .headOption
       activeCustCount match {
         case Some(row) => row[Long]("cnt")
         case None => 0
       }
     }
-  }
-
-  def checkIfUserExists(username: String, password: String): Boolean = {
-    DB.withConnection { implicit c =>
-      val extraRange = SQL("select count(*) as count from Users where LOWER(username) = {username} and password = {password};").on(
-        'username -> username.toLowerCase,
-        'password -> password
-      ).apply().head
-      // Transform the resulting Stream[Row] to a List[(String,String)]
-      //val product = productRange().map(row => Item(row[Long]("id"), row[String]("name"), row[String]("unit"), row[String]("type")))
-      var count = extraRange[Long]("count")
-      println("count " + count + " username " + username + " password " + password)
-      if(count > 0) {
-        return true
-      }
-    }
-    false
   }
 
 }

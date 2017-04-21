@@ -12,6 +12,7 @@ GET         /location            controllers.Application.location
 GET         /error               controllers.Application.error
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
+GET         /resendConfirm       controllers.MailController.resendConfirm(userID: Long)
 GET         /confirm             controllers.UserController.confirm(id: Long, token: String)
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
 GET         /cart                controllers.OrderController.showCart
@@ -19,6 +20,7 @@ GET         /confirmCart         controllers.OrderController.confirmCart
 GET         /deleteCart          controllers.OrderController.deleteCart
 GET         /cancelOrder         controllers.OrderController.cancelOrder(orderID: Long)
 GET         /deleteCartItem      controllers.OrderController.deleteCartItem(itemID: Long)
+GET         /deleteCartExtra     controllers.OrderController.deleteCartExtra(extraID: Long)
 GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
@@ -45,7 +47,6 @@ POST        /addItem             controllers.AssortmentController.addItem
 POST        /addCategory         controllers.AssortmentController.addCategory
 POST        /updateCategory      controllers.AssortmentController.updateCategory
 POST        /removeCategory      controllers.AssortmentController.rmCategory(id: Option[Long])
-POST        /login               controllers.UserController.login
 POST        /addOrder            controllers.OrderController.addOrder(username)
 POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh

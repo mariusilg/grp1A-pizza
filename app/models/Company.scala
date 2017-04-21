@@ -15,8 +15,8 @@ object Company {
 
   //TODO: Mail Configuration
   final val mailServer = "postout.lrz.de"
-  final val email = " " //zb: "n.engelbrecht1@hm.edu"
-  final val mailUser = " " //zb: "hm-nengelbr"
+  final val email = "n.engelbrecht1@hm.edu"
+  final val mailUser = "hm-nengelbr"
   final val mailPassword = "xxx"
   final val mailPort: Int = 587
 }

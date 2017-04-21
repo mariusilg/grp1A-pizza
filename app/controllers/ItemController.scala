@@ -19,7 +19,6 @@ object ItemController extends Controller with Secured {
     )(CreateOrderForm.apply)(CreateOrderForm.unapply))
 
   def showItems(categoryID: Long) = withUser_Customer { user => implicit request =>
-    println("kommt hier was an")
     Ok(views.html.welcomeUser(controllers.ItemController.orderForm, user, categoryID))
   }
 }
