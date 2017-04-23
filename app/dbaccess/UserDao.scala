@@ -21,9 +21,9 @@ trait UserDaoT {
   def addUser(user: User, token: String): User = {
     DB.withConnection { implicit c =>
       val id: Option[Long] =
-        SQL("insert into Users(username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag, token)" +
-          " values ({username}, {first_name}, {last_name}, {password}, {admin}, {street}, {zip}, {city}, {phone}, {email}, {distance}, {active}, {token})").on(
-          'username -> user.userName, 'first_name -> user.firstName, 'last_name -> user.lastName, 'password -> user.password,
+        SQL("insert into Users(username, gender, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag, token)" +
+          " values ({username}, {gender}, {first_name}, {last_name}, {password}, {admin}, {street}, {zip}, {city}, {phone}, {email}, {distance}, {active}, {token})").on(
+          'username -> user.userName, 'gender -> user.gender, 'first_name -> user.firstName, 'last_name -> user.lastName, 'password -> user.password,
           'admin -> user.admin, 'street -> user.street, 'zip -> user.zip, 'city -> user.city, 'phone -> user.phone, 'email -> user.email,
           'distance -> user.distance, 'active -> user.active, 'token -> token).executeInsert()
       user.id = id.get
@@ -69,8 +69,8 @@ trait UserDaoT {
    */
   def registeredUsers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectUsers = SQL("Select id, username, first_name, last_name, admin_flag, street, zip, city, phone, email, distance, active_flag from Users;")
-      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), null, row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
+      val selectUsers = SQL("Select id, username, gender, first_name, last_name, admin_flag, street, zip, city, phone, email, distance, active_flag from Users;")
+      val users = selectUsers().map(row => User(row[Long]("id"), row[String]("username"), row[Boolean]("gender"), row[String]("first_name"), row[String]("last_name"), null, row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       users
     }
   }
@@ -81,8 +81,8 @@ trait UserDaoT {
     */
   def registeredCustomers: List[User] = {
     DB.withConnection { implicit c =>
-      val selectCustomers = SQL("Select id, username, first_name, last_name, street, zip, city, phone, email, distance, active_flag from Users where admin_flag = false;")
-      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"),  null, false, row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
+      val selectCustomers = SQL("Select id, username, gender, first_name, last_name, street, zip, city, phone, email, distance, active_flag from Users where admin_flag = false;")
+      val customers = selectCustomers().map(row => User(row[Long]("id"), row[String]("username"), row[Boolean]("gender"), row[String]("first_name"), row[String]("last_name"),  null, false, row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag"))).toList
       customers
     }
   }
@@ -94,10 +94,10 @@ trait UserDaoT {
     */
   def getUser(userName: String): Option[User] = {
     DB.withConnection { implicit c =>
-        val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where LOWER(username) = {username} limit 1;").on('username -> userName.toLowerCase).apply
+        val selectUser = SQL("Select id, username, gender, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where LOWER(username) = {username} limit 1;").on('username -> userName.toLowerCase).apply
           .headOption
         selectUser match {
-          case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
+          case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[Boolean]("gender"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
           case None => None
         }
       }
@@ -111,10 +111,21 @@ trait UserDaoT {
     */
   def updateUser(user: User): Boolean = {
     DB.withConnection { implicit c =>
-      val rowsUpdated = SQL("update Users SET username={username}, first_name={firstName}, last_name={lastName}, password={password}" +
-        " ,admin_flag={admin}, street={street}, zip={zip}, city={city}, phone={phone}, email={email}, active_flag={active} where id = {id}").on('username -> user.userName
-        , 'firstName ->user.firstName, 'lastName -> user.lastName, 'password -> user.password, 'admin -> user.admin, 'street -> user.street
-        , 'zip -> user.zip, 'city -> user.city, 'phone -> user.phone, 'email -> user.email, 'active -> user.active, 'id -> user.id).executeUpdate()
+      val rowsUpdated = SQL("update Users SET username={username}, gender={gender}, first_name={firstName}, last_name={lastName}, password={password}" +
+        " ,admin_flag={admin}, street={street}, zip={zip}, city={city}, phone={phone}, email={email}, active_flag={active} where id = {id}").on(
+        'username -> user.userName,
+        'gender -> user.gender,
+        'firstName ->user.firstName,
+        'lastName -> user.lastName,
+        'password -> user.password,
+        'admin -> user.admin,
+        'street -> user.street
+        , 'zip -> user.zip,
+        'city -> user.city,
+        'phone -> user.phone,
+        'email -> user.email,
+        'active -> user.active,
+        'id -> user.id).executeUpdate()
       rowsUpdated == 1
     }
   }
@@ -138,10 +149,10 @@ trait UserDaoT {
     */
   def getUserByID(id: Long): Option[User] = {
     DB.withConnection { implicit c =>
-      val selectUser = SQL("Select id, username, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where id = {id};").on('id -> id).apply
+      val selectUser = SQL("Select id, username, gender, first_name, last_name, password, admin_flag, street, zip, city, phone, email, distance, active_flag from Users where id = {id};").on('id -> id).apply
         .headOption
       selectUser match {
-        case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
+        case Some(row) => Some(User(row[Long]("id"), row[String]("username"), row[Boolean]("gender"), row[String]("first_name"), row[String]("last_name"), row[String]("password"), row[Boolean]("admin_flag"), row[String]("street"), row[String]("zip"), row[String]("city"), row[String]("phone"), row[String]("email"), row[Int]("distance"), row[Boolean]("active_flag")))
         case None => None
       }
     }
@@ -213,6 +224,7 @@ trait UserDaoT {
     }
   }
 
+
   /**
     * Returns whether username already in use or not.
     * @param id the users id.
@@ -222,6 +234,39 @@ trait UserDaoT {
   def nameInUse(id: Long, userName: String): Boolean = {
     DB.withConnection { implicit c =>
       val checkAvailability = SQL("Select COUNT(*) as cnt from Users where UPPER(username) = UPPER({username}) and id <> {id};").on('username -> userName, 'id -> id).apply
+        .headOption
+      checkAvailability match {
+        case Some(row) => row[Long]("cnt") != 0
+        case None => true
+      }
+    }
+  }
+
+  /**
+    * Checks whether eMail address is in use or not in the database.
+    * @param eMail eMail address of user.
+    * @return true (inUse) / false
+    */
+  def eMailInUse(eMail: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkName = SQL("Select COUNT(*) as cnt from Users where UPPER(email) = UPPER({email});").on('email -> eMail).apply
+        .headOption
+      checkName match {
+        case Some(row) => row[Long]("cnt") > 0
+        case None => true
+      }
+    }
+  }
+
+  /**
+    * Returns whether eMail address already in use or not.
+    * @param id the users id.
+    * @param  eMail new eMail address of user.
+    * @return Boolean
+    */
+  def eMailInUse(id: Long, eMail: String): Boolean = {
+    DB.withConnection { implicit c =>
+      val checkAvailability = SQL("Select COUNT(*) as cnt from Users where UPPER(email) = UPPER({email}) and id <> {id};").on('email -> eMail, 'id -> id).apply
         .headOption
       checkAvailability match {
         case Some(row) => row[Long]("cnt") != 0

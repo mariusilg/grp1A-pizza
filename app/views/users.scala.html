@@ -52,8 +52,13 @@
         <input type="button" class="button" value="Neuen User anlegen"/>
         <div class="dialog" title="User anlegen:">
         @helper.form(action = routes.UserController.addUser) {
-            <label>Name:</label><br/>
-            <input id="userName" name="UserName" type="text"><br/><br/>
+            <label>Username:</label><br/>
+            <input id="userName" name="UserName" class="userInfoForm" type="text"><br/><br/>
+            @helper.select(
+                userForm("Gender"),
+                helper.options(("true", "Herr"),("false", "Frau")),
+                '_label -> "Anrede", '_default -> "-- Wähle Anrede --"
+            )<br/><br/>
             <label>Vorname:</label><br/>
             <input id="firstName" name="FirstName" type="text"><br/><br/>
             <label>Nachname:</label><br/>
@@ -67,7 +72,7 @@
             <label>Telefon:</label><br/>
             <input id="phone" name="Phone" type="text"><br/><br/>
             <label>eMail:</label><br/>
-            <input id="eMail" name="Email" type="text"><br/><br/>
+            <input id="eMail" name="Email" class="userInfoForm" type="text"><br/><br/>
             <label>Passwort:</label><br/>
             <input id="password" name="Password" type="password"><br/><br/>
             <label>Mitarbeiter?</label>

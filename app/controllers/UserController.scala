@@ -20,6 +20,7 @@ object UserController extends Controller with Secured {
   val userForm = Form(
     mapping(
       "UserName" -> text.verifying("Bitte Username angeben!", f => f.trim!="").verifying("Bitte geben Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")).verifying("Username existiert bereits", name => !services.UserService.nameInUse(name)),
+      "Gender" -> text.verifying("Fehler", g => gender(g)),
       "FirstName" -> text,
       "LastName" -> text,
       "Password" -> text.verifying("Passwort fehlt!", f => f.trim!=""),
@@ -28,9 +29,15 @@ object UserController extends Controller with Secured {
       "Zip" -> text,
       "City" -> text,
       "Phone" -> text,
-      "Email" -> text,
+      "Email" -> text.verifying("eMail existiert bereits", eMail => !services.UserService.eMailInUse(eMail)),
       "Active" -> optional(boolean)
     )(CreateUserForm.apply)(CreateUserForm.unapply))
+
+  def gender(gender: String): Boolean = {
+    if(gender == "true" || gender == "false")
+      true
+    else false
+  }
 
   /**
     * Form object for editing user data.
@@ -39,6 +46,7 @@ object UserController extends Controller with Secured {
     mapping(
       "ID" -> longNumber,
       "UserName" -> text.verifying("Bitte geben Sie einen Username an!", f => f.trim!="").verifying("Bitte gebe Sie einen validen Usernamen an", name => name.matches("[A-z\\s]+")),
+      "Gender" -> text.verifying("Fehler", g => gender(g)),
       "FirstName" -> text,
       "LastName" -> text,
       "Password" -> text.verifying("Passwort fehlt", f => f.trim!=""),
@@ -76,7 +84,7 @@ object UserController extends Controller with Secured {
       },
       userData => {
         val token = controllers.Auth.generateMD5Token(userData.userName)
-        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, false, token)
+        val newUser = services.UserService.addUser(userData.userName, userData.gender.toBoolean, userData.firstName, userData.lastName, userData.password, false, userData.street, userData.zip, userData.city, userData.phone, userData.email, false, token)
           Redirect(routes.UserController.welcome(None))
       })
   }
@@ -93,13 +101,11 @@ object UserController extends Controller with Secured {
       },
       userData => {
         val token = controllers.Auth.generateMD5Token(userData.userName)
-        val newUser = services.UserService.addUser(userData.userName, userData.firstName, userData.lastName, userData.password, userData.admin.getOrElse(false),
+        val newUser = services.UserService.addUser(userData.userName, userData.gender.toBoolean, userData.firstName, userData.lastName, userData.password, userData.admin.getOrElse(false),
           userData.street, userData.zip, userData.city, userData.phone, userData.email, userData.active.getOrElse(false), token)
         Redirect(routes.UserController.manageUser).flashing("success" -> "User wurde erfolgreich angelegt")
       })
   }
-
-
 
   /**
     * Shows the welcome view for a (newly) registered user.
@@ -116,6 +122,7 @@ object UserController extends Controller with Secured {
 
     }
   }*/
+
   def home = withUser { user => implicit request =>
     Ok(views.html.home())
   }
@@ -202,7 +209,7 @@ object UserController extends Controller with Secured {
           Redirect(routes.UserController.editUser(Some(id))).flashing("fail" -> "Es ist ein Fehler unterlaufen!")
         },
         userData => {
-          val user = models.User(userData.id, userData.userName, userData.firstName, userData.lastName, userData.password, userData.admin, userData.street, userData.zip, userData.city, userData.phone, userData.email, -1, userData.active)
+          val user = models.User(userData.id, userData.userName, userData.gender.toBoolean, userData.firstName, userData.lastName, userData.password, userData.admin, userData.street, userData.zip, userData.city, userData.phone, userData.email, -1, userData.active)
           if(UserService.nameInUse(userData.id, userData.userName)) {
             Redirect(routes.UserController.editUser(Some(user.id))).flashing("fail" -> "Username ist schon vergeben!")
           } else if((UserService.lastAdmin(user.id) && !user.admin) || (UserService.lastAdmin(user.id) && !user.active)) {

@@ -13,6 +13,7 @@
                     <thead>
                         <th>Kundennummer</th>
                         <th>Username</th>
+                        <th>Anrede</th>
                         <th>Vorname</th>
                         <th>Nachname</th>
                         <th>Straße</th>
@@ -36,26 +37,32 @@
                 <table cellpadding="0" cellspacing="0" border="0">
                     <tbody>
                         <tr>
-                            <td><input type="hidden" name="ID" value="@user.id" class="userInfoForm">@user.id</td>
-                            <td><input type="text" name="UserName" value="@user.userName" class="userInfoForm"/></td>
-                            <td><input type="text" name="FirstName" value="@user.firstName" class="userInfoForm"/></td>
-                            <td><input type="text" name="LastName" value="@user.lastName" class="userInfoForm"/></td>
-                            <td><input type="text" name="Street" value="@user.street" class="userInfoForm"/></td>
-                            <td><input type="text" name="Zip" value="@user.zip" class="userInfoForm"/></td>
-                            <td><input type="text" name="City" value="@user.city" class="userInfoForm"/></td>
-                            <td><input type="text" name="Phone" value="@user.phone" class="userInfoForm"/></td>
-                            <td><input type="text" name="Email" value="@user.email" class="userInfoForm"/></td>
-                            <td><input type="text" name="Password" value="@user.password" class="userInfoForm"/></td>
+                            <td><input type="hidden" name="ID" value="@user.id" class="editUserForm">@user.id</td>
+                            <td><input type="text" name="UserName" value="@user.userName" class="editUserForm"/></td>
+                            <td>
+                            <select name="Gender" class="editUserForm">
+                                <option value="true" @if(user.gender) {selected} >Herr</option>
+                                <option value="false" @if(!user.gender) {selected} >Frau</option>
+                            </select>
+                            </td>
+                            <td><input type="text" name="FirstName" value="@user.firstName" class="editUserForm"/></td>
+                            <td><input type="text" name="LastName" value="@user.lastName" class="editUserForm"/></td>
+                            <td><input type="text" name="Street" value="@user.street" class="editUserForm"/></td>
+                            <td><input type="text" name="Zip" value="@user.zip" class="editUserForm"/></td>
+                            <td><input type="text" name="City" value="@user.city" class="editUserForm"/></td>
+                            <td><input type="text" name="Phone" value="@user.phone" class="editUserForm"/></td>
+                            <td><input type="text" name="Email" value="@user.email" class="editUserForm"/></td>
+                            <td><input type="text" name="Password" value="@user.password" class="editUserForm"/></td>
                         @if(admin) {
-                                <td><input type="checkbox" name="Admin" value="true" class="userInfoForm" @{
+                                <td><input type="checkbox" name="Admin" value="true" class="editUserForm" @{
                                     if(user.admin) "checked"
                                 }></td>
-                                <td><input type="checkbox" name="Active" value="true" class="userInfoForm" @{
+                                <td><input type="checkbox" name="Active" value="true" class="editUserForm" @{
                                     if(user.active) "checked"
                                 }></td>
-                                <td><input type="number" name="Distance" value="@user.distance" class="userInfoForm"/></td>
+                                <td><input type="number" name="Distance" value="@user.distance" class="editUserForm"/></td>
                         } else {
-                                <input type="hidden" name="Active" value="true" class="userInfoForm" checked/>
+                                <input type="hidden" name="Active" value="true" class="editUserForm" checked/>
                         }
                         </tr>
                     </tbody>

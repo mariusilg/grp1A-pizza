@@ -12,8 +12,8 @@ GET         /location            controllers.Application.location
 GET         /error               controllers.Application.error
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
-GET         /resendConfirm       controllers.MailController.resendConfirm(userID: Long)
 GET         /confirm             controllers.UserController.confirm(id: Long, token: String)
+GET         /resendConfirm       controllers.MailController.resendConfirm(userID: Long)
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
 GET         /cart                controllers.OrderController.showCart
 GET         /confirmCart         controllers.OrderController.confirmCart
@@ -32,8 +32,10 @@ GET         /addCategory         controllers.AssortmentController.manageAssortme
 GET         /updateCategory      controllers.AssortmentController.manageAssortment
 
 GET         /javascriptRoutes    controllers.JavascriptRoutes.javascriptRoutes
-GET         /checkUser           controllers.JavascriptRoutes.checkUser(username: String)
-GET         /checkIfUserExists   controllers.JavascriptRoutes.checkIfUserExists(username: String)
+GET         /checkName           controllers.JavascriptRoutes.checkName(username: String)
+GET         /checkOtherName      controllers.JavascriptRoutes.checkOtherName(id: Long, username: String)
+GET         /checkEmail           controllers.JavascriptRoutes.checkEmail(eMail: String)
+GET         /checkOtherEmail      controllers.JavascriptRoutes.checkOtherEmail(id: Long, eMail: String)
 GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
 
 GET         /showItems           controllers.ItemController.showItems(categoryId: Long)

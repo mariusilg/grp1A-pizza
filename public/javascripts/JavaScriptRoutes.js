@@ -24,15 +24,65 @@ var onError = function(error) {
 }*/
 
 $(".userInfoForm[name=UserName]").keyup(function(){
-        checkUser(this)
-
+        checkName(this)
 });
-function checkUser(username) {
-    jsRoutes.controllers.JavascriptRoutes.checkIfUserExists($(username).val()).ajax({
+
+$(".editUserForm[name=UserName]").keyup(function(){
+    checkOtherName($(".editUserForm[name=ID]"), this)
+});
+
+$(".userInfoForm[name=Email]").keyup(function(){
+    checkEmail(this)
+});
+$(".editUserForm[name=Email]").keyup(function(){
+    checkOtherEmail($(".editUserForm[name=ID]"), this)
+});
+
+function checkName(username) {
+    jsRoutes.controllers.JavascriptRoutes.checkName($(username).val()).ajax({
         success: function (data) {
             $(".alertUser").remove();
             if(data == "true") {
-                renderErrorMessage();
+                renderErrorMessageUser();
+            } else {
+                console.log("true");
+            }
+        }
+    });
+}
+
+function checkOtherName(id, username) {
+    jsRoutes.controllers.JavascriptRoutes.checkOtherName($(id).val(), $(username).val()).ajax({
+        success: function (data) {
+            $(".alertUser").remove();
+            if(data == "true") {
+                renderErrorMessageUser();
+            } else {
+                console.log("true");
+            }
+        }
+    });
+}
+
+function checkEmail(email) {
+    jsRoutes.controllers.JavascriptRoutes.checkEmail($(email).val()).ajax({
+        success: function (data) {
+            $(".alertUser").remove();
+            if(data == "true") {
+                renderErrorMessageMail();
+            } else {
+                console.log("true");
+            }
+        }
+    });
+}
+
+function checkOtherEmail(id, email) {
+    jsRoutes.controllers.JavascriptRoutes.checkOtherEmail($(id).val(), $(email).val()).ajax({
+        success: function (data) {
+            $(".alertUser").remove();
+            if(data == "true") {
+                renderErrorMessageMail();
             } else {
                 console.log("true");
             }
@@ -42,7 +92,12 @@ function checkUser(username) {
 
 
 
-function renderErrorMessage() {
+function renderErrorMessageUser() {
     console.log("false");
     $("#contentContainer").prepend("<div class='alert alertUser'><span class='closebtn' onclick='$(this).parent().remove();'>&times;</span>Username bereits vergeben!</div>");
+}
+
+function renderErrorMessageMail() {
+    console.log("false");
+    $("#contentContainer").prepend("<div class='alert alertUser'><span class='closebtn' onclick='$(this).parent().remove();'>&times;</span>Email bereits vorhanden!</div>");
 }

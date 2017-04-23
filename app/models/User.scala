@@ -4,6 +4,7 @@ package models
  * User entity.
  * @param id database id of the user.
  * @param userName username of the user.
+ * @param gender gender of the user.
  * @param firstName firstname of the user.
  * @param lastName lastname of the user.
  * @param password password of the user.
@@ -16,4 +17,4 @@ package models
  * @param distance distance of user to the shop.
  * @param active optional active-flag of the user.
  */
-case class User(var id: Long, var userName: String, var firstName: String, var lastName: String, var password: String, var admin: Boolean, var street: String, var zip: String, var city: String, var phone: String, var email: String, var distance: Int, var active: Boolean)
+case class User(var id: Long, var userName: String, var gender: Boolean, var firstName: String, var lastName: String, var password: String, var admin: Boolean, var street: String, var zip: String, var city: String, var phone: String, var email: String, var distance: Int, var active: Boolean)
