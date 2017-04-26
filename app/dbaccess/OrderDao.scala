@@ -60,6 +60,30 @@ trait OrderDaoT {
     }
   }
 
+  /**
+    * Confirms cart to be an order.
+    * @param cart cart.
+    * @return whether update was successful or not
+    */
+  def cancelOrder(orderID: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Orders SET state = 'canceled' where id = {id}").on('id -> orderID).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
+  /**
+    * Accepts an order.
+    * @param orderID id of order.
+    * @return whether update was successful or not
+    */
+  def acceptOrder(orderID: Long): Boolean = {
+    DB.withConnection { implicit c =>
+      val rowsUpdated = SQL("update Orders SET state = 'inProcess' where id = {id}").on('id -> orderID).executeUpdate()
+      rowsUpdated == 1
+    }
+  }
+
 
   /**
     * Deletes cart.

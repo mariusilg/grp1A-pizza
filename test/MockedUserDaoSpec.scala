@@ -15,7 +15,10 @@ class MockedUserDaoSpec extends Specification with Mockito {
   object UserService extends services.UserServiceT {
     override val userDao = mock[dbaccess.UserDaoT]
     import models.User
-    userDao.registeredUsers returns List(User(1,"Helge"), User(2,"Helga"), User(3,"Tina"))
+    userDao.registeredUsers returns List(User(1,"Helge", true, "Helge", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "", -1, true)
+      , User(2,"Helga", true, "Helga", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "", -1, true)
+      , User(3,"Tina", true, "Tina", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "", -1, true)
+    )
   }
 
 }

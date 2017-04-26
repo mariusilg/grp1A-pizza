@@ -11,7 +11,7 @@ class StoveSpecification extends Specification with ScalaCheck {
 
     "return three pizza at once if the capacity is 4" in {
       val stove = new Stove(4)
-      val listOfPizza = List(new Pizza, new Pizza, new Pizza)
+      val listOfPizza = List(new Pizza(1, "Pizza1", 10, 10), new Pizza(2, "Pizza2", 10, 10), new Pizza(3, "Pizza3", 10, 10))
       stove += listOfPizza
       stove.next().length must_== 3
       stove.next() must beEmpty
@@ -19,7 +19,7 @@ class StoveSpecification extends Specification with ScalaCheck {
 
     "return three pizza in two parts if the capacity is 2" in {
       val stove = new Stove(2)
-      val listOfPizza = List(new Pizza, new Pizza, new Pizza)
+      val listOfPizza = List(new Pizza(1, "Pizza1", 10, 10), new Pizza(2, "Pizza2", 10, 10), new Pizza(3, "Pizza3", 10, 10))
       stove += listOfPizza
       stove.next().length must_== 2
       stove.next().length must_== 1
@@ -35,7 +35,7 @@ class StoveSpecification extends Specification with ScalaCheck {
         if (noOfPizza == 0) noOfPizza = 25
 
         val stove = new Stove(capa)
-        stove += List.fill(noOfPizza)(new Pizza)
+        stove += List.fill(noOfPizza)(new Pizza(1, "Pizza1", 10, 10))
 
         var returnedPizza = 0
         var noOfNext = -1

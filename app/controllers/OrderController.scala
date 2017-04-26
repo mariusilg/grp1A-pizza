@@ -111,12 +111,30 @@ object OrderController extends Controller {
     }
   }
 
-  def cancelOrder(orderID: Long)= withUser_Customer { user => implicit request =>
-          if (services.OrderService.cancelOrder(user.id, orderID)) {
-            Redirect(routes.OrderController.showOrders(None))
-          } else {
-            Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
-          }
+  def cancelOrder(orderID: Long)= withUser { user => implicit request =>
+    user.admin match {
+      case true =>
+        if (services.OrderService.cancelOrder(orderID)) {
+          Redirect(routes.OrderController.showOrders(None))
+        } else {
+          Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+        }
+      case _ =>
+        if (services.OrderService.cancelOrder(user.id, orderID)) {
+          Redirect(routes.OrderController.showOrders(None))
+        } else {
+          Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+        }
+    }
+
+  }
+
+  def acceptOrder(orderID: Long)= withUser_Employee { user => implicit request =>
+    if (services.OrderService.acceptOrder(orderID)) {
+      Redirect(routes.OrderController.showOrders(None))
+    } else {
+      Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+    }
   }
 
 

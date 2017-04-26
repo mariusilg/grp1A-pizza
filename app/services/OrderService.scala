@@ -89,6 +89,14 @@ trait OrderServiceT {
     orderDao.cancelOrder(custID, orderID)
   }
 
+  def cancelOrder(orderID: Long): Boolean = {
+    orderDao.cancelOrder(orderID)
+  }
+
+  def acceptOrder(orderID: Long): Boolean = {
+    orderDao.acceptOrder(orderID)
+  }
+
 
   def getCartIDByUserID(userID: Long): Option[Long] = {
     orderDao.getCartIDByUserID(userID)

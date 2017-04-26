@@ -19,6 +19,7 @@ GET         /cart                controllers.OrderController.showCart
 GET         /confirmCart         controllers.OrderController.confirmCart
 GET         /deleteCart          controllers.OrderController.deleteCart
 GET         /cancelOrder         controllers.OrderController.cancelOrder(orderID: Long)
+GET         /acceptOrder         controllers.OrderController.acceptOrder(orderID: Long)
 GET         /deleteCartItem      controllers.OrderController.deleteCartItem(itemID: Long)
 GET         /deleteCartExtra     controllers.OrderController.deleteCartExtra(extraID: Long)
 GET         /manageUser          controllers.UserController.manageUser

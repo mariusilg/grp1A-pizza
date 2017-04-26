@@ -23,11 +23,16 @@
                         </tr>
                         <tr>
                             <th colspan="2">Distanz: @order.distance km</th>
-                            <th colspan="2">@if(order.state == "inOrder"){
-                                    <a href="@routes.OrderController.cancelOrder(order.id)">stornieren</a>
-                            } else {
-                                @order.state
-                            }
+                            <th colspan="2">
+                                @if(order.state == "inOrder"){
+                                    <a href="@routes.OrderController.cancelOrder(order.id)">@if(ownOrder){stornieren}else{ablehnen}</a>
+                                }
+                                @if(order.state == "inOrder" && !ownOrder) {
+                                    <a href="@routes.OrderController.acceptOrder(order.id)"> / annehmen</a>
+                                }
+                                @if(order.state != "inOrder") {
+                                    Status: @order.state
+                                }
                             </th>
                         </tr>
                         <tr>
