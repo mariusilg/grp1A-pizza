@@ -190,7 +190,7 @@ trait OrderDaoT {
       val businessVolume = SQL("Select SUM(costs) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
-        case Some(row) => Some(row[Long]("turnover").toInt)
+        case Some(row) => Some(row[BigInt]("turnover").toInt)
         case None => None
       }
     }
@@ -201,7 +201,7 @@ trait OrderDaoT {
       val businessVolume = SQL("Select SUM(costs) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
-        case Some(row) => Some(row[Long]("turnover").toInt)
+        case Some(row) => Some(row[BigInt]("turnover").toInt)
         case None => None
       }
     }
@@ -212,7 +212,7 @@ trait OrderDaoT {
       val businessVolume = SQL("Select AVG(costs) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
-        case Some(row) => row[Long]("turnover").toInt
+        case Some(row) => row[BigInt]("turnover").toInt
         case None => 0
       }
     }
@@ -223,7 +223,7 @@ trait OrderDaoT {
       val businessVolume = SQL("Select AVG(costs) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
-        case Some(row) => row[Long]("turnover").toInt
+        case Some(row) => row[BigInt]("turnover").toInt
         case None => 0
       }
     }
