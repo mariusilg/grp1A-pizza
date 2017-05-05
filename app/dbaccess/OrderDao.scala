@@ -187,10 +187,10 @@ trait OrderDaoT {
 
   def getTotalBusinessVolumeByCustID(custID: Long) : Option[Int] = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select SUM(costs) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
+      val businessVolume = SQL("Select CAST(SUM(costs) as INT) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
-        case Some(row) => Some(row[BigInt]("turnover").toInt)
+        case Some(row) => Some(row[Int]("turnover"))
         case None => None
       }
     }
@@ -198,10 +198,10 @@ trait OrderDaoT {
 
   def getTotalBusinessVolume : Option[Int] = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select SUM(costs) as turnover from orders where state <> 'inCart'").apply
+      val businessVolume = SQL("Select CAST(SUM(costs) as INT) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
-        case Some(row) => Some(row[BigInt]("turnover").toInt)
+        case Some(row) => Some(row[Int]("turnover"))
         case None => None
       }
     }
@@ -209,10 +209,10 @@ trait OrderDaoT {
 
   def getAverageBusinessVolume : Int = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select AVG(costs) as turnover from orders where state <> 'inCart'").apply
+      val businessVolume = SQL("Select CAST(AVG(costs) as INT) as turnover from orders where state <> 'inCart'").apply
         .headOption
       businessVolume match {
-        case Some(row) => row[BigInt]("turnover").toInt
+        case Some(row) => row[Int]("turnover")
         case None => 0
       }
     }
@@ -220,10 +220,10 @@ trait OrderDaoT {
 
   def getAverageBusinessVolume(custID: Long) : Int = {
     DB.withConnection { implicit c =>
-      val businessVolume = SQL("Select AVG(costs) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
+      val businessVolume = SQL("Select CAST(AVG(costs) as INT) as turnover from orders where cust_id = {custID} and state <> 'inCart'").on('custID -> custID).apply
         .headOption
       businessVolume match {
-        case Some(row) => row[BigInt]("turnover").toInt
+        case Some(row) => row[Int]("turnover")
         case None => 0
       }
     }
