@@ -35,8 +35,8 @@ GET         /updateCategory      controllers.AssortmentController.manageAssortme
 GET         /javascriptRoutes    controllers.JavascriptRoutes.javascriptRoutes
 GET         /checkName           controllers.JavascriptRoutes.checkName(username: String)
 GET         /checkOtherName      controllers.JavascriptRoutes.checkOtherName(id: Long, username: String)
-GET         /checkEmail           controllers.JavascriptRoutes.checkEmail(eMail: String)
-GET         /checkOtherEmail      controllers.JavascriptRoutes.checkOtherEmail(id: Long, eMail: String)
+GET         /checkEmail          controllers.JavascriptRoutes.checkEmail(eMail: String)
+GET         /checkOtherEmail     controllers.JavascriptRoutes.checkOtherEmail(id: Long, eMail: String)
 GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
 
 GET         /showItems           controllers.ItemController.showItems(categoryId: Long)
