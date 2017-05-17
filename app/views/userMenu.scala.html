@@ -7,7 +7,7 @@
             <!--@for(category <- services.CategoryService.visibleCategories) {
                 <li class="tab @{if(selected == (category.id ).toString()){"selectedTab"}}"><a href="@routes.ItemController.showItems(category.id)">@category.name</a></li>
             }-->
-            <li class="tab rangeTab @{if(selected == "range" || parent.getOrElse("error") == "range"){"selectedTab"}}"><a href="@routes.ItemController.showItems(1)">Sortiment</a></li>
+            <li content="center" class="tab rangeTab @{if(selected == "range" || parent.getOrElse("error") == "range"){"selectedTab"}}"><a href="@routes.ItemController.showItems(1)">Sortiment</a></li>
             <li class="tab cartTab @{if(selected == "cart"){"selectedTab"}}"><a href="@routes.OrderController.showCart">Warenkorb</a></li>
             <li class="tab myOrdersTab @{if(selected == "myOrders"){"selectedTab"}}"><a href="@routes.OrderController.showOrders(None)">Bestellungen</a></li>
             <li class="tab myAccountTab @{if(selected == "myAccount"){"selectedTab"}}"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>

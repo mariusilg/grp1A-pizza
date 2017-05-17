@@ -23,10 +23,11 @@ jQuery(document).ready(function ($) {
     });
 
     function resizeWindow() {
+        //liWidth = $('#slider ul li').width(300);
         liWidth = $('#slider ul li').width($(window).width());
         slideCount = liWidth.length;
         slideWidth = $('#slider ul li').width();
-        slideHeight = $('#slider ul li').height();
+        slideHeight = $('#slider ul li').height($(window).height());
         sliderUlWidth = slideCount * slideWidth;
 
         //$('.canvas').css({width: $(window).width(), height: "auto"});

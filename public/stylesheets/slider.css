@@ -2,6 +2,7 @@
 
 #slider {
     position: relative;
+    width: 20%;
     overflow: hidden;
     margin: 20px auto 0 auto;
     border-radius: 4px;
@@ -21,7 +22,7 @@
     float: left;
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 20%;
     height: 500px;
     background: #ccc;
     text-align: center;
