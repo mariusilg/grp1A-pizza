@@ -4,7 +4,7 @@
 
     @if(loggedIn){
         @if(adminFlag){
-            @adminMenu()
+            @adminMenu("privacy", None, false)
         } else {
             @userMenu("privacy", None, false)
         }

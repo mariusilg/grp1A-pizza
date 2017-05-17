@@ -4,7 +4,7 @@
 
     @if(loggedIn){
         @if(adminFlag){
-            @adminMenu()
+            @adminMenu("location", None, false)
         } else {
             @userMenu("location", None, false)
         }

@@ -1,10 +1,17 @@
-@()
-<ul id="menu">
-        <li><a href="@routes.Application.index">Home</a></li>
-        <li><a href="@routes.OrderController.showOrders(Some(0))">Bestellungen einsehen</a></li>
-        <li><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></li>
-        <li><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></li>
-        <li style="float: right"><a href="@routes.Auth.logout">logout</a></li>
-        <li style="float: right"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
-</ul>
+@(selected: String, parent: Option[String], subMenu: Boolean)
+<div id="contentHeader">
+
+        <div id="topHeader">
+                <ul class="menu topmenu">
+                        <li class="tab homeTab @{if(selected == "home"){"selectedTab"}}"><a href="@routes.Application.index()"><img src="@routes.Assets.at("images/pizzaLogo2.png")"></a></li>
+                        <li class="tab ordersTab @{if(selected == "orders"){"selectedTab"}}"><a href="@routes.OrderController.showOrders(Some(0))">Bestellungen einsehen</a></li>
+                        <li class="tab manageUserTab @{if(selected == "manageUser"){"selectedTab"}}"><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></li>
+                        <li class="tab manageRangeTab @{if(selected == "manageRange"){"selectedTab"}}"><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></li>
+                        <li class="tab myAccountTab @{if(selected == "myAccount"){"selectedTab"}}"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
+                        <li class="tab logoutTab @{if(selected == "logout"){"selectedTab"}} "><a href="@routes.Auth.logout">logout</a></li>
+
+                </ul>
+        </div>
+</div>
+
 

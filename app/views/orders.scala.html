@@ -3,7 +3,7 @@
 @main(models.Company.name) {
 
     @if(admin) {
-        @adminMenu()
+        @adminMenu("orders", None, false)
         @helper.form(action = routes.OrderController.refresh()) {
             <select name="custID">
                 <option value="-1">Select..</option>

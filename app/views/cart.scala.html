@@ -3,7 +3,7 @@
 @main(models.Company.name) {
 
     @if(user.admin) {
-        @adminMenu()
+        @adminMenu("orders", None, false)
     } else {
         @userMenu("cart", None, false)
         <h1>Mein Warenkorb</h1>

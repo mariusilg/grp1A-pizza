@@ -1,7 +1,7 @@
 @(userForm: Form[forms.CreateUserForm], users: List[models.User])(implicit flash: Flash)
 
 @main(models.Company.name) {
-    @adminMenu()
+    @adminMenu("manageUser", None, false)
     <h1>Benutzerverwaltung</h1>
         <div class="tbl-header">
             <table cellpadding="0" cellspacing="0" border="0">

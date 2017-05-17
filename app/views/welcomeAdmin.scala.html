@@ -1,7 +1,7 @@
 @(user: models.User)()
 
 @main(models.Company.name) {
-    @adminMenu()
+    @adminMenu("home", None, false)
     <h1>Willkommen @user.userName im Mitarbeiterbereich</h1>
     registrierte Kunden: @services.UserService.getCustCount<br/>
     davon aktive Kunden: @services.UserService.getActiveCustCount<br/>

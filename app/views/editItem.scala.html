@@ -1,7 +1,7 @@
 @(item: models.Item)(implicit flash: Flash)
 
 @main(models.Company.name) {
-        @adminMenu()
+        @adminMenu("manageRange", None, false)
         <h2>Produkt @item.name verwalten:</h2>
         @helper.form(action = routes.AssortmentController.updateItem()) {
             <table>
