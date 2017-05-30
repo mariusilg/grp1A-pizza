@@ -110,10 +110,27 @@ trait CategoryDaoT {
     * Returns a list of available sizes from the database.
     * @return a list of size objects
     */
-  def getSizes(id: Long): List[Size] = {
+  def getSizesByCategory(id: Long): List[Size] = {
     DB.withConnection { implicit c =>
-      val selectSizes = SQL("Select id, name, size from Sizes where cat_id = {id};").on('id -> id)
-      val sizes = selectSizes().map(row => Size(row[Long]("id"), row[String]("name"), row[Int]("size"))).toList
+      val selectSizes = SQL("Select id, name, size, cat_id from Sizes where cat_id = {id};").on('id -> id)
+      val sizes = selectSizes().map(row => Size(row[Long]("id"), row[String]("name"), row[Int]("size"), row[Long]("cat_id"))).toList
+      sizes
+    }
+  }
+
+  def getSizesById(id: Long): Size = {
+    DB.withConnection { implicit c =>
+      val selectSize = SQL("Select id, name, size, cat_id from Sizes where id = {id};").on('id -> id).apply().head
+      //val sizes = selectSizes().map(row => Size(row[Long]("id"), row[String]("name"), row[Int]("size"), row[Long]("cat_id"))).toList
+      var size = Size(selectSize[Long]("id"), selectSize[String]("name"), selectSize[Int]("size"), selectSize[Long]("cat_id"))
+      size
+    }
+  }
+
+  def getSizes(): List[Size] = {
+    DB.withConnection { implicit c =>
+      val selectSizes = SQL("Select id, name, size, cat_id from Sizes;")
+      val sizes = selectSizes().map(row => Size(row[Long]("id"), row[String]("name"), row[Int]("size"), row[Long]("cat_id"))).toList
       sizes
     }
   }
@@ -264,6 +281,40 @@ trait CategoryDaoT {
       val rowsUpdated = SQL("update Categories SET visibility = FALSE where id = {id}").on('id -> id).executeUpdate()
       rowsUpdated == 1
     }
+  }
+
+  def rmSize(sizeId: Int): String = {
+    println("3005 " + sizeId)
+    DB.withConnection { implicit c =>
+      val selectExtras= SQL("delete from Sizes where id = {sizeId};").on('sizeId -> sizeId).executeUpdate()
+      "true"
+    }
+  }
+
+  def updateSize(size: Size): Size = {
+    DB.withConnection { implicit c =>
+      val id: Int =
+        SQL("update Sizes set cat_id = {cat_id}, name = {name}, size = {size} where id = {id} ").on(
+          'id -> size.id.toInt,
+          'cat_id -> size.categoryID.toInt,
+          'name -> size.name,
+          'size -> size.size
+        ).executeUpdate()
+    }
+    size
+  }
+
+  def insertSize(size: Size): Size = {
+    println("size " + size.size)
+    DB.withConnection { implicit c =>
+      val id: Option[Long] =
+        SQL("insert into Sizes(cat_id, name, size) values({cId}, {name}, {size})").on(
+          'cId -> size.categoryID,
+          'name -> size.name,
+          'size -> size.size
+        ).executeInsert()
+    }
+    size
   }
 
 }

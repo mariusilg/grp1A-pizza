@@ -1,12 +1,12 @@
 package controllers
 
 import controllers.Auth.Secured
-import play.api.mvc.{Action, AnyContent, Controller}
-import play.api.data.Forms._
-import play.api.data.Form
-import services._
 import forms._
+import play.api.data.Form
+import play.api.data.Forms._
 import play.api.libs.json._
+import play.api.mvc.{Action, AnyContent, Controller}
+import services._
 
 /**
   * Controller for assortment specific operations.
@@ -14,6 +14,14 @@ import play.api.libs.json._
   * @author ne
   */
 object AssortmentController extends Controller with Secured {
+
+  val sizeForm = Form(
+    mapping(
+      "id" -> optional(number),
+      "name" -> text,
+      "size" -> number,
+      "categoryId" -> number
+    )(CreateSizeForm.apply)(CreateSizeForm.unapply))
 
   val itemForm = Form(
     mapping(
@@ -153,6 +161,11 @@ object AssortmentController extends Controller with Secured {
 
   }
 
+  def manageSizes = withUser_Employee { user => implicit request =>
+    var sizes = CategoryService.getSizes()
+    Ok(views.html.size(sizes))
+  }
+
   /**
     * Remove a specific item.
     */
@@ -221,6 +234,45 @@ object AssortmentController extends Controller with Secured {
     var returnValue = "false"
     returnValue = services.ExtraService.rmExtra(extraId)
     Ok(returnValue)
+  }
+
+  def rmSize(sizeId: Int) = withUser_Employee { user => implicit request =>
+    var resultRemove: JsValue = Json.obj(
+      "result" -> false
+    )
+    println("3005 " + sizeId)
+    var returnValue = "false"
+    returnValue = services.CategoryService.rmSize(sizeId)
+    Ok(returnValue)
+  }
+
+  def editSize(ofSize: Option[Long]) = withUser_Employee { user => implicit request =>
+    val size = services.CategoryService.getSizeById(ofSize.get)
+    Ok(views.html.detailView_Size("edit", Some(size)))
+  }
+
+  def post_editSize(extraType: String) = withUser_Employee { user => implicit request =>
+    sizeForm.bindFromRequest.fold(
+      formWithErrors => {
+        BadRequest(views.html.errorHandler("", Some(user), 4, request.headers("referer")))
+      },
+      sizeData => {
+        extraType match {
+          case "edit" =>
+            val size = services.CategoryService.updateSize(sizeData)
+          case "insert" =>
+            val size = services.CategoryService.insertSize(sizeData)
+        }
+
+        Redirect(routes.AssortmentController.manageSizes()).
+          flashing("success" -> "User saved!")
+      })
+  }
+
+  def insertSize(ofSize: Option[Long]) = withUser_Employee { user => implicit request =>
+    println("hallo welt")
+    //val extra = services.ExtraService.getExtra(ofExtra.get)
+    Ok(views.html.detailView_Size("insert",None))
   }
 
 }

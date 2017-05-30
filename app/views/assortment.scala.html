@@ -127,37 +127,7 @@
         </div>
     }
 
-    <h2>Extras</h2>
-    <div class="tbl-header">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <thead>
-                <tr>
-                    <th>Extra Items</th>
-                </tr>
-                <tr>
-                    <th>ID</th>
-                    <th>Extra Name</th>
-                    <th>Preis / Einheit</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-        <div class="tbl-content">
-            <table cellpadding="0" cellspacing="0" border="0">
-                <tbody>
-                    @for(extra <- services.ExtraService.getExtras) {
-                        <tr>
-                            <td>@extra.id (e)</td>
-                            <td>@extra.name</td>
-                            <td>@extra.priceToString</td>
-                            <td>
-                                <a style="float: left;" href="@routes.ExtraController.editExtra(Some(extra.id))"><i class="button material-icons button edit">edit</i></a>
-                                <a class="deleteItem" data-id="@extra.id"><i class="button material-icons button delete">delete</i></a>
-                            </td>
-                        </tr>
-                    }
-                </table>
-        </div>
+    
 
     <div id="messageBox">
         @categoryForm.errors.map { errors =>

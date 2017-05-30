@@ -42,10 +42,16 @@ function checkUser(username) {
 
 $(".deleteItem").click(function() {
     //alert(parseInt($(this).attr("data-id")))
-    rmUser(this);
+    if ($(this).attr("data-name") == "extra") {
+        rmExtra(this);
+    } else
+    if ($(this).attr("data-name") == "size"){
+        rmSize(this)
+    }
+
 });
 
-function rmUser(id) {
+function rmExtra(id) {
     jsRoutes.controllers.AssortmentController.rmExtra(parseInt($(id).attr("data-id"))).ajax({
         success: function (data) {
             if(data == "true") {
@@ -55,6 +61,19 @@ function rmUser(id) {
         }
     });
 }
+
+function rmSize(id) {
+    jsRoutes.controllers.AssortmentController.rmSize(parseInt($(id).attr("data-id"))).ajax({
+        success: function (data) {
+            if(data == "true") {
+                $(id).parent().parent().remove();
+            }
+
+        }
+    });
+}
+
+
 
 
 

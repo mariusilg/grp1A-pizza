@@ -23,4 +23,4 @@ case class Category(var id: Long, var name: String, var unit: String, var visibi
   * @param name name of the size.
   * @param size size of the size.
   */
-case class Size(var id: Long, var name: String, var size: Int)
+case class Size(var id: Long, var name: String, var size: Int, var categoryID: Long)

@@ -1,28 +1,28 @@
-@(editType: String, extra: Option[Item])
+@(editType: String, size: Option[Size])
 
 @main(models.Company.name) {
 
-    @adminMenu("manageExtras", Some("range"), true)
+    @adminMenu("manageSizes", Some("range"), true)
 
         @helper.form(action = routes.AssortmentController.post_editSize(editType)) {
-        @if(extra.nonEmpty) {
+        @if(size.nonEmpty) {
             <div class="appUserMask">
                 <label for="id">
                     <span class="field">id</span>
-                    <input class="nonInputStyle" type="text" name="id" id="id" value="@{if(extra.nonEmpty){extra.get.id} else {null}}">
+                    <input class="nonInputStyle" type="text" name="id" id="id" value="@{if(size.nonEmpty){size.get.id} else {null}}">
                 </label>
             </div>
         }
         <div class="appUserMask">
             <label for="name">
                 <span class="field">Name</span>
-                <input class="inputStyle" type="text" name="name" id="name" value="@{if(extra.nonEmpty){extra.get.name} else {null}}">
+                <input class="inputStyle" type="text" name="name" id="name" value="@{if(size.nonEmpty){size.get.name} else {null}}">
             </label>
         </div>
         <div class="appUserMask">
-            <label for="price">
-                <span class="field">Preis (Cent)</span>
-                <input class="inputStyle" type="number" min="0" name="price" id="price" value="@{if(extra.nonEmpty){extra.get.price} else {null}}">
+            <label for="size">
+                <span class="field">Size</span>
+                <input class="inputStyle" type="number" min="0" name="size" id="size" value="@{if(size.nonEmpty){size.get.size} else {null}}">
             </label>
         </div>
         <div class="appUserMask">
@@ -31,8 +31,8 @@
                 <select type="number" name="categoryId" id="typeId">
                 @for(category <- services.CategoryService.getCategories()) {
                     <option name="@category.name" value="@category.id" @{
-                        if(extra.nonEmpty) {
-                            if(extra.get.categoryID == category.id) {
+                        if(size.nonEmpty) {
+                            if(size.get.categoryID == category.id) {
                                 "selected"
                             }
                         }

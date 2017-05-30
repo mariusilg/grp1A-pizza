@@ -1,6 +1,7 @@
 package services
 
 import dbaccess.{CategoryDao, CategoryDaoT}
+import forms.CreateSizeForm
 import models._
 
 /**
@@ -64,7 +65,11 @@ trait CategoryServiceT {
     * Gets a list of all visible categories from the system.
     * @return list of categories.
     */
-  def getSizes(id: Long): List[Size] = categoryDao.getSizes(id)
+  def getSizesByCategory(id: Long): List[Size] = categoryDao.getSizesByCategory(id)
+
+  def getSizeById(id: Long): Size = categoryDao.getSizesById(id)
+
+  def getSizes(): List[Size] = categoryDao.getSizes()
 
   /**
     * Gets the default size of a category from the system.
@@ -135,6 +140,22 @@ trait CategoryServiceT {
     * @return a boolean success flag.
     */
   def deactivateCategory(id: Long): Boolean = categoryDao.deactivateCategory(id)
+
+  def rmSize(sizeId: Int): String = {
+    println("3005 " + sizeId)
+    categoryDao.rmSize(sizeId)
+  }
+
+  def updateSize(sizeForm: CreateSizeForm): Size = {
+    var size = Size(sizeForm.id.get, sizeForm.name, sizeForm.size, sizeForm.categoryId)
+    categoryDao.updateSize(size)
+  }
+
+  def insertSize(sizeForm: CreateSizeForm): Size = {
+    var size = Size(0, sizeForm.name, sizeForm.size, sizeForm.categoryId)
+
+    categoryDao.insertSize(size)
+  }
 
 }
 

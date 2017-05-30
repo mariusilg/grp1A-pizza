@@ -23,7 +23,9 @@ GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
 GET         /editExtra           controllers.ExtraController.editExtra(ofExtra: Option[Long])
+GET         /editSize            controllers.AssortmentController.editSize(ofSize: Option[Long])
 GET         /insertExtra         controllers.ExtraController.insertExtra(ofExtra: Option[Long])
+GET         /insertSize          controllers.AssortmentController.insertSize(ofSize: Option[Long])
 GET         /manageAssortment    controllers.AssortmentController.manageAssortment
 GET         /logout              controllers.Auth.logout
 GET         /removeUser          controllers.UserController.removeUser(id: Long)
@@ -31,12 +33,14 @@ GET         /removeItem          controllers.AssortmentController.rmItem(id: Opt
 GET         /addCategory         controllers.AssortmentController.manageAssortment
 GET         /updateCategory      controllers.AssortmentController.manageAssortment
 GET         /manageExtras        controllers.ExtraController.manageExtras
+GET         /manageSizes         controllers.AssortmentController.manageSizes
 
 GET         /javascriptRoutes    controllers.JavascriptRoutes.javascriptRoutes
 GET         /checkUser           controllers.JavascriptRoutes.checkUser(username: String)
 GET         /checkIfUserExists   controllers.JavascriptRoutes.checkIfUserExists(username: String)
 GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
 GET         /rmExtra             controllers.AssortmentController.rmExtra(extraId: Int)
+GET         /rmSize              controllers.AssortmentController.rmSize(sizeId: Int)
 
 GET         /showItems           controllers.ItemController.showItems(categoryId: Long)
 GET         /home                controllers.UserController.home
@@ -55,6 +59,7 @@ POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh
 POST        /post_authenticate   controllers.Auth.post_authenticate
 POST        /post_editExtra      controllers.ExtraController.post_editExtra(editType: String)
+POST        /post_editSize       controllers.AssortmentController.post_editSize(editType: String)
 
 # REST API
 GET         /api                 rest.Api.api

@@ -110,7 +110,7 @@
                                 <td>
                                 @if(services.CategoryService.hasSizes(categoryID)) {
                                     <select id="@item.id" name="size" @if(item.hasExtras) {onchange="changePriceWithE(@item.id)"} else {onchange="changePrice(@item.id)"}>
-                                    @for(size <- services.CategoryService.getSizes(categoryID)) {
+                                    @for(size <- services.CategoryService.getSizesByCategory(categoryID)) {
                                         <option value="@size.size">@size.name (@size.size @category.getUnit)</option>
                                     }
                                     </select>

@@ -1,15 +1,15 @@
-@(extras: List[Item])(implicit flash: Flash)
+@(sizes: List[Size])(implicit flash: Flash)
 
 @main(models.Company.name) {
 
-    @adminMenu("manageExtras", Some("range"), true)
+    @adminMenu("manageSizes", Some("range"), true)
 
     <div class="tbl-header">
         <table cellpadding="0" cellspacing="0" border="0">
             <thead>
                 <tr>
                     <th>Extra Items</th>
-                    @helper.form(action = routes.ExtraController.insertExtra(None)) {
+                    @helper.form(action = routes.AssortmentController.insertSize(None)) {
                         <input style="float: left;" type="submit" class="button" value="editieren"/>
                     }
                 </tr>
@@ -26,15 +26,15 @@
     <div class="tbl-content">
         <table cellpadding="0" cellspacing="0" border="0">
             <tbody>
-            @for(extra <- extras) {
+            @for(size <- sizes) {
                 <tr>
-                    <td>@extra.id (e)</td>
-                    <td>@extra.name</td>
-                    <td>@extra.priceToString</td>
-                    <td>@{services.CategoryService.getCategory(extra.categoryID).get.name}</td>
+                    <td>@size.id</td>
+                    <td>@size.name</td>
+                    <td>@size.size</td>
+                    <td>@{services.CategoryService.getCategory(size.categoryID).get.name}</td>
                     <td>
-                        <a style="float: left;" href="@routes.ExtraController.editExtra(Some(extra.id))"><i class="button material-icons button edit">edit</i></a>
-                        <a class="deleteItem" data-name="extra" data-id="@extra.id"><i class="button material-icons button delete">delete</i></a>
+                        <a style="float: left;" href="@routes.AssortmentController.editSize(Some(size.id))"><i class="button material-icons button edit">edit</i></a>
+                        <a class="deleteItem" data-name="size" data-id="@size.id"><i class="button material-icons button delete">delete</i></a>
                     </td>
                 </tr>
             }
