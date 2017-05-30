@@ -230,6 +230,14 @@ trait CategoryDaoT {
     }
   }
 
+  def getCategories(): List[Category] = {
+    DB.withConnection { implicit c =>
+      val selectCategories = SQL("Select id, name, unit, visibility from Categories;")
+      val categories = selectCategories().map(row => Category(row[Long]("id"), row[String]("name"), row[String]("unit"), row[Boolean]("visibility"))).toList
+      categories
+    }
+  }
+
   /**
     * Checks whether category is visible or not.
     * @param id id of category.

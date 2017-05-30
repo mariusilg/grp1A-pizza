@@ -119,7 +119,7 @@
                                 }
                                 </td>
                                 <td>
-                                @if(item.hasExtras) {
+                                @if(services.ExtraService.getExtrasForCategory(item.categoryID).length > 0) {
                                     <input id="addExtras" type="button" value="+ extras" onclick="showExtra(@item.id);"/>
                                 }
                                 </td>
@@ -127,7 +127,7 @@
                                 <td id="tp@item.id">@item.priceToString(services.CategoryService.getDefaultSize(categoryID))</td>
                                 <td><input type="submit" value="hinzufügen" /></td>
                             </tr>
-                            @if(item.hasExtras) {
+                            @if(services.ExtraService.getExtrasForCategory(item.categoryID).length > 0) {
                                 <tr id="tr@item.id" style="display: none;">
                                     <td>
                                         <input type="button" value="-" onclick="delExtra(@item.id);"/>
@@ -140,7 +140,7 @@
                                         <option value="@extra.id">@extra.name</option>
                                         }
                                         </select>**@
-                                        @for(extra <- services.ExtraService.getExtras) {
+                                        @for(extra <- services.ExtraService.getExtrasForCategory(item.categoryID)) {
                                             <label class="checkbox-inline">
                                                 <input type="checkbox" onchange="modifyExtra(@item.id)" name="extraID[@{
                                                     extra.id - 1

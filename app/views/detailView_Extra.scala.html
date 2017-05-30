@@ -1,0 +1,52 @@
+@(editType: String, extra: Option[Item])
+
+@main(models.Company.name) {
+
+    @adminMenu("manageExtras", Some("manageRange"), true)
+
+        @helper.form(action = routes.ExtraController.post_editExtra(editType)) {
+        @if(extra.nonEmpty) {
+            <div class="appUserMask">
+                <label for="id">
+                    <span class="field">id</span>
+                    <input class="nonInputStyle" type="text" name="id" id="id" value="@{if(extra.nonEmpty){extra.get.id} else {null}}">
+                </label>
+            </div>
+        }
+        <div class="appUserMask">
+            <label for="name">
+                <span class="field">Name</span>
+                <input class="inputStyle" type="text" name="name" id="name" value="@{if(extra.nonEmpty){extra.get.name} else {null}}">
+            </label>
+        </div>
+        <div class="appUserMask">
+            <label for="price">
+                <span class="field">Preis (Cent)</span>
+                <input class="inputStyle" type="number" min="0" name="price" id="price" value="@{if(extra.nonEmpty){extra.get.price} else {null}}">
+            </label>
+        </div>
+        <div class="appUserMask">
+            <label for="categoryId">
+                <span class="field">Type</span>
+                <select type="number" name="categoryId" id="typeId">
+                @for(category <- services.CategoryService.getCategories()) {
+                    <option name="@category.name" value="@category.id" @{
+                        if(extra.nonEmpty) {
+                            if(extra.get.categoryID == category.id) {
+                                "selected"
+                            }
+                        }
+                    }>@category.name</option>
+                }
+                </select>
+            </label>
+        </div>
+            <div class="appUserMask">
+                <input class="submitButton" type="submit">
+            </div>
+        }
+
+        <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
+        <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
+
+}

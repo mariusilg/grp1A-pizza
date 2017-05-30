@@ -8,7 +8,8 @@ CREATE TABLE Items (
     price Int NOT NULL,
     extra_flag BOOLEAN DEFAULT FALSE,
     prep_duration INT DEFAULT 0,
-    visibility BOOLEAN DEFAULT TRUE
+    visibility BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY(cat_id) references Categories(id)
 );
 
 INSERT INTO Items (

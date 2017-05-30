@@ -6,12 +6,24 @@
                         <li class="tab homeTab @{if(selected == "home"){"selectedTab"}}"><a href="@routes.Application.index()"><img src="@routes.Assets.at("images/pizzaLogo2.png")"></a></li>
                         <li class="tab ordersTab @{if(selected == "orders"){"selectedTab"}}"><a href="@routes.OrderController.showOrders(Some(0))">Bestellungen einsehen</a></li>
                         <li class="tab manageUserTab @{if(selected == "manageUser"){"selectedTab"}}"><a href="@routes.UserController.manageUser">Benutzerverwaltung</a></li>
-                        <li class="tab manageRangeTab @{if(selected == "manageRange"){"selectedTab"}}"><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></li>
+                        <li class="tab manageRangeTab @{if(selected == "manageRange" || parent.getOrElse("error") == "range"){"selectedTab"}}"><a href="@routes.AssortmentController.manageAssortment">Sortimentverwaltung</a></li>
                         <li class="tab myAccountTab @{if(selected == "myAccount"){"selectedTab"}}"><a href="@routes.UserController.editUser(None)">Mein Konto</a></li>
                         <li class="tab logoutTab @{if(selected == "logout"){"selectedTab"}} "><a href="@routes.Auth.logout">logout</a></li>
 
                 </ul>
         </div>
+        @if(subMenu) {
+                <div id="subHeader">
+                        <ul class="menu submenu">
+
+                                <li class="tab @{if(selected == "manageRange") {"selectedTab"}}"><a href="@routes.AssortmentController.manageAssortment">Sortiment</a></li>
+                                <li class="tab @{if(selected == "manageCategories") {"selectedTab"}}"><a href="#">Kategorien</a></li>
+                                <li class="tab @{if(selected == "manageExtras") {"selectedTab"}}"><a href="@routes.ExtraController.manageExtras">Extras</a></li>
+                                <li class="tab @{if(selected == "manageSizes") {"selectedTab"}}"><a href="#">Sizes</a></li>
+
+                        </ul>
+                </div>
+        }
 </div>
 
 

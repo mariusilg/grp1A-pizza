@@ -1,0 +1,46 @@
+@(extras: List[Item])(implicit flash: Flash)
+
+@main(models.Company.name) {
+
+    @adminMenu("manageExtras", Some("manageRange"), true)
+
+    <div class="tbl-header">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <thead>
+                <tr>
+                    <th>Extra Items</th>
+                    @helper.form(action = routes.ExtraController.insertExtra(None)) {
+                        <input style="float: left;" type="submit" class="button" value="editieren"/>
+                    }
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Extra Name</th>
+                    <th>Preis / Einheit</th>
+                    <th>Kategorie</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="tbl-content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+            @for(extra <- extras) {
+                <tr>
+                    <td>@extra.id (e)</td>
+                    <td>@extra.name</td>
+                    <td>@extra.priceToString</td>
+                    <td>@{services.CategoryService.getCategory(extra.categoryID).get.name}</td>
+                    <td>
+                        <a style="float: left;" href="@routes.ExtraController.editExtra(Some(extra.id))"><i class="button material-icons button edit">edit</i></a>
+                        <a class="deleteItem" data-id="@extra.id"><i class="button material-icons button delete">delete</i></a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
+    <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
+
+}

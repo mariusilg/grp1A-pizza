@@ -101,7 +101,12 @@ trait CategoryServiceT {
     * @return category if .
     */
   def getCategory(id: Long): Option[Category] = {
+    println("getCategory " + id)
     categoryDao.getCategory(id)
+  }
+
+  def getCategories(): List[Category] = {
+    categoryDao.getCategories()
   }
 
   /**

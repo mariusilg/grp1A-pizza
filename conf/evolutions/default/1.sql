@@ -31,8 +31,8 @@ INSERT INTO Users (
     admin_flag,
     distance,
     active_flag
-)   VALUES ('Padrone', 'Padrone', 'Mustermann', 'Lothstraße. 64', '80335', 'München', '+4915112345123', 'padrone@test.com', 'adminPw', TRUE, 0, TRUE),
-('Emil', 'Emil', 'Mustermann', 'Lothstraße. 1', '80335', 'München', '+4915112345123', 'emil@test.com','custPw', FALSE, 1, TRUE);
+)   VALUES ('padrone', 'Padrone', 'Mustermann', 'Lothstraße. 64', '80335', 'München', '+4915112345123', 'padrone@test.com', '123', TRUE, 0, TRUE),
+('emil', 'Emil', 'Mustermann', 'Lothstraße. 1', '80335', 'München', '+4915112345123', 'emil@test.com','123', FALSE, 1, TRUE);
 
 # --- !Downs
 DROP TABLE Users;

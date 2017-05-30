@@ -5,7 +5,8 @@ CREATE TABLE Sizes (
     id serial PRIMARY KEY,
     cat_id INT NOT NULL,
     name varchar(255) NOT NULL,
-    size INT NOT NULL
+    size INT NOT NULL,
+    FOREIGN KEY(cat_id) references Categories(id)
 );
 
 INSERT INTO Sizes (

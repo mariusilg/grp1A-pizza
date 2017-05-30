@@ -13,7 +13,8 @@ object JavascriptRoutes extends Controller with Secured {
     Ok(
       Routes.javascriptRouter("jsRoutes")(
         routes.javascript.JavascriptRoutes.checkUser,
-        routes.javascript.JavascriptRoutes.checkIfUserExists
+        routes.javascript.JavascriptRoutes.checkIfUserExists,
+        routes.javascript.AssortmentController.rmExtra
       )
     ).as("text/javascript")
   }

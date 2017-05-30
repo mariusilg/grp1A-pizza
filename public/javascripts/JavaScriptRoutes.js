@@ -40,6 +40,22 @@ function checkUser(username) {
     });
 }
 
+$(".deleteItem").click(function() {
+    //alert(parseInt($(this).attr("data-id")))
+    rmUser(this);
+});
+
+function rmUser(id) {
+    jsRoutes.controllers.AssortmentController.rmExtra(parseInt($(id).attr("data-id"))).ajax({
+        success: function (data) {
+            if(data == "true") {
+                $(id).parent().parent().remove();
+            }
+
+        }
+    });
+}
+
 
 
 function renderErrorMessage() {

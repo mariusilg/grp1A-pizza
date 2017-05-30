@@ -1,17 +1,19 @@
 package controllers
 
+import controllers.Auth.Secured
 import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.data.Forms._
 import play.api.data.Form
 import services._
 import forms._
+import play.api.libs.json._
 
 /**
   * Controller for assortment specific operations.
   *
   * @author ne
   */
-object AssortmentController extends Controller {
+object AssortmentController extends Controller with Secured {
 
   val itemForm = Form(
     mapping(
@@ -135,23 +137,20 @@ object AssortmentController extends Controller {
   /**
     * Edit a specific item.
     */
-  def editItem(ofItem: Option[Long]) : Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => ofItem match {
-                                    case Some(ofItem) => val item = ItemService.getItem(ofItem)
-                                      item match {
-                                        case Some(item) => if (currentUser.admin) Ok(views.html.editItem(item)) else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
-                                        case None => if (currentUser.admin) Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Item konnte nicht im System gefunden werden") else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
-                                      }
-                                    case None => if (currentUser.admin) Redirect(routes.AssortmentController.manageAssortment) else Redirect(routes.Application.error).flashing("error" -> "Kein Zutritt zu diesem Bereich")
-                                  }
-        case None => Redirect(routes.Auth.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+  def editItem(ofItem: Option[Long]) = withUser_Employee { user => implicit request =>
+
+
+
+        ofItem match {
+          case Some(ofItem) => val item = ItemService.getItem(ofItem)
+            item match {
+              case Some(item) => Ok(views.html.editItem(item))
+              case None => Redirect(routes.AssortmentController.manageAssortment).flashing("fail" -> "Item konnte nicht im System gefunden werden")
+            }
+          case None
+          => Redirect(routes.AssortmentController.manageAssortment) 
+        }
+
   }
 
   /**
@@ -207,16 +206,21 @@ object AssortmentController extends Controller {
   /**
     * Manage all categories, products and extras.
     */
-  def manageAssortment : Action[AnyContent] = Action { implicit request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => if(currentUser.admin) Ok(views.html.assortment(categoryForm, itemForm)) else Redirect(routes.Application.index)
-        case None => Redirect(routes.Auth.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
+  def manageAssortment = withUser_Employee { user => implicit request =>
+    println("heydasisteintest")
+    Ok(views.html.assortment(categoryForm, itemForm))
+  }
+
+
+
+  def rmExtra(extraId: Int) = withUser_Employee { user => implicit request =>
+    var resultRemove: JsValue = Json.obj(
+        "result" -> false
+      )
+
+    var returnValue = "false"
+    returnValue = services.ExtraService.rmExtra(extraId)
+    Ok(returnValue)
   }
 
 }

@@ -2,7 +2,7 @@
 
 @main(models.Company.name) {
 
-    @adminMenu("manageRange", None, false)
+    @adminMenu("manageRange", None, true)
     <h1>Sortimentverwaltung</h1>
     <h2>Kategorien</h2>
 
@@ -150,6 +150,10 @@
                             <td>@extra.id (e)</td>
                             <td>@extra.name</td>
                             <td>@extra.priceToString</td>
+                            <td>
+                                <a style="float: left;" href="@routes.ExtraController.editExtra(Some(extra.id))"><i class="button material-icons button edit">edit</i></a>
+                                <a class="deleteItem" data-id="@extra.id"><i class="button material-icons button delete">delete</i></a>
+                            </td>
                         </tr>
                     }
                 </table>
@@ -173,4 +177,6 @@
             </div>
         }
     </div>
+    <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
+    <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
 }

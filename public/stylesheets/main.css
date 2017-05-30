@@ -537,5 +537,42 @@ table.productTable tr {
     display: table-cell;
 }
 
+.appUserMask {
+    padding-bottom: 13px;
+    padding-left: 13px;
+}
+
+.inputStyle {
+    width: 300px;
+    padding: 10px;
+    border: none;
+    border-bottom: solid 1px #c9c9c9;
+    transition: border 0.3s;
+}
+
+.nonInputStyle {
+    width: 300px;
+    padding: 10px;
+    border: none;
+    transition: border 0.3s;
+}
+
+.inputStyle:focus,
+.inputStyle.focus {
+    border-bottom: solid 1px #969696;
+}
+
+input[type="text"], input[type="number"], input[type="password"] {
+    -webkit-appearance: none;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.field {
+    color: black;
+    display: block;
+}
+
+
 
 
