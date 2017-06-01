@@ -109,7 +109,7 @@ class CategoryServiceSpec extends Specification {
       CategoryService.getSizes(3).length must be equalTo(2)
     }
 
-    "return wheter a category has specific sizes or not" in memDB {
+    "return whether a category has specific sizes or not" in memDB {
       clearDatabase()
       CategoryService.addCategory("Pizza", "cm", true)
       CategoryService.hasSizes(4) must beFalse
@@ -130,7 +130,7 @@ class CategoryServiceSpec extends Specification {
       CategoryService.lastVisibleCategory(3) must beTrue
     }
 
-    /*ToDo: mit Nils absprechen, ob richtig getestet*/
+
     "return that there is no visible category left" in memDB {
       CategoryService.deactivateCategory(1) must beTrue
       CategoryService.deactivateCategory(2) must beTrue
@@ -140,7 +140,7 @@ class CategoryServiceSpec extends Specification {
       CategoryService.lastVisibleCategory(3) must beTrue
     }
 
-    /*ToDo: mit Nils absprechen, ob richtig getestet*/
+
     "Return whether new name of category exists or not" in memDB {
       clearDatabase()
       CategoryService.addCategory("Pizza", "cm", true)
@@ -169,9 +169,6 @@ class CategoryServiceSpec extends Specification {
       CategoryService.isCategoryVisible(4) must beFalse
     }
 
-    /*ToDo: noch testen, dass False rauskommt, wenn über diese Kategorie
-    schon mal was bestellt wurde
-     */
     "Returns whether a category is deletable or not" in memDB {
       CategoryService.isCategoryDeletable(1) must beTrue
     }
