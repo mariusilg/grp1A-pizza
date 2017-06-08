@@ -5,7 +5,7 @@ CREATE TABLE Categories (
     id serial PRIMARY KEY,
     name varchar(255) NOT NULL,
     unit varchar(255) NOT NULL,
-    visibility BIT DEFAULT FALSE
+    visibility BOOLEAN DEFAULT FALSE
 );
 
 INSERT INTO Categories (

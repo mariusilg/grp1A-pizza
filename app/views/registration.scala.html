@@ -11,6 +11,11 @@
             @helper.input(userForm("Password"), '_label -> "Passwort:") { (id, name, value, args) =>
                 <input name="@name" type="password" value="@value" placeholder="Passwort" class="userInfoForm">
             }
+            @helper.select(
+                userForm("Gender"),
+                helper.options(("true", "Herr"),("false", "Frau")),
+                '_label -> "Anrede", '_default -> "-- Wähle Anrede --"
+            )
             @helper.input(userForm("FirstName"), '_label -> "First Name:") { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="First Name" class="userInfoForm">
             }
@@ -29,23 +34,13 @@
             @helper.input(userForm("Phone"), '_label -> "Phone:") { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="Phone number" class="userInfoForm">
             }
-            @helper.input(userForm("Email"), '_label -> "Email:") { (id, name, value, args) =>
+            @helper.input(userForm("Email"), '_label -> "Email:", 'hasErrors -> userForm("Email").hasErrors) { (id, name, value, args) =>
                 <input name="@name" type="text" value="@value" placeholder="eMail" class="userInfoForm">
             }
-            @*helper.input(userForm("Distance"), '_label -> "Distanz:") { (id, name, value, args) =>
-                <input name="@name" type="Int" value="@value" placeholder="in km" min="0" required/>
-            }
-            <dl id="Distance_field">
-                <dt>
-                    <label>Distanz:</label>
-                </dt>
-                <dd>
-                    <input name="Distance" type="number" value='@{userForm("Distance").value.map(x=>x).getOrElse("")}' placeholder="in km" min="0" required/>
-                </dd>
-            </dl>*@
             <input id="register" type="submit" value="registrieren" />
         }
     </div>
+
     <script type="text/javascript" src='@routes.JavascriptRoutes.javascriptRoutes()'></script>
     <script src="@routes.Assets.at("javascripts/javaScriptRoutes.js")" type="text/javascript"></script>
 }

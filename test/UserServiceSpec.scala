@@ -22,23 +22,23 @@ class UserServiceSpec extends Specification {
     }
 
     "add a user Helge" in memDB {
-      UserService.addUser("Helge").name must be equalTo("Helge")
+      UserService.addUser("Helge", true, "Helge", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "",true, "abc123").userName must be equalTo("Helge")
     }
 
     "add a user Helga" in memDB {
-      UserService.addUser("Helga").name must be equalTo("Helga")
+      UserService.addUser("Helga", true, "Helga", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "",true, "abc123").userName must be equalTo("Helga")
     }
 
     "return a list containing just Helge after adding user Helge" in memDB {
-      UserService.addUser("Helge")
+      UserService.addUser("Helge", true, "Helge", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "",true, "abc123")
       val registeredUsers = UserService.registeredUsers
       registeredUsers.length must be equalTo(1)
-      registeredUsers(0).name must be equalTo("Helge")
+      registeredUsers(0).userName must be equalTo("Helge")
     }
 
     "return a list of two users after adding two users Helge" in memDB {
-      UserService.addUser("Helge")
-      UserService.addUser("Helge")
+      UserService.addUser("Helge", true, "Helge", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "",true, "abc123")
+      UserService.addUser("Helga", true, "Helga", "Schneider", "pw", false, "street", "plz", "city","0176xxxxx", "mail",true, "abc123")
       UserService.registeredUsers.length must be equalTo(2)
     }
 

@@ -12,23 +12,34 @@ object JavascriptRoutes extends Controller with Secured {
   def javascriptRoutes = Action { implicit request =>
     Ok(
       Routes.javascriptRouter("jsRoutes")(
-        routes.javascript.JavascriptRoutes.checkUser,
-        routes.javascript.JavascriptRoutes.checkIfUserExists,
+
+        routes.javascript.JavascriptRoutes.checkName,
+        routes.javascript.JavascriptRoutes.checkOtherName,
+        routes.javascript.JavascriptRoutes.checkEmail,
+        routes.javascript.JavascriptRoutes.checkOtherEmail,
         routes.javascript.AssortmentController.rmExtra,
         routes.javascript.AssortmentController.rmSize
       )
     ).as("text/javascript")
   }
 
-  def checkUser(username: String) = Action {
-    //Ok(views.html.alertUserExists("hallo"))
-    println(username)
-    Ok("true")
+  def checkName(username: String) = Action {
+    var returnValue = services.UserService.nameInUse(username.trim)
+    Ok(returnValue.toString)
   }
 
-  def checkIfUserExists(username: String) = Action {
-    //Ok(views.html.alertUserExists("hallo"))
-    var returnValue = services.UserService.nameInUse(username)
+  def checkOtherName(id: Long, username: String) = Action {
+    var returnValue = services.UserService.nameInUse(id, username.trim)
+    Ok(returnValue.toString)
+  }
+
+  def checkEmail(email: String) = Action {
+    var returnValue = services.UserService.eMailInUse(email.trim)
+    Ok(returnValue.toString)
+  }
+
+  def checkOtherEmail(id: Long, email: String) = Action {
+    var returnValue = services.UserService.eMailInUse(id, email.trim)
     Ok(returnValue.toString)
   }
 

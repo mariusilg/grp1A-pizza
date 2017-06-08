@@ -13,35 +13,23 @@ trait OrderServiceT {
   val orderDao: OrderDaoT = OrderDao
 
   /**
-    * Adds a new order to the system.
+    * Adds a new product to the users system.
     * @param custID id of the customer.
+    * @param itemID
+    * @param quantity
+    * @param size
+    * @param distance
+    * @param extraIDs
     * @return the new order.
     */
-  def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Order = {
-    val item = ItemService.getItem(itemID).get
-    var newOrderExtras = List[OrderExtra]()
-    for(id <- extraIDs) {
-      val extra = ExtraService.getExtra(id)
-      extra match {
-        case Some(extra) => newOrderExtras = OrderExtra(extra.id, extra.name, 1, extra.price) :: newOrderExtras
-        case None =>
-      }
-    }
-    var newOrderItems = List[OrderItem](OrderItem(-1, itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
-    var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
-    newOrder.calcDuration(item.prepDuration)
-    newOrder.calcOrderCost
-    orderDao.addOrder(newOrder)
-  }
-
   def addToCart(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Unit = {
     val item = ItemService.getItem(itemID).get
     var newOrderExtras = List[OrderExtra]()
     for(id <- extraIDs) {
       val extra = ExtraService.getExtra(id)
       extra match {
-        case Some(extra) => newOrderExtras = OrderExtra(extra.id, extra.name, 1, extra.price) :: newOrderExtras
-        case None =>
+        case Some(extra) => newOrderExtras = OrderExtra(-1, extra.id, extra.name, 1, extra.price) :: newOrderExtras
+        case _ =>
       }
     }
     var newOrderItems = List[OrderItem](OrderItem(-1, itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
@@ -52,7 +40,7 @@ trait OrderServiceT {
     val cartID = getCartIDByUserID(custID)
     cartID match {
       case Some(cartID) => orderDao.addOrderItems(newOrder.orderItems, cartID)
-      case None => orderDao.addOrder(newOrder)
+      case _ => orderDao.addOrder(newOrder)
     }
   }
 
@@ -72,12 +60,29 @@ trait OrderServiceT {
 
   def deleteCartItem(custID: Long, orderItemID: Long): Boolean = {
     val cart = getCartByUserID(custID).head
-    orderDao.deleteOrderItem(cart.id, orderItemID)
+    if(cart.orderItems.length == 1) {
+      deleteCart(custID)
+    } else {
+      orderDao.deleteOrderItem(cart.id, orderItemID)
+    }
+  }
+
+  def deleteCartExtra(custID: Long, orderExtraID: Long): Boolean = {
+    val cart = getCartByUserID(custID).head
+    orderDao.deleteOrderExtra(cart.id, orderExtraID)
   }
 
 
   def cancelOrder(custID: Long, orderID: Long): Boolean = {
     orderDao.cancelOrder(custID, orderID)
+  }
+
+  def cancelOrder(orderID: Long): Boolean = {
+    orderDao.cancelOrder(orderID)
+  }
+
+  def acceptOrder(orderID: Long): Boolean = {
+    orderDao.acceptOrder(orderID)
   }
 
 

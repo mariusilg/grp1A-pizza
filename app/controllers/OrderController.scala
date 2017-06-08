@@ -25,25 +25,6 @@ object OrderController extends Controller {
     mapping(
       "custID" -> longNumber)(CreateIDForm.apply)(CreateIDForm.unapply))
 
-  def addOrder(username: String) = withUser { user => implicit request =>
-    orderForm.bindFromRequest.fold(
-      formWithErrors => {
-        val user = services.UserService.getUser(username).get
-        BadRequest(views.html.welcomeUser(formWithErrors, user, 1))
-      },
-      userData => {
-        val user = services.UserService.getUser(username).get
-        if(user.distance <= 20) {
-          services.OrderService.addOrder(user.id, userData.itemID, userData.quantity, userData.size, user.distance, userData.extraID)
-          Redirect(routes.OrderController.showOrders(None))
-        }
-        else {
-          Redirect(routes.UserController.editUser(None)).flashing("fail" -> "Bestellung konnte nicht aufgenommen werden, da wir nicht weiter als 20 Kilometer ausliefern")
-        }
-
-      })
-  }
-
   def addToCart = withUser { user => implicit request =>
           orderForm.bindFromRequest.fold(
           formWithErrors => {
@@ -58,6 +39,7 @@ object OrderController extends Controller {
   def confirmCart = withUser { user => implicit request =>
             if(user.distance <= 20) {
               if (services.OrderService.confirmCart(user.id)) {
+                controllers.WSController.sendNotification(user)
                 Redirect(routes.OrderController.showOrders(None))
               } else {
                 Redirect(routes.OrderController.showCart)
@@ -66,9 +48,6 @@ object OrderController extends Controller {
               Redirect(routes.UserController.editUser(None)).flashing("fail" -> "Bestellung konnte nicht aufgenommen werden, da wir nicht weiter als 20 Kilometer ausliefern")
             }
   }
-
-
-
 
 
   def refresh() = withUser { user => implicit request =>
@@ -118,18 +97,44 @@ object OrderController extends Controller {
 
   def deleteCartItem(orderItemID: Long) = withUser_Customer { user => implicit request =>
           if (services.OrderService.deleteCartItem(user.id, orderItemID)) {
-            Redirect(routes.OrderController.showCart)
+            Redirect(routes.OrderController.showCart).flashing("success" -> "Produkt wurde aus dem Warenkorb gelöscht")
           } else {
             Redirect(routes.OrderController.showCart).flashing("fail" -> "Produkt konnte nicht aus dem Warenkorb gelöscht werden")
           }
   }
 
-  def cancelOrder(orderID: Long)= withUser_Customer { user => implicit request =>
-          if (services.OrderService.cancelOrder(user.id, orderID)) {
-            Redirect(routes.OrderController.showOrders(None))
-          } else {
-            Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
-          }
+  def deleteCartExtra(orderExtraID: Long) = withUser_Customer { user => implicit request =>
+    if (services.OrderService.deleteCartExtra(user.id, orderExtraID)) {
+      Redirect(routes.OrderController.showCart).flashing("success" -> "Extra wurde aus dem Warenkorb gelöscht")
+    } else {
+      Redirect(routes.OrderController.showCart).flashing("fail" -> "Extra konnte nicht aus dem Warenkorb gelöscht werden")
+    }
+  }
+
+  def cancelOrder(orderID: Long)= withUser { user => implicit request =>
+    user.admin match {
+      case true =>
+        if (services.OrderService.cancelOrder(orderID)) {
+          Redirect(routes.OrderController.showOrders(None))
+        } else {
+          Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+        }
+      case _ =>
+        if (services.OrderService.cancelOrder(user.id, orderID)) {
+          Redirect(routes.OrderController.showOrders(None))
+        } else {
+          Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+        }
+    }
+
+  }
+
+  def acceptOrder(orderID: Long)= withUser_Employee { user => implicit request =>
+    if (services.OrderService.acceptOrder(orderID)) {
+      Redirect(routes.OrderController.showOrders(None))
+    } else {
+      Redirect(routes.OrderController.showOrders(None)).flashing("fail" -> "Bestellung konnte nicht storniert werden")
+    }
   }
 
 

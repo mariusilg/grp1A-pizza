@@ -90,7 +90,7 @@ object Users extends Controller {
     }.getOrElse(NotFound)
   }
 
-  private case class Username(userName: String, firstName: String, lastName: String, password: String,
+  private case class Username(userName: String, gender: Boolean, firstName: String, lastName: String, password: String,
                               admin: Boolean, street: String, zip: String, city: String, phone: String,
                               email: String, distance: Int, active: Boolean)
   private implicit val usernameReads = Json.reads[Username]
@@ -112,7 +112,7 @@ object Users extends Controller {
       },
       username => {
         Ok(Json.obj("status" -> "OK",
-          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.userName, username.firstName, username.lastName, username.password,
+          "user" -> Json.toJson(mkHateoasUser(UserService.addUser(username.userName, username.gender, username.firstName, username.lastName, username.password,
             username.admin, username.street, username.zip, username.city, username.phone, username.email, username.active, controllers.Auth.generateMD5Token(username.userName))))))
       }
     )

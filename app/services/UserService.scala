@@ -17,9 +17,9 @@ trait UserServiceT {
    * @param userName userName of the new user.
    * @return the new user.
    */
-  def addUser(userName: String, firstName: String, lastName: String, password: String, admin: Boolean, street: String, zip: String, city: String, phone: String, email: String, active: Boolean, token: String): User = {
+  def addUser(userName: String, gender: Boolean, firstName: String, lastName: String, password: String, admin: Boolean, street: String, zip: String, city: String, phone: String, email: String, active: Boolean, token: String): User = {
     // create User
-    val newUser = User(-1, userName, firstName, lastName, password, admin, street, zip, city, phone, email, -1, active)
+    val newUser = User(-1, userName, gender, firstName, lastName, password, admin, street, zip, city, phone, email, -1, active)
     // persist and return User
     val user = userDao.addUser(newUser, token)
     controllers.WSController.updateDistance(user)
@@ -35,6 +35,10 @@ trait UserServiceT {
 
   def confirmAccount(id: Long, token: String): Boolean= {
     userDao.confirmAccount(id, token)
+  }
+
+  def getTokenByUserID(id: Long): Option[String] = {
+    userDao.getTokenByUserID(id)
   }
 
   /**
@@ -75,9 +79,9 @@ trait UserServiceT {
     * Return id of user if the user exists.
     * @param userName username of the user.
     * @param password password of the user.
-    * @return optional id of the user.
+    * @return optional user.
     */
-  def login(userName: String, password: String): Option[Long] = {
+  def login(userName: String, password: String): Option[User] = {
     userDao.login(userName, password)
   }
 
@@ -94,6 +98,20 @@ trait UserServiceT {
     * @return true or false.
     */
   def nameInUse(id: Long, name: String): Boolean = userDao.nameInUse(id, name)
+
+  /**
+    * Return whether email exists or not.
+    * @return true or false.
+    */
+  def eMailInUse(eMail: String): Boolean = {
+    userDao.eMailInUse(eMail)
+  }
+
+  /**
+    * Return whether new mail address exists or not.
+    * @return true or false.
+    */
+  def eMailInUse(id: Long, eMail: String): Boolean = userDao.eMailInUse(id, eMail)
 
   /**
     * Return whether username exists or not.
@@ -144,10 +162,6 @@ trait UserServiceT {
     * @return a boolean success flag.
     */
   def rmUser(id: Long): Boolean = userDao.rmUser(id)
-
-  def checkIfUserExists(username: String, password: String): Boolean = {
-    userDao.checkIfUserExists(username, password)
-  }
 
 
   /*##########################################################################

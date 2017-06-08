@@ -16,17 +16,11 @@ object Application extends Controller with Secured {
    * @return main web page
    */
   def index = withUser { user => implicit request =>
-    println("funktioniert")
     user.admin match {
       case true =>
-        println("customer")
         Ok(views.html.welcomeAdmin(user))
-      //Ok(views.html.index(controllers.UserController.userForm))
       case _ =>
-        //Ok(views.html.index(controllers.UserController.userForm))
-        println("kein customer")
         Redirect(routes.UserController.home())
-
     }
     /*request.session.get("id").map { id =>
       val user = UserService.getUserByID(id.toLong)

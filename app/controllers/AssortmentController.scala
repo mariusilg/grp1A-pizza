@@ -8,12 +8,14 @@ import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Controller}
 import services._
 
+
 /**
   * Controller for assortment specific operations.
   *
   * @author ne
   */
 object AssortmentController extends Controller with Secured {
+
 
   val sizeForm = Form(
     mapping(
@@ -22,6 +24,7 @@ object AssortmentController extends Controller with Secured {
       "size" -> number,
       "categoryId" -> number
     )(CreateSizeForm.apply)(CreateSizeForm.unapply))
+
 
   val itemForm = Form(
     mapping(
@@ -55,7 +58,7 @@ object AssortmentController extends Controller with Secured {
   /**
     * Add a new category.
     */
-  def addCategory : Action[AnyContent] = Action { implicit request =>
+  def addCategory = withUser_Employee { user =>  implicit request =>
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(views.html.assortment(formWithErrors, itemForm))
@@ -69,7 +72,7 @@ object AssortmentController extends Controller with Secured {
   /**
     * Update a specific category.
     */
-  def updateCategory : Action[AnyContent] = Action { implicit request =>
+  def updateCategory = withUser_Employee { user => implicit request =>
     categoryForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(views.html.assortment(formWithErrors, itemForm))
@@ -95,11 +98,7 @@ object AssortmentController extends Controller with Secured {
   /**
     * Remove a specific category.
     */
-  def rmCategory(categoryID: Option[Long]) : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => if(currentUser.admin) {
+  def rmCategory(categoryID: Option[Long]) = withUser_Employee { currentUser => request =>
                                     categoryID match {
                                       case Some(categoryID) =>
                                         if (CategoryService.lastVisibleCategory(categoryID)) {
@@ -116,18 +115,11 @@ object AssortmentController extends Controller with Secured {
                                         }
                                       case None => Redirect(routes.AssortmentController.manageAssortment)
                                     }
-                                  } else Redirect(routes.Application.index)
-        case None => Redirect(routes.Auth.logout)
       }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
-  }
-
   /**
     * Add a new item.
     */
-  def addItem : Action[AnyContent] = Action { implicit request =>
+  def addItem = withUser_Employee {user => implicit request =>
     itemForm.bindFromRequest.fold(
       formWithErrors => {
         BadRequest(views.html.assortment(categoryForm, formWithErrors))
@@ -145,6 +137,7 @@ object AssortmentController extends Controller with Secured {
   /**
     * Edit a specific item.
     */
+
   def editItem(ofItem: Option[Long]) = withUser_Employee { user => implicit request =>
 
 
@@ -161,19 +154,17 @@ object AssortmentController extends Controller with Secured {
 
   }
 
-  def manageSizes = withUser_Employee { user => implicit request =>
-    var sizes = CategoryService.getSizes()
-    Ok(views.html.size(sizes))
+  def manageSizes = withUser_Employee { user =>
+    implicit request =>
+      var sizes = CategoryService.getSizes()
+      Ok(views.html.size(sizes))
   }
 
   /**
     * Remove a specific item.
     */
-  def rmItem(itemID: Option[Long]) : Action[AnyContent] = Action { request =>
-    request.session.get("id").map { id =>
-      val currentUser = UserService.getUserByID(id.toLong)
-      currentUser match {
-        case Some(currentUser) => if(currentUser.admin) {
+  def rmItem(itemID: Option[Long]) = withUser_Employee { currentUser => request =>
+if(currentUser.admin) {
           itemID match {
             case Some(itemID) =>
               if(!services.ItemService.isItemDeletable(itemID)) {
@@ -188,17 +179,12 @@ object AssortmentController extends Controller with Secured {
             case None => Redirect(routes.AssortmentController.manageAssortment)
           }
         } else Redirect(routes.Application.error).flashing("error" -> "Ihnen fehlen Berechtigungen")
-        case None => Redirect(routes.Auth.logout)
-      }
-    }.getOrElse {
-      Redirect(routes.Application.index)
-    }
   }
 
   /**
     * Update a specific Item.
     */
-  def updateItem() : Action[AnyContent] = Action { implicit request =>
+  def updateItem() = withUser_Employee { user => implicit request =>
     editItemForm.bindFromRequest.fold(
       formWithErrors => {
         Redirect(routes.Application.error()).flashing("error" -> "Fehler bei Update")
@@ -219,6 +205,7 @@ object AssortmentController extends Controller with Secured {
   /**
     * Manage all categories, products and extras.
     */
+
   def manageAssortment = withUser_Employee { user => implicit request =>
     println("heydasisteintest")
     Ok(views.html.assortment(categoryForm, itemForm))
@@ -269,10 +256,11 @@ object AssortmentController extends Controller with Secured {
       })
   }
 
-  def insertSize(ofSize: Option[Long]) = withUser_Employee { user => implicit request =>
-    println("hallo welt")
-    //val extra = services.ExtraService.getExtra(ofExtra.get)
-    Ok(views.html.detailView_Size("insert",None))
+  def insertSize(ofSize: Option[Long]) = withUser_Employee { user =>
+    implicit request =>
+      println("hallo welt")
+      //val extra = services.ExtraService.getExtra(ofExtra.get)
+      Ok(views.html.detailView_Size("insert", None))
   }
 
 }

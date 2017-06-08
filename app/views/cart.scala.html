@@ -51,10 +51,10 @@
                             @for(orderExtra <- orderItem.orderExtras) {
                                 <tr>
                                     <td></td>
-                                    <td><a href="@routes.OrderController.deleteCartItem(orderItem.id)">löschen</a></td>
+                                    <td><a href="@routes.OrderController.deleteCartExtra(orderExtra.id)">löschen</a></td>
                                     <td>je @orderExtra.quantity x</td>
                                     <td>+ @orderExtra.name</td>
-                                    <td>@orderExtra.id (e)</td>
+                                    <td>@orderExtra.extraID (e)</td>
                                     <td></td>
                                     <td><i>@orderExtra.priceToString</i></td>
                                     <td><i>@services.OrderService.costsToString(orderExtra.price * orderItem.quantity)</i></td>

@@ -13,12 +13,15 @@ GET         /error               controllers.Application.error
 
 GET         /welcome             controllers.UserController.welcome(categoryID: Option[Long])
 GET         /confirm             controllers.UserController.confirm(id: Long, token: String)
+GET         /resendConfirm       controllers.MailController.resendConfirm(userID: Long)
 GET         /showOrders          controllers.OrderController.showOrders(ofUser: Option[Long])
 GET         /cart                controllers.OrderController.showCart
 GET         /confirmCart         controllers.OrderController.confirmCart
 GET         /deleteCart          controllers.OrderController.deleteCart
 GET         /cancelOrder         controllers.OrderController.cancelOrder(orderID: Long)
+GET         /acceptOrder         controllers.OrderController.acceptOrder(orderID: Long)
 GET         /deleteCartItem      controllers.OrderController.deleteCartItem(itemID: Long)
+GET         /deleteCartExtra     controllers.OrderController.deleteCartExtra(extraID: Long)
 GET         /manageUser          controllers.UserController.manageUser
 GET         /editUser            controllers.UserController.editUser(ofUser: Option[Long])
 GET         /editItem            controllers.AssortmentController.editItem(ofItem: Option[Long])
@@ -36,8 +39,10 @@ GET         /manageExtras        controllers.ExtraController.manageExtras
 GET         /manageSizes         controllers.AssortmentController.manageSizes
 
 GET         /javascriptRoutes    controllers.JavascriptRoutes.javascriptRoutes
-GET         /checkUser           controllers.JavascriptRoutes.checkUser(username: String)
-GET         /checkIfUserExists   controllers.JavascriptRoutes.checkIfUserExists(username: String)
+GET         /checkName           controllers.JavascriptRoutes.checkName(username: String)
+GET         /checkOtherName      controllers.JavascriptRoutes.checkOtherName(id: Long, username: String)
+GET         /checkEmail          controllers.JavascriptRoutes.checkEmail(eMail: String)
+GET         /checkOtherEmail     controllers.JavascriptRoutes.checkOtherEmail(id: Long, eMail: String)
 GET         /jsroutetest         controllers.JavascriptRoutes.jsroutetest
 GET         /rmExtra             controllers.AssortmentController.rmExtra(extraId: Int)
 GET         /rmSize              controllers.AssortmentController.rmSize(sizeId: Int)
@@ -53,13 +58,13 @@ POST        /addItem             controllers.AssortmentController.addItem
 POST        /addCategory         controllers.AssortmentController.addCategory
 POST        /updateCategory      controllers.AssortmentController.updateCategory
 POST        /removeCategory      controllers.AssortmentController.rmCategory(id: Option[Long])
-POST        /login               controllers.UserController.login
-POST        /addOrder            controllers.OrderController.addOrder(username)
 POST        /addToCart           controllers.OrderController.addToCart
 POST        /refresh             controllers.OrderController.refresh
 POST        /post_authenticate   controllers.Auth.post_authenticate
+
 POST        /post_editExtra      controllers.ExtraController.post_editExtra(editType: String)
 POST        /post_editSize       controllers.AssortmentController.post_editSize(editType: String)
+
 
 # REST API
 GET         /api                 rest.Api.api

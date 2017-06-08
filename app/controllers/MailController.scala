@@ -1,9 +1,10 @@
 package controllers
+import controllers.Auth._
 import play.api.mvc.{Action, AnyContent, Controller}
 import mail._
 import org.apache.commons.mail.EmailException
 
-object MailController extends Controller {
+object MailController extends Controller with Secured {
 
   def sendMail(user: models.User, order: models.Order)= {
     try {
@@ -20,7 +21,7 @@ object MailController extends Controller {
     }
   }
 
-  def confirmMail(user: models.User, token: String)= {
+  def confirmMail(user: models.User, token: String) = {
     try {
       val sendMail = send a new Mail(
         from = (models.Company.email, models.Company.name),
@@ -37,5 +38,22 @@ object MailController extends Controller {
       case e: EmailException              => println("eMail Exception");
     }
   }
+
+  /**
+    * Shows the welcome view for a (newly) registered user.
+    */
+  def resendConfirm(id: Long) = withUser_Employee { user => request =>
+      val user = services.UserService.getUserByID(id)
+      user match{
+        case Some(user) =>
+          if(!user.active) {
+            services.UserService.getTokenByUserID(user.id).map{token => confirmMail(user, token)}
+            Redirect(routes.UserController.editUser(Some(id))).flashing("success" -> "Email wurde erneut versandt")
+          } else {
+            Redirect(routes.UserController.editUser(Some(id))).flashing("fail" -> "User ist schon aktiv")
+          }
+        case _ => Redirect(routes.UserController.editUser(None))
+      }
+    }
 
 }
