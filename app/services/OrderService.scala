@@ -12,28 +12,6 @@ trait OrderServiceT {
 
   val orderDao: OrderDaoT = OrderDao
 
-  /**
-    * Adds a new order to the system.
-    * @param custID id of the customer.
-    * @return the new order.
-    */
-  def addOrder(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Order = {
-    val item = ItemService.getItem(itemID).get
-    var newOrderExtras = List[OrderExtra]()
-    for(id <- extraIDs) {
-      val extra = ExtraService.getExtra(id)
-      extra match {
-        case Some(extra) => newOrderExtras = OrderExtra(-1, extra.id, extra.name, 1, extra.price) :: newOrderExtras
-        case None =>
-      }
-    }
-    var newOrderItems = List[OrderItem](OrderItem(-1, itemID, item.name, quantity, size, CategoryService.getUnit(item.categoryID), newOrderExtras, calcProductCost(quantity, size, item.price)))
-    var newOrder = Order(-1, custID, "inCart", null, newOrderItems, distance, -1, -1)
-    newOrder.calcDuration(item.prepDuration)
-    newOrder.calcOrderCost
-    orderDao.addOrder(newOrder)
-  }
-
   def addToCart(custID: Long, itemID: Long, quantity: Int, size: Int, distance: Int, extraIDs: List[Long]): Unit = {
     val item = ItemService.getItem(itemID).get
     var newOrderExtras = List[OrderExtra]()
@@ -145,7 +123,6 @@ trait OrderServiceT {
       case None => orderDao.getAverageBusinessVolume
     }
   }
-
 
 
   def getTotalBusinessVolume : Int = {
